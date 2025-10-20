@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+  cart          Cart?
+  wishlists     Wishlist[]
+  addresses     Address[]
+}
+
+model Product {
+  id                String    @id @default(cuid())
+  name              String
+  description       String
+  price             Float
+  images            String[]
+  category          Category  @relation(fields: [categoryId], references: [id])
+  categoryId        String
+  stock             Int
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  orderItems        OrderItem[]
+  cartItems         CartItem[]
+  wishlistItems     WishlistItem[]
+  // New EDI-related fields
+  sku               String?    @unique  // SKU for product identification in EDI
+  upc               String?    // UPC code for product identification
+  ediEnabled        Boolean    @default(false) // Whether this product is managed via EDI
+  supplierPartId    String?    // Supplier's part number/ID
+  supplierId        String?    // ID of the supplier for EDI
+  countInStock      Int        @default(0) // Current inventory level
+  lastInventoryUpdate DateTime? // Last time inventory was updated via EDI
+  ediInventoryReference String? // Reference to last inventory update
+  // Multilingual support
+  translations      ProductTranslation[]
+}
+
+model ProductTranslation {
+  id          String   @id @default(cuid())
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  language    String   // Language code (en, hi, es, etc.)
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productId, language])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  products    Product[]
+  parent      Category? @relation("SubCategories", fields: [parentId], references: [id])
+  parentId    String?
+  children    Category[] @relation("SubCategories")
+  // Multilingual support
+  translations CategoryTranslation[]
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String
+  language    String   // Language code (en, hi, es, etc.)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([categoryId, language])
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  orderNumber       String?     @unique  // New field for PO number used in EDI
+  user              User        @relation(fields: [userId], references: [id])
+  userId            String
+  status            OrderStatus @default(PENDING)
+  total             Float
+  items             OrderItem[]
+  address           Address     @relation(fields: [addressId], references: [id])
+  addressId         String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  // New fields for shipping tracking
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  trackingNumber    String?
+  shippingCarrier   String?
+  // EDI related fields
+  ediInfo           EdiOrderInfo? // Relation to EDI order info
+  invoices          Invoice[]     // Relation to invoices
+  ediTransactions   EdiTransaction[] @relation("OrderEdiTransactions") // Related EDI transactions
+  supplierId        String?       // ID of the supplier for EDI
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Float
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+}
+
+model Wishlist {
+  id        String         @id @default(cuid())
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String
+  name      String
+  items     WishlistItem[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model WishlistItem {
+  id         String   @id @default(cuid())
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
+  wishlistId String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  street    String
+  city      String
+  state     String
+  country   String
+  zipCode   String
+  isDefault Boolean  @default(false)
+  orders    Order[]
+}
+
+model EdiOrderInfo {
+  id                          String    @id @default(cuid())
+  order                       Order     @relation(fields: [orderId], references: [id])
+  orderId                     String    @unique
+  poSent                      Boolean   @default(false)
+  poSentAt                    DateTime?
+  poReferenceNumber           String?
+  orderConfirmationReceived   Boolean   @default(false)
+  orderConfirmationReceivedAt DateTime?
+  orderConfirmationReferenceNumber String?
+  shippingNoticeReceived      Boolean   @default(false)
+  shippingNoticeReceivedAt    DateTime?
+  shippingNoticeReferenceNumber String?
+  invoiceReceived             Boolean   @default(false)
+  invoiceReceivedAt           DateTime?
+  invoiceReferenceNumber      String?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+}
+
+model EdiTransaction {
+  id            String    @id @default(cuid())
+  documentType  String    // 850, 855, 856, etc.
+  direction     String    // inbound or outbound
+  partnerId     String    // trading partner ID
+  referenceId   String    // reference ID from EDI provider
+  status        String    // sent, received, processed, error
+  orderId       String?   // related order ID
+  order         Order?    @relation("OrderEdiTransactions", fields: [orderId], references: [id])
+  errorMessage  String?   // error message if status is error
+  rawData       String?   // raw EDI data (JSON)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([documentType, direction, partnerId, referenceId])
+}
+
+model Invoice {
+  id               String    @id @default(cuid())
+  invoiceNumber    String    @unique
+  order            Order     @relation(fields: [orderId], references: [id])
+  orderId          String
+  amount           Float
+  currency         String    @default("USD")
+  status           String    // received, approved, paid, rejected
+  issuedDate       DateTime
+  dueDate          DateTime
+  paidDate         DateTime?
+  ediReferenceNumber String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model EdiPartner {
+  id              String    @id @default(cuid())
+  name            String
+  partnerId       String    @unique
+  isActive        Boolean   @default(true)
+  supportedDocuments String[] // 850, 855, etc.
+  contactEmail    String?
+  contactPhone    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  CONFIRMED    // EDI: Order confirmation received (855)
+  SHIPPED      // EDI: Shipping notice received (856)
+  DELIVERED
+  CANCELLED
+  REJECTED     // EDI: Order rejected by supplier
+  INVOICED     // EDI: Invoice received (810)
+  PAID         // EDI: Payment sent (820)
+  PROBLEMSDETECTED // EDI: Problems detected with order
+}
