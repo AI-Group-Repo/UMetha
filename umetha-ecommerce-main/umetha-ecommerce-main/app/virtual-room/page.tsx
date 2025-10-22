@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Camera, Sparkles } from "lucide-react";
 import MainLayout from "@/components/main-layout";
@@ -123,6 +123,36 @@ const products = [
 export default function VirtualRoomPage() {
   const [selectedProduct, setSelectedProduct] = useState(products[0]);
   const { t } = useTranslation();
+
+  // Check for preloaded product from modal
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const preloadedProduct = sessionStorage.getItem('selectedProductForTryOn');
+      if (preloadedProduct) {
+        try {
+          const product = JSON.parse(preloadedProduct);
+          // Find matching product in the available products or create a new one
+          const existingProduct = products.find(p => p.id === product.id);
+          if (existingProduct) {
+            setSelectedProduct(existingProduct);
+          } else {
+            // Create a new product object that matches the expected structure
+            setSelectedProduct({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              category: product.category || 'Clothing'
+            });
+          }
+          // Clear the session storage after use
+          sessionStorage.removeItem('selectedProductForTryOn');
+        } catch (error) {
+          console.error('Error parsing preloaded product:', error);
+        }
+      }
+    }
+  }, []);
 
   return (
     <MainLayout>

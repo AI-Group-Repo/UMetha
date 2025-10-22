@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { useTranslation } from 'react-i18next';
-import { GoogleGenAI, Modality } from "@google/genai";
+import { useCart } from '@/context/cart-context';
+import { useToast } from '@/hooks/use-toast';
+import { ShoppingCart, CheckCircle } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -32,8 +34,11 @@ export default function VirtualTryOn({
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
+  const { addItem } = useCart();
+  const { toast } = useToast();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -57,11 +62,6 @@ export default function VirtualTryOn({
     setError(null);
 
     try {
-      // Initialize Google Gemini AI
-      const ai = new GoogleGenAI({
-        apiKey: process.env.nanoBananaApiKey || "AIzaSyA9ybO1IqMANa87pfef15Kkpur1zr08QEU"
-      });
-
       // Convert user image to base64
       const userImageBase64 = userImage.split(',')[1]; // Remove data:image/...;base64, prefix
       
@@ -77,51 +77,65 @@ export default function VirtualTryOn({
         reader.readAsDataURL(productImageBlob);
       });
 
-      // Create the prompt for Gemini AI
-      const prompt = [
-        {
-          inlineData: {
-            mimeType: "image/jpg",
-            data: productImageBase64,
-          },
-        },
-        {
-          inlineData: {
-            mimeType: "image/jpg", 
-            data: userImageBase64,
-          },
-        },
-        { 
-          text: `Create a professional e-commerce fashion photo. Take the ${selectedProduct.name} from the first image and let the person from the second image wear it. Generate a realistic, full-body shot of the person wearing the ${selectedProduct.name}, with proper lighting, shadows, and fabric draping that looks natural and professional. The person should be standing in a clean, modern environment with good lighting.` 
-        },
-      ];
+      // Create FormData for the API call
+      const formData = new FormData();
+      
+      // Convert base64 strings back to Blobs for FormData
+      const userImageBlob = new Blob([Uint8Array.from(atob(userImageBase64), c => c.charCodeAt(0))], { type: 'image/jpeg' });
+      const productImageBlobFromBase64 = new Blob([Uint8Array.from(atob(productImageBase64), c => c.charCodeAt(0))], { type: 'image/jpeg' });
+      
+      formData.append('userImage', userImageBlob, 'user-image.jpg');
+      formData.append('productImage', productImageBlobFromBase64, 'product-image.jpg');
+      formData.append('productName', selectedProduct.name);
 
-      // Generate the image using Gemini AI
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-image",
-        contents: prompt,
+      // Call the nanoBanana API endpoint
+      const response = await fetch('/api/virtual-tryon', {
+        method: 'POST',
+        body: formData,
       });
 
-      // Process the response
-      if (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.text) {
-            console.log("AI Response:", part.text);
-          } else if (part.inlineData) {
-            // Convert the generated image to a data URL
-            const imageData = part.inlineData.data;
-            const imageDataUrl = `data:image/png;base64,${imageData}`;
-            setResultImage(imageDataUrl);
-            return; // Exit after getting the image
+      const result = await response.json();
+
+      if (result.success && result.resultImage) {
+        setResultImage(result.resultImage);
+        console.log("Virtual try-on generated successfully:", result.message);
+      } else {
+        // Provide more specific error messages
+        let errorMessage = t("virtual_tryon.error_generation");
+        
+        if (result.error) {
+          if (result.error.includes("quota") || result.error.includes("limit")) {
+            errorMessage = "API quota exceeded. Please try again later or contact support.";
+          } else if (result.error.includes("network") || result.error.includes("timeout")) {
+            errorMessage = "Network error. Please check your connection and try again.";
+          } else if (result.error.includes("image") || result.error.includes("format")) {
+            errorMessage = "Image format not supported. Please try a different image.";
+          } else {
+            errorMessage = result.error;
           }
         }
+        
+        setError(errorMessage);
+        console.error("API Error:", result);
       }
-
-      // If no image was generated, show an error
-      setError("AI was unable to generate a virtual try-on image. Please try again.");
       
     } catch (err) {
-      setError(t("virtual_tryon.error_generation"));
+      // Provide more specific error messages for different error types
+      let errorMessage = t("virtual_tryon.error_generation");
+      
+      if (err instanceof Error) {
+        if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else if (err.message.includes("quota") || err.message.includes("limit")) {
+          errorMessage = "API quota exceeded. Please try again later or contact support.";
+        } else if (err.message.includes("API key") || err.message.includes("authentication")) {
+          errorMessage = "API configuration error. Please contact support.";
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
       console.error("Virtual try-on error:", err);
     } finally {
       setIsLoading(false);
@@ -145,6 +159,33 @@ export default function VirtualTryOn({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!selectedProduct) return;
+
+    setIsAddingToCart(true);
+    try {
+      await addItem({
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
+      });
+      
+      toast({
+        title: "Added to Cart",
+        description: `${selectedProduct.name} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -278,6 +319,11 @@ export default function VirtualTryOn({
       {error && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
           <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+          {error.includes("API configuration") && (
+            <p className="text-red-500 dark:text-red-300 text-xs mt-2">
+              💡 Tip: Make sure the VIRTUAL_NANO_BANANA_API_KEY environment variable is set in your .env.local file
+            </p>
+          )}
         </div>
       )}
 
@@ -315,10 +361,39 @@ export default function VirtualTryOn({
               )}
             </div>
             
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center space-y-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {t("virtual_tryon.result_question").replace("{productName}", selectedProduct?.name || "")}
               </p>
+              
+              <div className="flex gap-4 justify-center">
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isAddingToCart ? (
+                    <>
+                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Accept & Add to Cart
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={resetTryOn}
+                  className="border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Try Different Look
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

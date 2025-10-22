@@ -38,6 +38,7 @@ import MainLayout from "@/components/main-layout";
 import PriceCartButton from "@/components/ui/price-cart-button";
 import { cn } from "@/lib/utils";
 import { useFollowedInfluencers } from "@/context/followed-influencers-context";
+import { useProductModal } from "@/context/product-modal-context";
 import { useToast } from "@/hooks/use-toast";
 
 export default function InfluencerProfile() {
@@ -323,9 +324,25 @@ export default function InfluencerProfile() {
 
 // Product Card Component
 function ProductCard({ product }) {
+  const { openModal } = useProductModal();
+  
   return (
     <Card className="group relative overflow-hidden border-border/50 hover:shadow-xl transition-all duration-300">
-      <div className="relative aspect-square">
+      <div 
+        className="relative aspect-square cursor-pointer"
+        onClick={() => openModal({
+          id: product.id,
+          name: product.name,
+          description: product.description || '',
+          price: product.price,
+          images: [product.image],
+          category: product.category ? {
+            name: product.category,
+            slug: product.category.toLowerCase().replace(/\s+/g, '-')
+          } : undefined,
+          stock: product.stock || 0
+        })}
+      >
         <Image
           src={product.image}
           alt={product.name}

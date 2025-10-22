@@ -9,6 +9,8 @@ import { FollowedInfluencersProvider } from "@/context/followed-influencers-cont
 import { Toaster } from "@/components/ui/toaster";
 import { headers } from "next/headers";
 import { AuthProvider } from "@/context/auth-context";
+import { ProductModalProvider } from "@/context/product-modal-context";
+import ProductTryOnModal from "@/components/product-tryon-modal";
 import ClientI18nProvider from "@/components/client-i18n-provider";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -28,8 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preload critical images only */}
-        <link rel="preload" href="/Logo.png" as="image" />
+        {/* Removed unused preload to avoid console warning */}
       </head>
       <body className={geist.className}>
         <ClientI18nProvider>
@@ -42,7 +43,10 @@ export default function RootLayout({
             <AuthProvider>
               <CartProvider>
                 <FollowedInfluencersProvider>
-                  {children}
+                  <ProductModalProvider>
+                    {children}
+                    <ProductTryOnModal />
+                  </ProductModalProvider>
                 </FollowedInfluencersProvider>
               </CartProvider>
             </AuthProvider>

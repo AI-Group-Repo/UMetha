@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import axios from "axios";
+import { GoogleGenAI } from "@google/genai";
 
-// Environment variables for API keys
-const VIRTUAL_NANO_BANANA_API_KEY = process.env.VIRTUAL_NANO_BANANA_API_KEY || "fd57fdce5d923edb588a6bb46b5e4bb0";
+// Google Gemini API key (using user's provided key as dev fallback)
+const GOOGLE_GENERATIVE_AI_API_KEY =
+  process.env.nanoBananaApiKey ||
+  "AIzaSyAlDFVyERRgGemp3hMLjPRuch3Q7-Z8BDM";
 const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
 export async function POST(request: NextRequest) {
+  
   try {
     console.log("Virtual try-on API called");
     
@@ -28,14 +31,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Both user image and product image are required" },
         { status: 400 }
-      );
-    }
-
-    if (!VIRTUAL_NANO_BANANA_API_KEY) {
-      console.log("Nano Banana API key not configured");
-      return NextResponse.json(
-        { error: "Nano Banana API key not configured" },
-        { status: 500 }
       );
     }
 
@@ -66,125 +61,77 @@ export async function POST(request: NextRequest) {
     let processedUserImage = compressedUserImage;
     if (REMOVE_BG_API_KEY) {
       try {
-        const removeBgResponse = await axios.post(
-          "https://api.remove.bg/v1.0/removebg",
-          {
-            image_file: compressedUserImage,
-            size: "regular",
-            type: "person",
+        const form = new FormData();
+        form.append("image_file", new Blob([new Uint8Array(compressedUserImage)], { type: "image/jpeg" }));
+        form.append("size", "regular");
+        form.append("type", "person");
+        const removeBgResponse = await fetch("https://api.remove.bg/v1.0/removebg", {
+          method: "POST",
+          headers: {
+            "X-Api-Key": REMOVE_BG_API_KEY,
           },
-          {
-            headers: {
-              "X-Api-Key": REMOVE_BG_API_KEY,
-            },
-            responseType: "arraybuffer",
-          }
-        );
-        processedUserImage = Buffer.from(removeBgResponse.data);
+          body: form as any,
+        });
+        const arrayBuf = await removeBgResponse.arrayBuffer();
+        processedUserImage = Buffer.from(arrayBuf);
       } catch (error) {
         console.warn("Background removal failed, using original image:", error);
       }
     }
 
-    // Convert to base64 for Nano Banana API
+    // Convert to base64 for AI providers
     const userImageBase64 = processedUserImage.toString("base64");
     const productImageBase64 = compressedProductImage.toString("base64");
-
-    // Call Nano Banana API for virtual try-on
-    console.log("Calling Nano Banana API with product:", productName);
-    console.log("User image size:", userImageBase64.length);
-    console.log("Product image size:", productImageBase64.length);
-    
+    // Call Google Gemini using the exact format requested
     try {
-      // Try different Nano Banana API endpoints
-      const endpoints = [
-        "https://api.nanobanana.ai/v1/generate",
-        "https://api.nanobanana.fans/v1/generate",
-        "https://api.nanobanana.run/v1/generate"
+      const ai = new GoogleGenAI({ apiKey: GOOGLE_GENERATIVE_AI_API_KEY });
+      const prompt = [
+        {
+          inlineData: {
+            mimeType: "image/png",
+            data: productImageBase64, // Product image
+          },
+        },
+        {
+          inlineData: {
+            mimeType: "image/png", 
+            data: userImageBase64, // User image
+          },
+        },
+        { 
+          text: "Create a professional e-commerce fashion photo. Take the [product] from the first image and let the person from the second image wear it. Generate a realistic, full-body shot of the person wearing the [product], with the lighting and shadows adjusted to match the environment." 
+        },
       ];
 
-      let lastError = null;
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-image",
+        contents: prompt,
+      });
 
-      for (const endpoint of endpoints) {
-        try {
-          console.log(`Trying endpoint: ${endpoint}`);
-          
-          const nanoBananaResponse = await axios.post(
-            endpoint,
-            {
-              model: "gemini-2.0-flash-exp",
-              prompt: `Create a professional e-commerce fashion photo. Take the ${productName || "clothing item"} from the product image and make the person from the user photo wear it. Generate a realistic, full-body shot of the person wearing the ${productName || "clothing item"}, with the lighting and shadows adjusted to match the environment. The result should look natural and professional, suitable for an e-commerce website.`,
-              images: [
-                {
-                  type: "user_photo",
-                  data: userImageBase64,
-                },
-                {
-                  type: "product_image", 
-                  data: productImageBase64,
-                },
-              ],
-              style: "realistic",
-              quality: "high",
-            },
-            {
-              headers: {
-                "Authorization": `Bearer ${VIRTUAL_NANO_BANANA_API_KEY}`,
-                "Content-Type": "application/json",
-              },
-              timeout: 30000, // 30 second timeout
-              // Disable SSL verification to handle certificate issues
-              httpsAgent: new (require('https').Agent)({
-                rejectUnauthorized: false
-              })
-            }
-          );
-          
-          console.log("Nano Banana API Response Status:", nanoBananaResponse.status);
-          console.log("Nano Banana API Response Data:", nanoBananaResponse.data);
-
-          if (nanoBananaResponse.data.success && nanoBananaResponse.data.result_image) {
-            console.log("Virtual try-on generated successfully with Nano Banana API");
+      if (response?.candidates?.[0]?.content?.parts) {
+        for (const part of response.candidates[0].content.parts) {
+          if (part.inlineData?.data) {
+            const imageData = part.inlineData.data;
             return NextResponse.json({
               success: true,
-              resultImage: nanoBananaResponse.data.result_image,
-              message: "Virtual try-on generated successfully with Nano Banana API!",
+              resultImage: `data:image/png;base64,${imageData}`,
+              message: "Virtual try-on generated successfully with Google Gemini!",
             });
-          } else if (nanoBananaResponse.data.error) {
-            throw new Error(nanoBananaResponse.data.error);
-          } else {
-            throw new Error("Invalid response format from Nano Banana API");
           }
-
-        } catch (endpointError) {
-          console.error(`Endpoint ${endpoint} failed:`, endpointError instanceof Error ? endpointError.message : 'Unknown error');
-          lastError = endpointError;
-          continue; // Try next endpoint
         }
       }
 
-      // If all endpoints failed, throw the last error
-      throw lastError || new Error("All Nano Banana API endpoints failed");
-
+      // No image returned
+      return NextResponse.json(
+        { success: false, error: "Gemini returned no image in response" },
+        { status: 502 }
+      );
     } catch (apiError) {
-      console.error("Nano Banana API error:", apiError);
-      
-      // If API fails, return a mock response for testing
-      console.log("API failed, returning mock response for testing...");
-      
-      // Simulate API processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Create a mock result image
-      const mockResultImage = `data:image/jpeg;base64,${userImageBase64}`;
-      
-      return NextResponse.json({
-        success: true,
-        resultImage: mockResultImage,
-        message: "Virtual try-on generated successfully! (Mock response - Nano Banana API unavailable)",
-        isMock: true,
-        error: apiError instanceof Error ? apiError.message : "Unknown API error"
-      });
+      console.error("Gemini API error:", apiError);
+      return NextResponse.json(
+        { success: false, error: apiError instanceof Error ? apiError.message : "Unknown error" },
+        { status: 502 }
+      );
     }
   } catch (error) {
     console.error("Virtual try-on error:", error);

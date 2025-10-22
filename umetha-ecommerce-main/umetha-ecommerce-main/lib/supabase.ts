@@ -62,7 +62,7 @@ export const db = {
   },
 
   // Products
-  getProducts: async (limit = 12, offset = 0) => {
+  getProducts: async (limit = 50, offset = 0) => {
     return await supabase
       .from("products")
       .select("*")

@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cart-context";
+import { useProductModal } from "@/context/product-modal-context";
 import { useToast } from "@/hooks/use-toast";
 import {
   Card,
@@ -76,6 +77,7 @@ export default function SearchPage() {
   const { t } = useTranslation();
   const { addItem } = useCart();
   const { toast } = useToast();
+  const { openModal } = useProductModal();
 
   // State for products and filters
   const [products, setProducts] = useState<Product[]>([]);
@@ -566,13 +568,26 @@ export default function SearchPage() {
             {/* Products grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
               {products.map((product) => (
-                <Link
+                <div
                   key={product.id}
-                  href={`/product/${product.id}`}
                   className="group"
                 >
                   <Card className="overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-violet-700 transition-all duration-300 h-full flex flex-col">
-                    <div className="relative pt-[100%] bg-gray-100 dark:bg-gray-900 overflow-hidden">
+                    <div 
+                      className="relative pt-[100%] bg-gray-100 dark:bg-gray-900 overflow-hidden cursor-pointer"
+                      onClick={() => openModal({
+                        id: product.id,
+                        name: product.name,
+                        description: product.description || '',
+                        price: product.price,
+                        images: product.images || [product.image || ''],
+                        category: product.category ? {
+                          name: product.category.name,
+                          slug: product.category.slug || ''
+                        } : undefined,
+                        stock: product.stock || 0
+                      })}
+                    >
                       {product.image ? (
                         <Image
                           src={product.image}
@@ -600,7 +615,7 @@ export default function SearchPage() {
                           variant="secondary"
                           className="rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 h-8 w-8"
                           onClick={(e) => {
-                            e.preventDefault();
+                            e.stopPropagation();
                             // Add to wishlist functionality
                           }}
                         >
@@ -623,9 +638,11 @@ export default function SearchPage() {
                           </span>
                         )}
                       </div>
-                      <h3 className="font-medium text-gray-900 dark:text-white mb-1 line-clamp-2">
-                        {product.name}
-                      </h3>
+                      <Link href={`/product/${product.id}`}>
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-1 line-clamp-2 hover:text-indigo-600 dark:hover:text-violet-400 transition-colors">
+                          {product.name}
+                        </h3>
+                      </Link>
                       {product.rating && (
                         <div className="flex items-center gap-1 mb-2">
                           {[1, 2, 3, 4, 5].map((star) => (
@@ -675,7 +692,7 @@ export default function SearchPage() {
                       </Button>
                     </CardFooter>
                   </Card>
-                </Link>
+                </div>
               ))}
             </div>
 

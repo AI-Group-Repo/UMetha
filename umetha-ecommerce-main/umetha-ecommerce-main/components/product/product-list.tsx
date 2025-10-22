@@ -16,7 +16,7 @@ export default function ProductList() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const { data, error } = await db.getProducts(40); // Get 40 products
+        const { data, error } = await db.getProducts(50); // Get 40 products
 
         if (error) {
           throw new Error(error.message);
@@ -79,7 +79,7 @@ export default function ProductList() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <Link
-              href={`/product/${product.products_id}`}
+              href={`/products/${product.products_id}`}
               key={product.products_id}
               className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >

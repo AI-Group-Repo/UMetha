@@ -6,6 +6,7 @@ import { ShoppingCart, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
+import { useProductModal } from '@/context/product-modal-context';
 interface Product {
   id: string;
   name: string;
@@ -40,6 +41,7 @@ export function ProductCard({
   className = "" 
 }: ProductCardProps) {
   const { t } = useTranslation();
+  const { openModal } = useProductModal();
   // Get translated content based on language
   const getTranslatedContent = () => {
     if (product.translations && product.translations.length > 0) {
@@ -64,7 +66,10 @@ export function ProductCard({
   return (
     <div className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${className}`}>
       {/* Product Image Section */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <div 
+        className="relative aspect-square overflow-hidden bg-gray-50 cursor-pointer"
+        onClick={() => openModal(product)}
+      >
         <Image
           src={mainImage}
           alt={name}
@@ -75,7 +80,10 @@ export function ProductCard({
         
         {/* Wishlist Button */}
         <button
-          onClick={() => onAddToWishlist?.(product.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToWishlist?.(product.id);
+          }}
           className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
           aria-label="Add to wishlist"
         >
