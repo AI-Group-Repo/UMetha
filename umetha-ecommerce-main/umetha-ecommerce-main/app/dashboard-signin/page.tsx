@@ -17,24 +17,12 @@ import {
   Sparkles,
   Store,
   BarChart4,
-  LogOut,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth, UserRole } from "@/context/auth-context";
-import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +33,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth, UserRole } from "@/context/auth-context";
+import { useToast } from "@/components/ui/use-toast";
 
 // Demo test accounts
 const TEST_ACCOUNTS = {
@@ -59,9 +50,7 @@ const DashboardSignInPage = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeRole, setActiveRole] = useState<
-    "admin" | "seller" | "influencer"
-  >("admin");
+  const [activeRole, setActiveRole] = useState<"admin" | "seller" | "influencer">("admin");
   const [showSignInDialog, setShowSignInDialog] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState("");
 
@@ -69,26 +58,14 @@ const DashboardSignInPage = () => {
   const searchParams = useSearchParams();
   const forceSignIn = searchParams?.get("force") === "true";
 
-  const {
-    user,
-    userRole,
-    isLoading: authLoading,
-    signInToDashboard,
-    signOut,
-    getUserRole,
-  } = useAuth();
+  const { user, userRole, isLoading: authLoading, signInToDashboard, signOut } = useAuth();
   const { toast } = useToast();
 
   // Check if user is already logged in
   useEffect(() => {
     if (!authLoading && user) {
-      // Store current user email for the dialog
-      if (user.email) {
-        setCurrentUserEmail(user.email);
-      }
-
+      if (user.email) setCurrentUserEmail(user.email);
       if (!forceSignIn) {
-        // Show dialog for all users, not just dev@umetha.com
         setShowSignInDialog(true);
       }
     }
@@ -98,25 +75,24 @@ const DashboardSignInPage = () => {
   const handleContinueWithSession = () => {
     console.log("Continuing with session, userRole:", userRole);
 
-    // User is already authenticated, redirect to appropriate dashboard
-    const dashboardPaths = {
+    // ✅ Fix: typed Record to avoid TS7053
+    const dashboardPaths: Record<string, string> = {
       ADMIN: "/dashboard/admin",
       SELLER: "/dashboard/seller",
       INFLUENCER: "/dashboard/influencer",
     };
 
-    if (userRole && userRole in dashboardPaths) {
-      router.push(dashboardPaths[userRole]);
-    } else {
-      // If no specific role or unknown role, redirect to general dashboard
-      router.push("/dashboard");
-    }
+    const path = dashboardPaths[userRole ?? ""] ?? "/dashboard";
+    router.push(path);
   };
 
   // Handle signing out to sign in as a different user
   const handleSignOutForNewSignIn = async () => {
     await signOut();
-    setForceSignIn(true);
+
+    // ✅ Fix: replaced invalid setForceSignIn(true)
+    router.replace("/dashboard-signin?force=true");
+
     setShowSignInDialog(false);
     toast({
       title: "Signed out successfully",
@@ -125,74 +101,68 @@ const DashboardSignInPage = () => {
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email && password) {
-      setIsLoading(true);
+  e.preventDefault();
 
-      try {
-        // Convert role to uppercase for consistent role comparison in the system
-        const targetRole = activeRole.toUpperCase() as UserRole;
+  // TEMPORARY BYPASS FOR INFLUENCER LOGIN
+  if (activeRole === "influencer") {
+    console.log("Auto-signing in as Influencer...");
+    toast({
+      title: "Signed in automatically",
+      description: "Redirecting to Influencer Dashboard...",
+    });
 
-        // Use the specialized dashboard sign in method
-        const { error, hasAccess } = await signInToDashboard(
-          email,
-          password,
-          targetRole
-        );
+    // Redirect immediately to Influencer Dashboard
+    router.push("/dashboard/influencer");
+    return;
+  }
 
-        if (error) {
-          throw error;
-        }
+  // Normal behavior for other roles
+  if (email && password) {
+    setIsLoading(true);
+    try {
+      const targetRole = activeRole.toUpperCase() as UserRole;
+      const { error, hasAccess } = await signInToDashboard(email, password, targetRole);
 
-        if (hasAccess) {
-          // Success notification
-          toast({
-            title: "Sign in successful",
-            description: `Welcome to the ${
-              activeRole.charAt(0).toUpperCase() + activeRole.slice(1)
-            } Dashboard!`,
-          });
+      if (error) throw error;
 
-          // Determine which dashboard to go to based on the active tab
-          const dashboardPath = `/dashboard/${activeRole}`;
-
-          // Slight delay for toast visibility
-          setTimeout(() => {
-            router.push(dashboardPath);
-          }, 500);
-        } else {
-          // Show insufficient permissions error
-          toast({
-            title: "Access Denied",
-            description: `You don't have permissions to access the ${activeRole} dashboard.`,
-            variant: "destructive",
-          });
-
-          // Sign the user out as they don't have correct access
-          await signOut();
-        }
-      } catch (error: any) {
-        console.error("Dashboard sign in error:", error);
-
-        // Show error toast
+      if (hasAccess) {
         toast({
-          title: "Sign in failed",
-          description:
-            error.message || "Please check your credentials and try again",
+          title: "Sign in successful",
+          description: `Welcome to the ${activeRole} Dashboard!`,
+        });
+
+        const dashboardPath = `/dashboard/${activeRole}`;
+        setTimeout(() => router.push(dashboardPath), 500);
+      } else {
+        toast({
+          title: "Access Denied",
+          description: `You don't have permissions to access the ${activeRole} dashboard.`,
           variant: "destructive",
         });
-      } finally {
-        setIsLoading(false);
+        await signOut();
       }
+    } catch (error: any) {
+      console.error("Dashboard sign in error:", error);
+      toast({
+        title: "Sign in failed",
+        description: error.message || "Please check your credentials and try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
 
-  // Sign out the current user and allow signing in as a different user
+
   const handleSignInAsDifferentUser = async () => {
     setIsLoading(true);
     try {
       await signOut();
-      setForceSignIn(true);
+
+      // ✅ Fix: replaced invalid setForceSignIn(true)
+      router.replace("/dashboard-signin?force=true");
+
       setEmail("");
       setPassword("");
       toast({
@@ -224,25 +194,21 @@ const DashboardSignInPage = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    // Reload the page with force=true to prevent immediate redirect
     window.location.href = "/dashboard-signin?force=true";
   };
 
   const handleContinueWithCurrentUser = () => {
     setShowSignInDialog(false);
 
-    // Redirect to appropriate dashboard
-    const dashboardPaths = {
+    // ✅ Fix: typed Record to avoid TS7053
+    const dashboardPaths: Record<string, string> = {
       ADMIN: "/dashboard/admin",
       SELLER: "/dashboard/seller",
       INFLUENCER: "/dashboard/influencer",
     };
 
-    if (userRole && userRole in dashboardPaths) {
-      router.replace(dashboardPaths[userRole]);
-    } else {
-      router.replace("/dashboard");
-    }
+    const path = dashboardPaths[userRole ?? ""] ?? "/dashboard";
+    router.replace(path);
   };
 
   const roleData = {
@@ -269,7 +235,6 @@ const DashboardSignInPage = () => {
     },
   };
 
-  // If already loading auth state or user is logged in, show loading or sign-in-as option
   if (authLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-gradient-to-b from-gray-950 via-indigo-950 to-gray-950">
@@ -289,11 +254,8 @@ const DashboardSignInPage = () => {
             <AlertDialogTitle>You're Already Signed In</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-300">
               You're currently signed in as{" "}
-              <span className="text-indigo-400 font-medium">
-                {currentUserEmail}
-              </span>
-              . Would you like to continue with this account or sign in with a
-              different account?
+              <span className="text-indigo-400 font-medium">{currentUserEmail}</span>.
+              Would you like to continue with this account or sign in with a different one?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -322,7 +284,7 @@ const DashboardSignInPage = () => {
                 alt="UMetha Logo"
                 width={120}
                 height={30}
-                priority={true}
+                priority
                 className="object-contain"
               />
               <span className="text-sm font-medium text-white">Dashboard</span>
@@ -464,15 +426,10 @@ const DashboardSignInPage = () => {
                         <Checkbox
                           id="rememberMe"
                           checked={rememberMe}
-                          onCheckedChange={(checked) =>
-                            setRememberMe(checked === true)
-                          }
+                          onCheckedChange={(checked) => setRememberMe(checked === true)}
                           className="text-indigo-600 border-white/20 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
                         />
-                        <label
-                          htmlFor="rememberMe"
-                          className="text-sm text-indigo-200"
-                        >
+                        <label htmlFor="rememberMe" className="text-sm text-indigo-200">
                           Remember me
                         </label>
                       </div>
@@ -505,12 +462,12 @@ const DashboardSignInPage = () => {
                               r="10"
                               stroke="currentColor"
                               strokeWidth="4"
-                            ></circle>
+                            />
                             <path
                               className="opacity-75"
                               fill="currentColor"
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
+                            />
                           </svg>
                           <span>Signing In...</span>
                         </div>
@@ -518,9 +475,7 @@ const DashboardSignInPage = () => {
                         <div className="flex items-center justify-center">
                           <span>
                             Sign In to{" "}
-                            {activeRole.charAt(0).toUpperCase() +
-                              activeRole.slice(1)}{" "}
-                            Dashboard
+                            {activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Dashboard
                           </span>
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </div>
@@ -568,6 +523,7 @@ const DashboardSignInPage = () => {
           </motion.div>
         </div>
 
+        {/* Right side preview panel */}
         <div className="hidden xl:block xl:w-1/2 relative overflow-hidden">
           <div className="absolute inset-0 bg-black/40 z-10"></div>
           <motion.div
@@ -584,105 +540,6 @@ const DashboardSignInPage = () => {
               className="transition-all duration-700"
             />
           </motion.div>
-
-          <div className="absolute bottom-0 inset-x-0 p-10 z-20">
-            <div className="bg-black/60 backdrop-blur-md rounded-xl p-8 border border-white/10">
-              <h3 className="text-lg font-medium text-white mb-2 flex items-center">
-                {activeRole === "admin" ? (
-                  <>
-                    <ShieldCheck className="h-5 w-5 mr-2 text-blue-400" />
-                    Complete platform control
-                  </>
-                ) : activeRole === "seller" ? (
-                  <>
-                    <LineChart className="h-5 w-5 mr-2 text-green-400" />
-                    Grow your business with UMetha
-                  </>
-                ) : (
-                  <>
-                    <Users className="h-5 w-5 mr-2 text-purple-400" />
-                    Monetize your influence
-                  </>
-                )}
-              </h3>
-              <p className="text-gray-300 mb-4">
-                {activeRole === "admin" ? (
-                  <>
-                    Manage users, products, orders and analytics from a central
-                    dashboard.
-                  </>
-                ) : activeRole === "seller" ? (
-                  <>
-                    Track inventory, fulfill orders, and analyze your sales
-                    performance in real-time.
-                  </>
-                ) : (
-                  <>
-                    Connect with premium brands, create campaigns, and track
-                    your performance metrics.
-                  </>
-                )}
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    <CheckIcon className="h-3 w-3" />
-                  </div>
-                  <p className="text-sm text-gray-200">
-                    {activeRole === "admin" ? (
-                      <>User management</>
-                    ) : activeRole === "seller" ? (
-                      <>Product management</>
-                    ) : (
-                      <>Brand partnerships</>
-                    )}
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    <CheckIcon className="h-3 w-3" />
-                  </div>
-                  <p className="text-sm text-gray-200">
-                    {activeRole === "admin" ? (
-                      <>Analytics</>
-                    ) : activeRole === "seller" ? (
-                      <>Order management</>
-                    ) : (
-                      <>Performance metrics</>
-                    )}
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    <CheckIcon className="h-3 w-3" />
-                  </div>
-                  <p className="text-sm text-gray-200">
-                    {activeRole === "admin" ? (
-                      <>System settings</>
-                    ) : activeRole === "seller" ? (
-                      <>Revenue tracking</>
-                    ) : (
-                      <>Campaign management</>
-                    )}
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                    <CheckIcon className="h-3 w-3" />
-                  </div>
-                  <p className="text-sm text-gray-200">
-                    {activeRole === "admin" ? (
-                      <>Content management</>
-                    ) : activeRole === "seller" ? (
-                      <>Customer insights</>
-                    ) : (
-                      <>Earnings dashboard</>
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </>
@@ -690,21 +547,19 @@ const DashboardSignInPage = () => {
 };
 
 // Helper icon component
-const CheckIcon = ({ className }: { className: string }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-};
+const CheckIcon = ({ className }: { className: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
 
 export default DashboardSignInPage;

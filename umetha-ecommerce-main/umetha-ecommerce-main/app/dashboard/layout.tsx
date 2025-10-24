@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import {
   Home,
   LayoutDashboard,
@@ -44,7 +44,11 @@ import { useAuth } from "@/context/auth-context";
 
 // Removed the sidebar logic from DashboardLayout to avoid duplication
 // The sidebar in AdminLayout will be retained for the admin dashboard
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const pathname = usePathname();
   const { user, userRole, isLoading } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -71,19 +75,26 @@ export default function DashboardLayout({ children }) {
         <header className="bg-white dark:bg-gray-950 shadow-sm border-b border-gray-200 dark:border-gray-800 h-16 fixed top-0 right-0 left-0 z-10">
           <div className="flex items-center justify-between h-full px-4">
             <div className="flex-1"></div>
+
             <div className="flex items-center gap-2">
+              {/* Help icon */}
               <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
                 <HelpCircle className="h-5 w-5" />
               </button>
+
               <div className="border-l border-gray-200 dark:border-gray-800 h-6 mx-2"></div>
-              <div className="flex items-center">
-                <span className="text-sm font-medium mr-2 hidden sm:block">
-                  {user?.email}
-                </span>
-                <div className="h-8 w-8 rounded-full bg-indigo-600 dark:bg-indigo-800 flex items-center justify-center text-white">
-                  {user?.email?.charAt(0).toUpperCase()}
+
+              {/* ✅ Hide the default avatar when on Influencer Dashboard */}
+              {!pathname.includes("/dashboard/influencer") && (
+                <div className="flex items-center">
+                  <span className="text-sm font-medium mr-2 hidden sm:block">
+                    {user?.email}
+                  </span>
+                  <div className="h-8 w-8 rounded-full bg-indigo-600 dark:bg-indigo-800 flex items-center justify-center text-white">
+                    {user?.email?.charAt(0).toUpperCase()}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </header>

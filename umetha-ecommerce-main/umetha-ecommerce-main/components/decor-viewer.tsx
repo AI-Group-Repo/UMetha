@@ -96,11 +96,23 @@ export default function DecorViewer({ selected, className = "" }: DecorViewerPro
 
   return (
     <div className={`relative w-full h-full ${className}`}>
-      <Canvas camera={{ position: [2.2, 1.8, 2.8], fov: 45 }} shadows style={{ background: "linear-gradient(180deg,#0b1020,#0a0f1a)" }}>
+      <Canvas
+        shadows
+        camera={{ position: [2.2, 1.8, 2.8], fov: 45 }}
+        style={{ background: "linear-gradient(180deg,#0b1020,#0a0f1a)" }}
+      >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.45} />
-          <directionalLight position={[3, 6, 4]} intensity={1.1} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
-          <hemisphereLight skyColor={0x88aaff} groundColor={0x222222} intensity={0.5} />
+          {/* Ambient and directional lights */}
+          <ambientLight intensity={0.4} />
+          <directionalLight
+            position={[3, 6, 4]}
+            intensity={1.0}
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+          />
+          <hemisphereLight args={[0x88aaff, 0x222222, 0.6]} />
+
 
           {/* Floor */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
@@ -108,11 +120,11 @@ export default function DecorViewer({ selected, className = "" }: DecorViewerPro
             <meshStandardMaterial color={0x0b1220} />
           </mesh>
 
+          {/* Model or default primitives */}
           {modelPath ? (
             <GLTFModel path={modelPath} />
           ) : (
             <group>
-              {/* Simple staged layout by style */}
               <PrimitiveSofa color={layout.includes("Bohemian") ? "#7c3aed" : layout.includes("Rustic") ? "#6b7280" : "#374151"} />
               <PrimitiveTable />
               <PrimitiveLamp />
