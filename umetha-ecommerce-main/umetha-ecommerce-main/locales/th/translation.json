@@ -137,12 +137,25 @@
     "standard_shipping": "จัดส่งมาตรฐาน",
     "pickup_available": "รับสินค้าได้",
     "same_day_delivery": "จัดส่งวันเดียวกัน",
-    "next_day_delivery": "จัดส่งวันถัดไป"
+    "next_day_delivery": "จัดส่งวันถัดไป",
+    "categories.fashion": "แฟชั่น",
+    "categories.beauty": "ความงาม",
+    "categories.baby": "ทารก",
+    "categories.home_decor": "ของตกแต่งบ้าน",
+    "categories.electronics": "อิเล็กทรอนิกส์",
+    "categories.gaming": "เกม",
+    "categories.influencer_market": "ตลาดอินฟลูเอนเซอร์",
+    "categories.bargains": "สินค้าลดราคา",
+    "categories.unique_finds": "การค้นพบที่เป็นเอกลักษณ์",
+    "categories.virtual_tryon": "ลองเสื้อผ้าออนไลน์"
   },
   "room_visualizer": {
     "decoration_visualizer": "เครื่องมือแสดงภาพการตกแต่ง",
     "room_design": "เปลี่ยนพื้นที่ของคุณด้วยเครื่องมือออกแบบห้องที่ขับเคลื่อนด้วย AI ของเรา ดูภาพการจัดวางเฟอร์นิเจอร์ โครงสร้างสี และการตกแต่งก่อนซื้อ",
-    "start_decorating": "เริ่มตกแต่ง"
+    "start_decorating": "เริ่มตกแต่ง",
+    "virtual_fitting.enter_fitting_room": "เริ่มลองเสื้อผ้า",
+    "virtual_fitting.virtual_fitting_room": "เริ่มลองเสื้อผ้า",
+    "virtual_fitting.try_on_clothes": "ลองเสื้อผ้าแบบเสมือนจริงด้วยระบบลองเสื้อผ้าเสมือนจริงที่ขับเคลื่อนด้วย AI ของเรา อัปโหลดรูปภาพของคุณและดูว่าคุณดูเป็นอย่างไรในชุดใดก็ได้ก่อนซื้อ!"
   },
   "homepage": {
     "shop": "ร้านค้า",
@@ -227,7 +240,64 @@
     "image": "ค้นหาด้วยรูปภาพ",
     "upload_image_tooltip": "อัปโหลดรูปภาพเพื่อค้นหาสินค้าที่คล้ายกัน"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "คอลเลกชันคัดสรร",
+      "subtitle": "ยกระดับสไตล์",
+      "alt": "แฟชั่นหรูหรา"
+    },
+    "slide2": {
+      "title": "แกดเจ็ตอัจฉริยะ",
+      "subtitle": "เทคโนโลยีแห่งอนาคต",
+      "alt": "เทคโนโลยีพรีเมียม"
+    },
+    "slide3": {
+      "title": "ดีไซน์สร้างสรรค์",
+      "subtitle": "การแสดงออกทางศิลปะ",
+      "alt": "ศิลปะนามธรรม"
+    },
+    "slide4": {
+      "title": "แฟชั่นเทรนด์",
+      "subtitle": "สไตล์ผู้นำเทรนด์",
+      "alt": "นางแบบแฟชั่น"
+    },
+    "slide5": {
+      "title": "การใช้ชีวิตแบบทันสมัย",
+      "subtitle": "ความสะดวกสบายที่ง่ายดาย",
+      "alt": "เครื่องใช้ในบ้าน"
+    },
+    "slide6": {
+      "title": "เปล่งประกายตามธรรมชาติ",
+      "subtitle": "ผิวสุขภาพดี",
+      "alt": "ผลิตภัณฑ์ดูแลผิว"
+    }
+  },
+  "footer": {
+    "shop": "ร้านค้า",
+    "about": "เกี่ยวกับ",
+    "help": "ช่วยเหลือ",
+    "contact_us": "ติดต่อเรา",
+    "new_arrivals": "สินค้าใหม่",
+    "best_sellers": "สินค้าขายดี",
+    "sale": "ลดราคา",
+    "men": "ผู้ชาย",
+    "women": "ผู้หญิง",
+    "our_story": "เรื่องราวของเรา",
+    "blog": "บล็อก",
+    "careers": "ตำแหน่งงาน",
+    "press": "สื่อ",
+    "faqs": "คำถามที่พบบ่อย",
+    "shipping": "การจัดส่ง",
+    "returns": "คืนสินค้า",
+    "privacy_policy": "นโยบายความเป็นส่วนตัว",
+    "terms_and_conditions": "ข้อกำหนดและเงื่อนไข",
+    "secure_payment_options": "ตัวเลือกการชำระเงินที่ปลอดภัย",
+    "follow_us": "ติดตามเรา",
+    "all_rights_reserved": "สงวนลิขสิทธิ์"
+  },
   "welcome": "ยินดีต้อนรับสู่ร้านค้าของเรา!",
   "description": "ค้นหาดีลที่ดีที่สุดสำหรับสินค้าเทรนด์ทั่วโลก",
-  "addToCart": "เพิ่มในตะกร้า"
+  "addToCart": "เพิ่มในตะกร้า",
+  "metadata.title": "UMetha - แฟชั่นพรีเมียมและไลฟ์สไตล์",
+  "metadata.description": "ช้อปเทรนด์ล่าสุดในแฟชั่น เครื่องประดับ และผลิตภัณฑ์ไลฟ์สไตล์"
 }

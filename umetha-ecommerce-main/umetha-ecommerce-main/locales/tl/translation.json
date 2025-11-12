@@ -137,12 +137,25 @@
     "standard_shipping": "Standard Shipping",
     "pickup_available": "Available ang Pickup",
     "same_day_delivery": "Same Day Delivery",
-    "next_day_delivery": "Next Day Delivery"
+    "next_day_delivery": "Next Day Delivery",
+    "categories.fashion": "Fashion",
+    "categories.beauty": "Kagandahan",
+    "categories.baby": "Sanggol",
+    "categories.home_decor": "Home Decor",
+    "categories.electronics": "Electronics",
+    "categories.gaming": "Gaming",
+    "categories.influencer_market": "Influencer Market",
+    "categories.bargains": "Bargains",
+    "categories.unique_finds": "Unique Finds",
+    "categories.virtual_tryon": "Virtual Try-On"
   },
   "room_visualizer": {
     "decoration_visualizer": "Tagapagpakita ng Dekorasyon",
     "room_design": "Baguhin ang inyong espasyo gamit ang aming AI-powered na room design tool. I-visualize ang paglalagay ng muwebles, color schemes at dekorasyon bago bumili.",
-    "start_decorating": "Simulan ang Pagde-dekorasyon"
+    "start_decorating": "Simulan ang Pagde-dekorasyon",
+    "virtual_fitting.enter_fitting_room": "Simulan ang Pagsubok",
+    "virtual_fitting.virtual_fitting_room": "Simulan ang Pagsubok",
+    "virtual_fitting.try_on_clothes": "Subukan ang mga damit nang virtual gamit ang aming AI-powered virtual try-on system. I-upload ang inyong larawan at tingnan kung paano kayo magmumukha sa anumang outfit bago kayo bumili!"
   },
   "homepage": {
     "shop": "Tindahan",
@@ -227,7 +240,64 @@
     "image": "Maghanap gamit ang larawan",
     "upload_image_tooltip": "Mag-upload ng larawan upang maghanap ng mga katulad na produkto"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Mga Piniling Koleksyon",
+      "subtitle": "Itaas ang Estilo",
+      "alt": "Luxury na Fashion"
+    },
+    "slide2": {
+      "title": "Mga Smart Gadget",
+      "subtitle": "Teknolohiya ng Bukas",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Mga Malikhaing Disenyo",
+      "subtitle": "Mga Artistikong Ekspresyon",
+      "alt": "Abstract Art"
+    },
+    "slide4": {
+      "title": "Trending na Fashion",
+      "subtitle": "Mga Estilong Trendsetter",
+      "alt": "Fashion Model"
+    },
+    "slide5": {
+      "title": "Makabagong Pamumuhay",
+      "subtitle": "Madaling Komportable",
+      "alt": "Mga Gamit sa Bahay"
+    },
+    "slide6": {
+      "title": "Kumikinang Natural",
+      "subtitle": "Malusog na Balat",
+      "alt": "Mga Produktong Pangangalaga sa Balat"
+    }
+  },
+  "footer": {
+    "shop": "Tindahan",
+    "about": "Tungkol",
+    "help": "Tulong",
+    "contact_us": "Makipag-ugnayan",
+    "new_arrivals": "Mga Bagong Dating",
+    "best_sellers": "Pinakamabentang",
+    "sale": "Sale",
+    "men": "Lalaki",
+    "women": "Babae",
+    "our_story": "Ang Aming Kwento",
+    "blog": "Blog",
+    "careers": "Karera",
+    "press": "Pindutin",
+    "faqs": "Mga Madalas Itanong",
+    "shipping": "Pagpapadala",
+    "returns": "Pagbabalik",
+    "privacy_policy": "Patakaran sa Privacy",
+    "terms_and_conditions": "Mga Tuntunin at Kundisyon",
+    "secure_payment_options": "Ligtas na Mga Pagpipilian sa Pagbabayad",
+    "follow_us": "Sundan kami",
+    "all_rights_reserved": "Lahat ng karapatan ay nakalaan"
+  },
   "welcome": "Maligayang pagdating sa aming tindahan!",
   "description": "Hanapin ang pinakamahusay na mga deal sa trending na mga produkto sa buong mundo.",
-  "addToCart": "Idagdag sa Cart"
+  "addToCart": "Idagdag sa Cart",
+  "metadata.title": "UMetha - Premium Fashion & Lifestyle",
+  "metadata.description": "Mamili ng pinakabagong mga trend sa fashion, accessories, at lifestyle products."
 }

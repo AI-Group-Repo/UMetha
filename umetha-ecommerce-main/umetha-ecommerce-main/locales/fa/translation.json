@@ -137,12 +137,25 @@
     "standard_shipping": "ارسال استاندارد",
     "pickup_available": "دریافت حضوری",
     "same_day_delivery": "تحویل همان روز",
-    "next_day_delivery": "تحویل روز بعد"
+    "next_day_delivery": "تحویل روز بعد",
+    "categories.fashion": "مد و پوشاک",
+    "categories.beauty": "زیبایی",
+    "categories.baby": "نوزاد",
+    "categories.home_decor": "دکوراسیون خانه",
+    "categories.electronics": "الکترونیک",
+    "categories.gaming": "بازی",
+    "categories.influencer_market": "بازار تأثیرگذاران",
+    "categories.bargains": "معاملات",
+    "categories.unique_finds": "یافته‌های منحصر به فرد",
+    "categories.virtual_tryon": "پیش نمایش مجازی"
   },
   "room_visualizer": {
     "decoration_visualizer": "تجسم‌ساز دکوراسیون",
     "room_design": "فضای خود را با ابزار طراحی اتاق مبتنی بر هوش مصنوعی ما تغییر دهید. قبل از خرید، قرارگیری مبلمان، طرح‌های رنگی و دکوراسیون را تجسم کنید.",
-    "start_decorating": "شروع دکوراسیون"
+    "start_decorating": "شروع دکوراسیون",
+    "virtual_fitting.enter_fitting_room": "شروع امتحان",
+    "virtual_fitting.virtual_fitting_room": "شروع امتحان",
+    "virtual_fitting.try_on_clothes": "با سیستم مجازی امتحان مبتنی بر هوش مصنوعی ما، لباس‌ها را به صورت مجازی امتحان کنید. عکس خود را آپلود کنید و قبل از خرید ببینید که با هر لباسی چگونه به نظر می‌رسید!"
   },
   "homepage": {
     "shop": "فروشگاه",
@@ -227,7 +240,64 @@
     "image": "جستجو با تصویر",
     "upload_image_tooltip": "برای یافتن محصولات مشابه تصویری آپلود کنید"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "مجموعه‌های انتخابی",
+      "subtitle": "ارتقای استایل",
+      "alt": "مد لوکس"
+    },
+    "slide2": {
+      "title": "گجت‌های هوشمند",
+      "subtitle": "فناوری فردا",
+      "alt": "تکنولوژی پریمیوم"
+    },
+    "slide3": {
+      "title": "طراحی‌های خلاقانه",
+      "subtitle": "بیان‌های هنری",
+      "alt": "هنر انتزاعی"
+    },
+    "slide4": {
+      "title": "مد ترند",
+      "subtitle": "استایل‌های ترند",
+      "alt": "مدل مد"
+    },
+    "slide5": {
+      "title": "زندگی مدرن",
+      "subtitle": "آسایش آسان",
+      "alt": "لوازم خانگی"
+    },
+    "slide6": {
+      "title": "درخشش طبیعی",
+      "subtitle": "پوست سالم",
+      "alt": "محصولات مراقبت از پوست"
+    }
+  },
+  "footer": {
+    "shop": "فروشگاه",
+    "about": "درباره",
+    "help": "راهنما",
+    "contact_us": "تماس با ما",
+    "new_arrivals": "جدیدترین‌ها",
+    "best_sellers": "پرفروش‌ترین‌ها",
+    "sale": "تخفیف",
+    "men": "مردانه",
+    "women": "زنانه",
+    "our_story": "داستان ما",
+    "blog": "وبلاگ",
+    "careers": "فرصت‌های شغلی",
+    "press": "رسانه",
+    "faqs": "سوالات متداول",
+    "shipping": "ارسال",
+    "returns": "بازگشت",
+    "privacy_policy": "سیاست حفظ حریم خصوصی",
+    "terms_and_conditions": "شرایط و ضوابط",
+    "secure_payment_options": "گزینه‌های پرداخت امن",
+    "follow_us": "ما را دنبال کنید",
+    "all_rights_reserved": "تمام حقوق محفوظ است"
+  },
   "welcome": "به فروشگاه ما خوش آمدید!",
   "description": "بهترین پیشنهادات محصولات ترند جهانی را پیدا کنید.",
-  "addToCart": "افزودن به سبد خرید"
+  "addToCart": "افزودن به سبد خرید",
+  "metadata.title": "UMetha - مد و سبک زندگی پریمیوم",
+  "metadata.description": "جدیدترین ترندهای مد، لوازم جانبی و محصولات سبک زندگی را خریداری کنید."
 }

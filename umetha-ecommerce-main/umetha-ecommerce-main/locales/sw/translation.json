@@ -137,12 +137,25 @@
     "standard_shipping": "Standardfrakt",
     "pickup_available": "Hämtning tillgänglig",
     "same_day_delivery": "Samma dag leverans",
-    "next_day_delivery": "Nästa dag leverans"
+    "next_day_delivery": "Nästa dag leverans",
+    "categories.fashion": "Mode",
+    "categories.beauty": "Skönhet",
+    "categories.baby": "Baby",
+    "categories.home_decor": "Hemdekoration",
+    "categories.electronics": "Elektronik",
+    "categories.gaming": "Spel",
+    "categories.influencer_market": "Influencer Marknad",
+    "categories.bargains": "Erbjudanden",
+    "categories.unique_finds": "Unika Upptäckter",
+    "categories.virtual_tryon": "Virtuell Passning"
   },
   "room_visualizer": {
     "decoration_visualizer": "Dekorationsvisualisator",
     "room_design": "Förvandla ditt utrymme med vårt AI-drivna rumdesignverktyg. Visualisera möbelplacering, färgscheman och dekoration innan du köper.",
-    "start_decorating": "Börja Dekorera"
+    "start_decorating": "Börja Dekorera",
+    "virtual_fitting.enter_fitting_room": "Börja Passning",
+    "virtual_fitting.virtual_fitting_room": "Börja Passning",
+    "virtual_fitting.try_on_clothes": "Prova kläder virtuellt med vårt AI-drivna virtuella passningssystem. Ladda upp ditt foto och se hur du ser ut i vilken outfit som helst innan du köper!"
   },
   "homepage": {
     "shop": "Butik",
@@ -227,7 +240,64 @@
     "image": "Sök med bild",
     "upload_image_tooltip": "Ladda upp en bild för att hitta liknande produkter"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Kuratade Samlingar",
+      "subtitle": "Höj Stilen",
+      "alt": "Lyx Mode"
+    },
+    "slide2": {
+      "title": "Smarta Enheter",
+      "subtitle": "Morgondagens Teknologi",
+      "alt": "Premium Teknik"
+    },
+    "slide3": {
+      "title": "Kreativa Design",
+      "subtitle": "Konstnärliga Uttryck",
+      "alt": "Abstrakt Konst"
+    },
+    "slide4": {
+      "title": "Trendig Mode",
+      "subtitle": "Trendsättande Stilar",
+      "alt": "Mode Modell"
+    },
+    "slide5": {
+      "title": "Modernt Liv",
+      "subtitle": "Enkel Komfort",
+      "alt": "Hushållsapparater"
+    },
+    "slide6": {
+      "title": "Glans Naturligt",
+      "subtitle": "Hälsosam Hud",
+      "alt": "Skönhetsprodukter"
+    }
+  },
+  "footer": {
+    "shop": "Butik",
+    "about": "Om oss",
+    "help": "Hjälp",
+    "contact_us": "Kontakta oss",
+    "new_arrivals": "Nyheter",
+    "best_sellers": "Bästsäljare",
+    "sale": "Rea",
+    "men": "Herrar",
+    "women": "Damer",
+    "our_story": "Vår berättelse",
+    "blog": "Blogg",
+    "careers": "Karriärer",
+    "press": "Press",
+    "faqs": "Vanliga frågor",
+    "shipping": "Frakt",
+    "returns": "Returer",
+    "privacy_policy": "Integritetspolicy",
+    "terms_and_conditions": "Villkor",
+    "secure_payment_options": "Säkra betalningsalternativ",
+    "follow_us": "Följ oss",
+    "all_rights_reserved": "Alla rättigheter förbehållna"
+  },
   "welcome": "Välkommen till vår butik!",
   "description": "Hitta de bästa erbjudandena på trendiga produkter världen över.",
-  "addToCart": "Lägg till i varukorg"
+  "addToCart": "Lägg till i varukorg",
+  "metadata.title": "UMetha - Premium Mode & Livsstil",
+  "metadata.description": "Handla de senaste trenderna inom mode, accessoarer och livsstilsprodukter."
 }

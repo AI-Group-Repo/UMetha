@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { ShoppingBag, X, Sparkles } from 'lucide-react';
+import { ShoppingBag, X, Sparkles, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
 import { useProductModal } from '@/context/product-modal-context';
@@ -106,7 +106,7 @@ export default function ProductTryOnModal() {
     }
   };
 
-  const mainImage = product.images?.[0] || '/placeholder-product.jpg';
+  const mainImage = product.images?.[0];
   const canTryOn = isClothingRelated();
 
   return (
@@ -122,13 +122,19 @@ export default function ProductTryOnModal() {
         <div className="space-y-4">
           {/* Product Image */}
           <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-            <Image
-              src={mainImage}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 400px"
-            />
+            {mainImage ? (
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                <ShoppingCart className="w-16 h-16 text-gray-400 opacity-50" />
+              </div>
+            )}
             {product.stock === 0 && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <Badge variant="destructive" className="text-sm">

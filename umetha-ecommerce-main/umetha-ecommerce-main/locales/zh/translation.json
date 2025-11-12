@@ -137,12 +137,25 @@
     "standard_shipping": "标准配送",
     "pickup_available": "可自提",
     "same_day_delivery": "当日送达",
-    "next_day_delivery": "次日送达"
+    "next_day_delivery": "次日送达",
+    "categories.fashion": "时尚",
+    "categories.beauty": "美容",
+    "categories.baby": "婴儿",
+    "categories.home_decor": "家居装饰",
+    "categories.electronics": "电子产品",
+    "categories.gaming": "游戏",
+    "categories.influencer_market": "网红市场",
+    "categories.bargains": "特价商品",
+    "categories.unique_finds": "独特发现",
+    "categories.virtual_tryon": "虚拟试穿"
   },
   "room_visualizer": {
     "decoration_visualizer": "装饰可视化器",
     "room_design": "使用我们的人工智能驱动的房间设计工具改造您的空间。在购买前可视化家具摆放、配色方案和装饰。",
-    "start_decorating": "开始装饰"
+    "start_decorating": "开始装饰",
+    "virtual_fitting.enter_fitting_room": "开始试衣",
+    "virtual_fitting.virtual_fitting_room": "开始试衣",
+    "virtual_fitting.try_on_clothes": "使用我们的人工智能驱动的虚拟试衣功能虚拟试穿衣服。上传您的照片，在购买前查看您穿着任何服装的样子！"
   },
   "homepage": {
     "shop": "商店",
@@ -227,7 +240,64 @@
     "image": "图片搜索",
     "upload_image_tooltip": "上传图片搜索相似产品"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "精选系列",
+      "subtitle": "提升风格",
+      "alt": "奢华时尚"
+    },
+    "slide2": {
+      "title": "智能设备",
+      "subtitle": "明日科技",
+      "alt": "高级科技"
+    },
+    "slide3": {
+      "title": "创意设计",
+      "subtitle": "艺术表达",
+      "alt": "抽象艺术"
+    },
+    "slide4": {
+      "title": "流行时尚",
+      "subtitle": "潮流风格",
+      "alt": "时尚模特"
+    },
+    "slide5": {
+      "title": "现代生活",
+      "subtitle": "轻松舒适",
+      "alt": "家用电器"
+    },
+    "slide6": {
+      "title": "自然光彩",
+      "subtitle": "健康肌肤",
+      "alt": "护肤产品"
+    }
+  },
+  "footer": {
+    "shop": "商店",
+    "about": "关于",
+    "help": "帮助",
+    "contact_us": "联系我们",
+    "new_arrivals": "新品",
+    "best_sellers": "畅销商品",
+    "sale": "促销",
+    "men": "男士",
+    "women": "女士",
+    "our_story": "我们的故事",
+    "blog": "博客",
+    "careers": "职业",
+    "press": "新闻",
+    "faqs": "常见问题",
+    "shipping": "配送",
+    "returns": "退货",
+    "privacy_policy": "隐私政策",
+    "terms_and_conditions": "条款和条件",
+    "secure_payment_options": "安全支付选项",
+    "follow_us": "关注我们",
+    "all_rights_reserved": "版权所有"
+  },
   "welcome": "欢迎来到我们的商店！",
   "description": "发现全球热门产品的最佳优惠。",
-  "addToCart": "加入购物车"
+  "addToCart": "加入购物车",
+  "metadata.title": "UMetha - 高级时尚与生活方式",
+  "metadata.description": "购买最新时尚、配饰和生活方式产品的潮流。"
 }

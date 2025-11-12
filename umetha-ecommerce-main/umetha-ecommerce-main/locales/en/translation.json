@@ -137,12 +137,33 @@
     "standard_shipping": "Standard Shipping",
     "pickup_available": "Pickup Available",
     "same_day_delivery": "Same Day Delivery",
-    "next_day_delivery": "Next Day Delivery"
+    "next_day_delivery": "Next Day Delivery",
+    "categories.fashion": "Fashion",
+    "categories.beauty": "Beauty",
+    "categories.baby": "Baby",
+    "categories.home_decor" : "Home Decor",
+    "categories.electronics": "Electronics",
+    "categories.gaming": "Gaming",
+    "categories.influencer_market": "Influencer Market",
+    "categories.bargains": "Bargains",
+    "categories.unique_finds": "Unique Finds",
+    "categories.virtual_tryon": "Virtual Try-On"
   },
   "room_visualizer": {
     "decoration_visualizer": "Decoration Visualizer",
     "room_design": "Transform your space with our AI-powered room design tool. Visualize furniture placement, color schemes, and decor before you buy.",
-    "start_decorating": "Start Decorating"
+    "start_decorating": "Start Decorating",
+    "virtual_fitting.enter_fitting_room": "Start Fitting",
+    "virtual_fitting.virtual_fitting_room": "Start Fitting",
+    "virtual_fitting.try_on_clothes": "Try on clothes virtually with our AI-powered virtual try-on. Upload your photo and see how you look in any outfit before you buy!"
+    
+
+    
+
+    
+
+    
+    
   },
   "homepage": {
     "shop": "Shop",
@@ -155,6 +176,7 @@
     "remaining": "remaining",
     "off": "off",
     "best_sellers": "Best Sellers",
+    
     "top_products_love": "Top products our customers love",
     "view_all": "View All",
     "premium_slim_fit_jacket": "Premium Slim Fit Jacket",
@@ -230,7 +252,64 @@
     "image": "Search with image",
     "upload_image_tooltip": "Upload an image to search for similar products"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Curated Collections",
+      "subtitle": "Elevate Style",
+      "alt": "Luxury Fashion"
+    },
+    "slide2": {
+      "title": "Smart Gadgets",
+      "subtitle": "Tomorrow's Technology",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Creative Designs",
+      "subtitle": "Artistic Expressions",
+      "alt": "Abstract Art"
+    },
+    "slide4": {
+      "title": "Trending Fashion",
+      "subtitle": "Trendsetting Styles",
+      "alt": "Fashion Model"
+    },
+    "slide5": {
+      "title": "Modern Living",
+      "subtitle": "Effortless Comfort",
+      "alt": "Home Appliances"
+    },
+    "slide6": {
+      "title": "Glow Naturally",
+      "subtitle": "Healthy Skin",
+      "alt": "Skincare Products"
+    }
+  },
+  "footer": {
+    "shop": "Shop",
+    "about": "About",
+    "help": "Help",
+    "contact_us": "Contact Us",
+    "new_arrivals": "New Arrivals",
+    "best_sellers": "Best Sellers",
+    "sale": "Sale",
+    "men": "Men",
+    "women": "Women",
+    "our_story": "Our Story",
+    "blog": "Blog",
+    "careers": "Careers",
+    "press": "Press",
+    "faqs": "FAQs",
+    "shipping": "Shipping",
+    "returns": "Returns",
+    "privacy_policy": "Privacy Policy",
+    "terms_and_conditions": "Terms & Conditions",
+    "secure_payment_options": "Secure Payment Options",
+    "follow_us": "Follow Us",
+    "all_rights_reserved": "All rights reserved"
+  },
   "welcome": "Welcome to our store!",
   "description": "Find the best deals on trending products worldwide.",
-  "addToCart": "Add to Cart"
+  "addToCart": "Add to Cart",
+  "metadata.title": "UMetha - Premium Fashion & Lifestyle",
+  "metadata.description": "Shop the latest trends in fashion, accessories, and lifestyle products."
 }

@@ -32,6 +32,7 @@ import {
   ArrowRight,
   Check,
   User,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,10 +106,12 @@ export default function MainLayout({
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isImageSearchOpen, setIsImageSearchOpen] = useState(false);
+  const [sidebarScrolled, setSidebarScrolled] = useState(false);
   
   // All useRef hooks
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   
   // All context hooks
   const { itemCount } = useCart();
@@ -417,14 +420,43 @@ export default function MainLayout({
           animate={{
             width: 210,
           }}
-          className="relative h-[calc(100vh-80px)] shrink-0 bg-background border-r z-40 hidden lg:block"
+          className="relative shrink-0 bg-background border-r z-40 hidden lg:block flex flex-col"
+          style={{ height: 'calc(100vh - 80px)' }}
         >
-          <div className="sticky top-[80px] h-[calc(100vh-80px)] overflow-y-auto">
-            <div className="space-y-4 p-2">
+          <div 
+            ref={sidebarRef}
+            className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth custom-scrollbar"
+            onScroll={(e) => {
+              const target = e.target as HTMLDivElement;
+              setSidebarScrolled(target.scrollTop > 100);
+            }}
+          >
+            <div className="space-y-4 p-2 pb-20">
               {!hideFittingRoom && <FittingRoomSidebar />}
               {!hideRoomVisualizer && <RoomVisualizerSidebar />}
             </div>
           </div>
+          
+          {/* Scroll to Top Button */}
+          <AnimatePresence>
+            {sidebarScrolled && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                onClick={() => {
+                  sidebarRef.current?.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-8 h-8 rounded-full bg-primary/90 hover:bg-primary text-primary-foreground flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                aria-label="Scroll to top"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </motion.aside>
       )}
 

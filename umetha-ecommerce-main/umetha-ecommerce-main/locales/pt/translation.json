@@ -137,12 +137,25 @@
     "standard_shipping": "Frete padrão",
     "pickup_available": "Retirada disponível",
     "same_day_delivery": "Entrega no mesmo dia",
-    "next_day_delivery": "Entrega no dia seguinte"
+    "next_day_delivery": "Entrega no dia seguinte",
+    "categories.fashion": "Moda",
+    "categories.beauty": "Beleza",
+    "categories.baby": "Bebê",
+    "categories.home_decor": "Decoração de Casa",
+    "categories.electronics": "Eletrônicos",
+    "categories.gaming": "Jogos",
+    "categories.influencer_market": "Mercado de Influenciadores",
+    "categories.bargains": "Promoções",
+    "categories.unique_finds": "Descobertas Únicas",
+    "categories.virtual_tryon": "Experimentação Virtual"
   },
   "room_visualizer": {
     "decoration_visualizer": "Visualizador de Decoração",
     "room_design": "Transforme seu espaço com nossa ferramenta de design de quartos alimentada por IA. Visualize a colocação de móveis, esquemas de cores e decoração antes de comprar.",
-    "start_decorating": "Começar a Decorar"
+    "start_decorating": "Começar a Decorar",
+    "virtual_fitting.enter_fitting_room": "Iniciar Experimentação",
+    "virtual_fitting.virtual_fitting_room": "Iniciar Experimentação",
+    "virtual_fitting.try_on_clothes": "Experimente roupas virtualmente com nosso sistema de experimentação virtual alimentado por IA. Envie sua foto e veja como você fica com qualquer look antes de comprar!"
   },
   "homepage": {
     "shop": "Loja",
@@ -227,7 +240,64 @@
     "image": "Pesquisar com imagem",
     "upload_image_tooltip": "Faça upload de uma imagem para pesquisar produtos similares"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Coleções Curadas",
+      "subtitle": "Eleve o Estilo",
+      "alt": "Moda de Luxo"
+    },
+    "slide2": {
+      "title": "Gadgets Inteligentes",
+      "subtitle": "Tecnologia de Amanhã",
+      "alt": "Tech Premium"
+    },
+    "slide3": {
+      "title": "Designs Criativos",
+      "subtitle": "Expressões Artísticas",
+      "alt": "Arte Abstrata"
+    },
+    "slide4": {
+      "title": "Moda em Tendência",
+      "subtitle": "Estilos Inovadores",
+      "alt": "Modelo de Moda"
+    },
+    "slide5": {
+      "title": "Vida Moderna",
+      "subtitle": "Conforto Sem Esforço",
+      "alt": "Eletrodomésticos"
+    },
+    "slide6": {
+      "title": "Brilhe Naturalmente",
+      "subtitle": "Pele Saudável",
+      "alt": "Produtos de Cuidados com a Pele"
+    }
+  },
+  "footer": {
+    "shop": "Loja",
+    "about": "Sobre",
+    "help": "Ajuda",
+    "contact_us": "Entre em contato",
+    "new_arrivals": "Novidades",
+    "best_sellers": "Mais Vendidos",
+    "sale": "Promoção",
+    "men": "Homens",
+    "women": "Mulheres",
+    "our_story": "Nossa História",
+    "blog": "Blog",
+    "careers": "Carreiras",
+    "press": "Imprensa",
+    "faqs": "Perguntas Frequentes",
+    "shipping": "Envio",
+    "returns": "Devoluções",
+    "privacy_policy": "Política de Privacidade",
+    "terms_and_conditions": "Termos e Condições",
+    "secure_payment_options": "Opções de Pagamento Seguro",
+    "follow_us": "Siga-nos",
+    "all_rights_reserved": "Todos os direitos reservados"
+  },
   "welcome": "Bem-vindo à nossa loja!",
   "description": "Encontre as melhores ofertas em produtos em tendência mundialmente.",
-  "addToCart": "Adicionar ao carrinho"
+  "addToCart": "Adicionar ao carrinho",
+  "metadata.title": "UMetha - Moda Premium e Estilo de Vida",
+  "metadata.description": "Compre as últimas tendências em moda, acessórios e produtos de estilo de vida."
 }

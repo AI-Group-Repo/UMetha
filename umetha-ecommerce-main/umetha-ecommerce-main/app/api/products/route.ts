@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       name: product.name,
       description: product.description || '',
       price: product.price,
-      images: product.url ? [product.url] : ['/placeholder-product.jpg'],
+      images: product.url ? [product.url] : [],
       category: {
         id: product.category_id || 'default',
         name: product.category_id ? product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1) : 'General',

@@ -137,12 +137,25 @@
     "standard_shipping": "شحن عادي",
     "pickup_available": "استلام متاح",
     "same_day_delivery": "تسليم في نفس اليوم",
-    "next_day_delivery": "تسليم في اليوم التالي"
+    "next_day_delivery": "تسليم في اليوم التالي",
+    "categories.fashion": "الأزياء",
+    "categories.beauty": "الجمال",
+    "categories.baby": "الأطفال",
+    "categories.home_decor": "ديكور المنزل",
+    "categories.electronics": "الإلكترونيات",
+    "categories.gaming": "الألعاب",
+    "categories.influencer_market": "سوق المؤثرين",
+    "categories.bargains": "صفقات",
+    "categories.unique_finds": "اكتشافات فريدة",
+    "categories.virtual_tryon": "تجربة افتراضية"
   },
   "room_visualizer": {
     "decoration_visualizer": "مصور الديكور",
     "room_design": "حول مساحتك باستخدام أداة تصميم الغرف المدعومة بالذكاء الاصطناعي. تصور وضع الأثاث والألوان والديكور قبل الشراء.",
-    "start_decorating": "ابدأ التزيين"
+    "start_decorating": "ابدأ التزيين",
+    "virtual_fitting.enter_fitting_room": "بدء التجربة",
+    "virtual_fitting.virtual_fitting_room": "بدء التجربة",
+    "virtual_fitting.try_on_clothes": "جرب الملابس افتراضياً مع تجربة افتراضية مدعومة بالذكاء الاصطناعي. ارفع صورتك وشاهد كيف تبدو بأي زي قبل الشراء!"
   },
   "homepage": {
     "shop": "تسوق",
@@ -227,7 +240,64 @@
     "image": "البحث بالصورة",
     "upload_image_tooltip": "قم بتحميل صورة للبحث عن منتجات مماثلة"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "مجموعات منتقاة",
+      "subtitle": "ارتقِ بالأسلوب",
+      "alt": "أزياء فاخرة"
+    },
+    "slide2": {
+      "title": "أجهزة ذكية",
+      "subtitle": "تقنية المستقبل",
+      "alt": "تقنية مميزة"
+    },
+    "slide3": {
+      "title": "تصاميم إبداعية",
+      "subtitle": "تعبيرات فنية",
+      "alt": "فن تجريدي"
+    },
+    "slide4": {
+      "title": "موضة رائجة",
+      "subtitle": "أنماط رائدة",
+      "alt": "عارضة أزياء"
+    },
+    "slide5": {
+      "title": "عيش عصري",
+      "subtitle": "راحة بلا جهد",
+      "alt": "أجهزة منزلية"
+    },
+    "slide6": {
+      "title": "تألق طبيعي",
+      "subtitle": "بشرة صحية",
+      "alt": "منتجات العناية بالبشرة"
+    }
+  },
+  "footer": {
+    "shop": "تسوق",
+    "about": "حول",
+    "help": "مساعدة",
+    "contact_us": "اتصل بنا",
+    "new_arrivals": "وصلات جديدة",
+    "best_sellers": "الأكثر مبيعاً",
+    "sale": "تخفيضات",
+    "men": "رجال",
+    "women": "نساء",
+    "our_story": "قصتنا",
+    "blog": "المدونة",
+    "careers": "الوظائف",
+    "press": "الصحافة",
+    "faqs": "الأسئلة الشائعة",
+    "shipping": "الشحن",
+    "returns": "الإرجاع",
+    "privacy_policy": "سياسة الخصوصية",
+    "terms_and_conditions": "الشروط والأحكام",
+    "secure_payment_options": "خيارات الدفع الآمنة",
+    "follow_us": "تابعنا",
+    "all_rights_reserved": "جميع الحقوق محفوظة"
+  },
   "welcome": "أهلاً وسهلاً في متجرنا!",
   "description": "اكتشف أفضل العروض على المنتجات الرائجة عالمياً.",
-  "addToCart": "أضف إلى السلة"
+  "addToCart": "أضف إلى السلة",
+  "metadata.title": "UMetha - أزياء وأنماط حياة راقية",
+  "metadata.description": "تسوق أحدث صيحات الموضة والإكسسوارات ومنتجات أنماط الحياة."
 }

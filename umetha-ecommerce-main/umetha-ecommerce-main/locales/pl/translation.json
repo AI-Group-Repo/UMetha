@@ -137,12 +137,25 @@
     "standard_shipping": "Standardowa dostawa",
     "pickup_available": "Odbiór dostępny",
     "same_day_delivery": "Dostawa tego samego dnia",
-    "next_day_delivery": "Dostawa następnego dnia"
+    "next_day_delivery": "Dostawa następnego dnia",
+    "categories.fashion": "Moda",
+    "categories.beauty": "Uroda",
+    "categories.baby": "Dziecko",
+    "categories.home_decor": "Dekoracja Wnętrz",
+    "categories.electronics": "Elektronika",
+    "categories.gaming": "Gry",
+    "categories.influencer_market": "Rynek Influencerów",
+    "categories.bargains": "Okazje",
+    "categories.unique_finds": "Unikalne Znaleziska",
+    "categories.virtual_tryon": "Wirtualne Przymierzanie"
   },
   "room_visualizer": {
     "decoration_visualizer": "Wizualizator Dekoracji",
     "room_design": "Przekształć swoją przestrzeń za pomocą naszego narzędzia do projektowania pokoi napędzanego przez AI. Wizualizuj rozmieszczenie mebli, schematy kolorów i dekoracje przed zakupem.",
-    "start_decorating": "Rozpocznij Dekorowanie"
+    "start_decorating": "Rozpocznij Dekorowanie",
+    "virtual_fitting.enter_fitting_room": "Rozpocznij Przymierzanie",
+    "virtual_fitting.virtual_fitting_room": "Rozpocznij Przymierzanie",
+    "virtual_fitting.try_on_clothes": "Wirtualnie przymierzaj ubrania za pomocą naszego wirtualnego systemu przymierzania napędzanego przez AI. Prześlij swoje zdjęcie i zobacz, jak wyglądasz w dowolnym stroju przed zakupem!"
   },
   "homepage": {
     "shop": "Sklep",
@@ -227,7 +240,64 @@
     "image": "Szukaj obrazem",
     "upload_image_tooltip": "Prześlij obraz, aby znaleźć podobne produkty"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Wybrane Kolekcje",
+      "subtitle": "Wynoś Styl",
+      "alt": "Luksusowa Moda"
+    },
+    "slide2": {
+      "title": "Inteligentne Gadżety",
+      "subtitle": "Technologia Jutra",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Kreatywne Projekty",
+      "subtitle": "Artystyczne Wyrażenia",
+      "alt": "Sztuka Abstrakcyjna"
+    },
+    "slide4": {
+      "title": "Trendowa Moda",
+      "subtitle": "Style Trendsetterskie",
+      "alt": "Modelka"
+    },
+    "slide5": {
+      "title": "Nowoczesne Życie",
+      "subtitle": "Bezwysiłkowy Komfort",
+      "alt": "Sprzęt AGD"
+    },
+    "slide6": {
+      "title": "Świeć Naturalnie",
+      "subtitle": "Zdrowa Skóra",
+      "alt": "Produkty do Pielęgnacji Skóry"
+    }
+  },
+  "footer": {
+    "shop": "Sklep",
+    "about": "O nas",
+    "help": "Pomoc",
+    "contact_us": "Skontaktuj się z nami",
+    "new_arrivals": "Nowości",
+    "best_sellers": "Bestsellery",
+    "sale": "Wyprzedaż",
+    "men": "Mężczyźni",
+    "women": "Kobiety",
+    "our_story": "Nasza Historia",
+    "blog": "Blog",
+    "careers": "Kariera",
+    "press": "Prasa",
+    "faqs": "FAQ",
+    "shipping": "Dostawa",
+    "returns": "Zwroty",
+    "privacy_policy": "Polityka Prywatności",
+    "terms_and_conditions": "Regulamin",
+    "secure_payment_options": "Bezpieczne Opcje Płatności",
+    "follow_us": "Śledź nas",
+    "all_rights_reserved": "Wszelkie prawa zastrzeżone"
+  },
   "welcome": "Witamy w naszym sklepie!",
   "description": "Znajdź najlepsze oferty na trendy produkty na całym świecie.",
-  "addToCart": "Dodaj do koszyka"
+  "addToCart": "Dodaj do koszyka",
+  "metadata.title": "UMetha - Premium Moda i Styl Życia",
+  "metadata.description": "Kup najnowsze trendy w modzie, akcesoriach i produktach lifestyle."
 }

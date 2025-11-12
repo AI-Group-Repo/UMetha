@@ -60,7 +60,7 @@ export function ProductCard({
   };
 
   const { name, description } = getTranslatedContent();
-  const mainImage = product.images?.[0] || '/placeholder-product.jpg';
+  const mainImage = product.images?.[0];
   const isInStock = product.stock > 0;
 
   return (
@@ -70,13 +70,19 @@ export function ProductCard({
         className="relative aspect-square overflow-hidden bg-gray-50 cursor-pointer"
         onClick={() => openModal(product)}
       >
-        <Image
-          src={mainImage}
-          alt={name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+        {mainImage ? (
+          <Image
+            src={mainImage}
+            alt={name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+            <ShoppingCart className="w-16 h-16 text-gray-400 opacity-50" />
+          </div>
+        )}
         
         {/* Wishlist Button */}
         <button

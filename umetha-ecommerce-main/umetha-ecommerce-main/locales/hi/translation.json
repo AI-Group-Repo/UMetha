@@ -137,12 +137,25 @@
     "standard_shipping": "स्टैंडर्ड शिपिंग",
     "pickup_available": "पिकअप उपलब्ध",
     "same_day_delivery": "समान दिन डिलीवरी",
-    "next_day_delivery": "अगले दिन डिलीवरी"
+    "next_day_delivery": "अगले दिन डिलीवरी",
+    "categories.fashion": "फैशन",
+    "categories.beauty": "ब्यूटी",
+    "categories.baby": "बेबी",
+    "categories.home_decor": "होम डेकोर",
+    "categories.electronics": "इलेक्ट्रॉनिक्स",
+    "categories.gaming": "गेमिंग",
+    "categories.influencer_market": "इन्फ्लुएंसर मार्केट",
+    "categories.bargains": "सस्ते सौदे",
+    "categories.unique_finds": "अनूठी खोजें",
+    "categories.virtual_tryon": "वर्चुअल ट्राई-ऑन"
   },
   "room_visualizer": {
     "decoration_visualizer": "सजावट विज़ुअलाइज़र",
     "room_design": "हमारे AI-संचालित कमरा डिज़ाइन टूल के साथ अपने स्थान को बदलें। खरीदने से पहले फर्नीचर प्लेसमेंट, रंग योजनाओं और सजावट को विज़ुअलाइज़ करें।",
-    "start_decorating": "सजावट शुरू करें"
+    "start_decorating": "सजावट शुरू करें",
+    "virtual_fitting.enter_fitting_room": "फिटिंग शुरू करें",
+    "virtual_fitting.virtual_fitting_room": "फिटिंग शुरू करें",
+    "virtual_fitting.try_on_clothes": "हमारे AI-संचालित वर्चुअल ट्राई-ऑन के साथ कपड़े वर्चुअली आज़माएं। अपनी फोटो अपलोड करें और खरीदने से पहले देखें कि आप किसी भी आउटफिट में कैसे दिखते हैं!"
   },
   "homepage": {
     "shop": "दुकान",
@@ -227,7 +240,64 @@
     "image": "छवि से खोजें",
     "upload_image_tooltip": "समान उत्पाद खोजने के लिए एक छवि अपलोड करें"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "क्यूरेटेड कलेक्शन",
+      "subtitle": "स्टाइल बढ़ाएं",
+      "alt": "लक्जरी फैशन"
+    },
+    "slide2": {
+      "title": "स्मार्ट गैजेट्स",
+      "subtitle": "कल की तकनीक",
+      "alt": "प्रीमियम टेक"
+    },
+    "slide3": {
+      "title": "रचनात्मक डिज़ाइन",
+      "subtitle": "कलात्मक अभिव्यक्तियां",
+      "alt": "अमूर्त कला"
+    },
+    "slide4": {
+      "title": "ट्रेंडिंग फैशन",
+      "subtitle": "ट्रेंडसेटिंग स्टाइल्स",
+      "alt": "फैशन मॉडल"
+    },
+    "slide5": {
+      "title": "आधुनिक जीवन",
+      "subtitle": "आसान आराम",
+      "alt": "घरेलू उपकरण"
+    },
+    "slide6": {
+      "title": "प्राकृतिक चमक",
+      "subtitle": "स्वस्थ त्वचा",
+      "alt": "त्वचा देखभाल उत्पाद"
+    }
+  },
+  "footer": {
+    "shop": "शॉप",
+    "about": "के बारे में",
+    "help": "मदद",
+    "contact_us": "संपर्क करें",
+    "new_arrivals": "नए आगमन",
+    "best_sellers": "सर्वश्रेष्ठ विक्रेता",
+    "sale": "बिक्री",
+    "men": "पुरुष",
+    "women": "महिलाएं",
+    "our_story": "हमारी कहानी",
+    "blog": "ब्लॉग",
+    "careers": "करियर",
+    "press": "प्रेस",
+    "faqs": "पूछे जाने वाले प्रश्न",
+    "shipping": "शिपिंग",
+    "returns": "रिटर्न",
+    "privacy_policy": "गोपनीयता नीति",
+    "terms_and_conditions": "नियम और शर्तें",
+    "secure_payment_options": "सुरक्षित भुगतान विकल्प",
+    "follow_us": "हमें फॉलो करें",
+    "all_rights_reserved": "सर्वाधिकार सुरक्षित"
+  },
   "welcome": "हमारे स्टोर में आपका स्वागत है!",
   "description": "दुनिया भर में ट्रेंडिंग उत्पादों पर सर्वोत्तम डील्स खोजें।",
-  "addToCart": "कार्ट में जोड़ें"
+  "addToCart": "कार्ट में जोड़ें",
+  "metadata.title": "UMetha - प्रीमियम फैशन और लाइफस्टाइल",
+  "metadata.description": "फैशन, एक्सेसरीज़ और लाइफस्टाइल उत्पादों में नवीनतम रुझान खरीदें।"
 }

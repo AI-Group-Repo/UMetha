@@ -138,12 +138,25 @@
     "standard_shipping": "Livraison standard",
     "pickup_available": "Retrait disponible",
     "same_day_delivery": "Livraison le jour même",
-    "next_day_delivery": "Livraison le lendemain"
+    "next_day_delivery": "Livraison le lendemain",
+    "categories.fashion": "Mode",
+    "categories.beauty": "Beauté",
+    "categories.baby": "Bébé",
+    "categories.home_decor": "Décoration Intérieure",
+    "categories.electronics": "Électronique",
+    "categories.gaming": "Jeux Vidéo",
+    "categories.influencer_market": "Marché d'Influenceurs",
+    "categories.bargains": "Affaires",
+    "categories.unique_finds": "Trouvailles Uniques",
+    "categories.virtual_tryon": "Essayage Virtuel"
   },
   "room_visualizer": {
     "decoration_visualizer": "Visualiseur de Décoration",
     "room_design": "Transformez votre espace avec notre outil de conception de pièce alimenté par l'IA. Visualisez le placement des meubles, les schémas de couleurs et la décoration avant d'acheter.",
-    "start_decorating": "Commencer à Décorer"
+    "start_decorating": "Commencer à Décorer",
+    "virtual_fitting.enter_fitting_room": "Commencer l'Essayage",
+    "virtual_fitting.virtual_fitting_room": "Commencer l'Essayage",
+    "virtual_fitting.try_on_clothes": "Essayez des vêtements virtuellement avec notre essayage virtuel alimenté par l'IA. Téléchargez votre photo et voyez à quoi vous ressemblez dans n'importe quelle tenue avant d'acheter!"
   },
   "homepage": {
     "shop": "Boutique",
@@ -231,7 +244,64 @@
     "image": "Rechercher avec une image",
     "upload_image_tooltip": "Téléchargez une image pour rechercher des produits similaires"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Collections Curatées",
+      "subtitle": "Élevez le Style",
+      "alt": "Mode de Luxe"
+    },
+    "slide2": {
+      "title": "Gadgets Intelligents",
+      "subtitle": "Technologie de Demain",
+      "alt": "Technologie Premium"
+    },
+    "slide3": {
+      "title": "Designs Créatifs",
+      "subtitle": "Expressions Artistiques",
+      "alt": "Art Abstrait"
+    },
+    "slide4": {
+      "title": "Mode Tendance",
+      "subtitle": "Styles Avant-Gardistes",
+      "alt": "Modèle de Mode"
+    },
+    "slide5": {
+      "title": "Vie Moderne",
+      "subtitle": "Confort Sans Effort",
+      "alt": "Électroménagers"
+    },
+    "slide6": {
+      "title": "Brillez Naturellement",
+      "subtitle": "Peau Saine",
+      "alt": "Produits de Soin"
+    }
+  },
+  "footer": {
+    "shop": "Boutique",
+    "about": "À propos",
+    "help": "Aide",
+    "contact_us": "Contactez-nous",
+    "new_arrivals": "Nouveautés",
+    "best_sellers": "Meilleures ventes",
+    "sale": "Soldes",
+    "men": "Hommes",
+    "women": "Femmes",
+    "our_story": "Notre histoire",
+    "blog": "Blog",
+    "careers": "Carrières",
+    "press": "Presse",
+    "faqs": "FAQ",
+    "shipping": "Livraison",
+    "returns": "Retours",
+    "privacy_policy": "Politique de confidentialité",
+    "terms_and_conditions": "Termes et conditions",
+    "secure_payment_options": "Options de paiement sécurisées",
+    "follow_us": "Suivez-nous",
+    "all_rights_reserved": "Tous droits réservés"
+  },
   "welcome": "Bienvenue dans notre boutique !",
   "description": "Trouvez les meilleures offres sur les produits tendance du monde entier.",
-  "addToCart": "Ajouter au panier"
+  "addToCart": "Ajouter au panier",
+  "metadata.title": "UMetha - Mode Premium et Style de Vie",
+  "metadata.description": "Achetez les dernières tendances en mode, accessoires et produits de style de vie."
 }

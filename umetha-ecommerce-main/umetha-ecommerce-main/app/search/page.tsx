@@ -140,7 +140,7 @@ export default function SearchPage() {
       }
 
       // Add category if selected
-      if (selectedCategory !== "All") {
+      if (selectedCategory && selectedCategory !== "All") {
         params.append("categoryId", selectedCategory);
       }
 
@@ -265,7 +265,7 @@ export default function SearchPage() {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image || (product.images && product.images[0]) || '/placeholder-product.jpg',
+        image: product.image || (product.images && product.images[0]) || '',
         quantity: 1,
       });
       toast({

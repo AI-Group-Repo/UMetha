@@ -137,12 +137,25 @@
     "standard_shipping": "Standard Shipping",
     "pickup_available": "Pickup Available",
     "same_day_delivery": "Same Day Delivery",
-    "next_day_delivery": "Next Day Delivery"
+    "next_day_delivery": "Next Day Delivery",
+    "categories.fashion": "ਫੈਸ਼ਨ",
+    "categories.beauty": "ਸੁੰਦਰਤਾ",
+    "categories.baby": "ਬੱਚਾ",
+    "categories.home_decor": "ਘਰ ਦੀ ਸਜਾਵਟ",
+    "categories.electronics": "ਇਲੈਕਟ੍ਰਾਨਿਕਸ",
+    "categories.gaming": "ਗੇਮਿੰਗ",
+    "categories.influencer_market": "ਇਨਫਲੂਐਨਸਰ ਮਾਰਕੀਟ",
+    "categories.bargains": "ਸਸਤੇ ਸੌਦੇ",
+    "categories.unique_finds": "ਵਿਲੱਖਣ ਖੋਜਾਂ",
+    "categories.virtual_tryon": "ਵਰਚੁਅਲ ਟ੍ਰਾਈ-ਓਨ"
   },
   "room_visualizer": {
     "decoration_visualizer": "ਸਜਾਵਟ ਵਿਜ਼ੂਅਲਾਈਜ਼ਰ",
     "room_design": "ਸਾਡੇ AI-ਚਲਾਏ ਗਏ ਕਮਰੇ ਦੇ ਡਿਜ਼ਾਈਨ ਟੂਲ ਨਾਲ ਆਪਣੀ ਜਗ੍ਹਾ ਨੂੰ ਬਦਲੋ। ਖਰੀਦਣ ਤੋਂ ਪਹਿਲਾਂ ਫਰਨੀਚਰ ਦੀ ਜਗ੍ਹਾ, ਰੰਗ ਦੇ ਸਕੀਮ ਅਤੇ ਸਜਾਵਟ ਨੂੰ ਵਿਜ਼ੂਅਲਾਈਜ਼ ਕਰੋ।",
-    "start_decorating": "ਸਜਾਵਟ ਸ਼ੁਰੂ ਕਰੋ"
+    "start_decorating": "ਸਜਾਵਟ ਸ਼ੁਰੂ ਕਰੋ",
+    "virtual_fitting.enter_fitting_room": "ਫਿਟਿੰਗ ਸ਼ੁਰੂ ਕਰੋ",
+    "virtual_fitting.virtual_fitting_room": "ਫਿਟਿੰਗ ਸ਼ੁਰੂ ਕਰੋ",
+    "virtual_fitting.try_on_clothes": "ਸਾਡੇ AI-ਚਲਾਏ ਗਏ ਵਰਚੁਅਲ ਟ੍ਰਾਈ-ਆਨ ਸਿਸਟਮ ਨਾਲ ਕੱਪੜੇ ਵਰਚੁਅਲੀ ਟ੍ਰਾਈ ਕਰੋ। ਆਪਣੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ ਅਤੇ ਖਰੀਦਣ ਤੋਂ ਪਹਿਲਾਂ ਦੇਖੋ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਆਉਟਫਿਟ ਵਿੱਚ ਕਿਵੇਂ ਦਿਖਦੇ ਹੋ!"
   },
   "homepage": {
     "shop": "ਸ਼ਾਪ",
@@ -227,7 +240,64 @@
     "image": "ਚਿੱਤਰ ਨਾਲ ਖੋਜੋ",
     "upload_image_tooltip": "ਸਮਾਨ ਉਤਪਾਦ ਖੋਜਣ ਲਈ ਇੱਕ ਚਿੱਤਰ ਅਪਲੋਡ ਕਰੋ"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "ਕਿਉਰੇਟਡ ਸੰਗ੍ਰਹਿ",
+      "subtitle": "ਸਟਾਈਲ ਵਧਾਓ",
+      "alt": "ਲਕਜ਼ਰੀ ਫੈਸ਼ਨ"
+    },
+    "slide2": {
+      "title": "ਸਮਾਰਟ ਗੈਜੇਟਸ",
+      "subtitle": "ਕੱਲ੍ਹ ਦੀ ਤਕਨਾਲੋਜੀ",
+      "alt": "ਪ੍ਰੀਮੀਅਮ ਟੈਕ"
+    },
+    "slide3": {
+      "title": "ਰਚਨਾਤਮਕ ਡਿਜ਼ਾਈਨ",
+      "subtitle": "ਕਲਾਤਮਕ ਸਮੀਕਰਨ",
+      "alt": "ਸਾਰ ਆਰਟ"
+    },
+    "slide4": {
+      "title": "ਟ੍ਰੈਂਡਿੰਗ ਫੈਸ਼ਨ",
+      "subtitle": "ਟ੍ਰੈਂਡਸੈਟਿੰਗ ਸਟਾਈਲ",
+      "alt": "ਫੈਸ਼ਨ ਮਾਡਲ"
+    },
+    "slide5": {
+      "title": "ਆਧੁਨਿਕ ਜੀਵਨ",
+      "subtitle": "ਆਸਾਨ ਆਰਾਮ",
+      "alt": "ਘਰੇਲੂ ਉਪਕਰਣ"
+    },
+    "slide6": {
+      "title": "ਕੁਦਰਤੀ ਚਮਕ",
+      "subtitle": "ਸਿਹਤਮੰਦ ਚਮੜੀ",
+      "alt": "ਚਮੜੀ ਦੇਖਭਾਲ ਉਤਪਾਦ"
+    }
+  },
+  "footer": {
+    "shop": "ਦੁਕਾਨ",
+    "about": "ਬਾਰੇ",
+    "help": "ਮਦਦ",
+    "contact_us": "ਸੰਪਰਕ ਕਰੋ",
+    "new_arrivals": "ਨਵੇਂ ਆਏ",
+    "best_sellers": "ਸਭ ਤੋਂ ਵਧੀਆ ਵਿਕਰੇਤਾ",
+    "sale": "ਸੇਲ",
+    "men": "ਮਰਦ",
+    "women": "ਔਰਤਾਂ",
+    "our_story": "ਸਾਡੀ ਕਹਾਣੀ",
+    "blog": "ਬਲੌਗ",
+    "careers": "ਕੈਰੀਅਰ",
+    "press": "ਪ੍ਰੈਸ",
+    "faqs": "ਅਕਸਰ ਪੁੱਛੇ ਜਾਣ ਵਾਲੇ ਸਵਾਲ",
+    "shipping": "ਸ਼ਿਪਿੰਗ",
+    "returns": "ਵਾਪਸੀ",
+    "privacy_policy": "ਗੋਪਨੀਯਤਾ ਨੀਤੀ",
+    "terms_and_conditions": "ਸ਼ਰਤਾਂ ਅਤੇ ਸ਼ਰਤਾਂ",
+    "secure_payment_options": "ਸੁਰੱਖਿਤ ਭੁਗਤਾਨ ਵਿਕਲਪ",
+    "follow_us": "ਸਾਨੂੰ ਫਾਲੋ ਕਰੋ",
+    "all_rights_reserved": "ਸਾਰੇ ਹੱਕ ਸੁਰੱਖਿਤ ਹਨ"
+  },
   "welcome": "ਸਾਡੇ ਸਟੋਰ ਵਿੱਚ ਸਵਾਗਤ ਹੈ!",
   "description": "ਦੁਨੀਆ ਭਰ ਵਿੱਚ ਟ੍ਰੈਂਡਿੰਗ ਉਤਪਾਦਾਂ 'ਤੇ ਸਭ ਤੋਂ ਵਧੀਆ ਡੀਲ ਲੱਭੋ।",
-  "addToCart": "ਕਾਰਟ ਵਿੱਚ ਜੋੜੋ"
+  "addToCart": "ਕਾਰਟ ਵਿੱਚ ਜੋੜੋ",
+  "metadata.title": "UMetha - ਪ੍ਰੀਮੀਅਮ ਫੈਸ਼ਨ ਅਤੇ ਜੀਵਨ ਸ਼ੈਲੀ",
+  "metadata.description": "ਫੈਸ਼ਨ, ਐਕਸੈਸਰੀਜ਼ ਅਤੇ ਜੀਵਨ ਸ਼ੈਲੀ ਉਤਪਾਦਾਂ ਵਿੱਚ ਨਵੀਨਤਮ ਰੁਝਾਨਾਂ ਖਰੀਦੋ।"
 }

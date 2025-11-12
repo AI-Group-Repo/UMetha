@@ -137,12 +137,25 @@
     "standard_shipping": "Standart Kargo",
     "pickup_available": "Mağazadan Teslim Alınabilir",
     "same_day_delivery": "Aynı Gün Teslimat",
-    "next_day_delivery": "Ertesi Gün Teslimat"
+    "next_day_delivery": "Ertesi Gün Teslimat",
+    "categories.fashion": "Moda",
+    "categories.beauty": "Güzellik",
+    "categories.baby": "Bebek",
+    "categories.home_decor": "Ev Dekorasyonu",
+    "categories.electronics": "Elektronik",
+    "categories.gaming": "Oyun",
+    "categories.influencer_market": "Etkileyici Pazar",
+    "categories.bargains": "Fırsatlar",
+    "categories.unique_finds": "Benzersiz Buluntular",
+    "categories.virtual_tryon": "Sanal Deneme"
   },
   "room_visualizer": {
     "decoration_visualizer": "Dekorasyon Görselleştirici",
     "room_design": "AI destekli oda tasarım aracımızla alanınızı dönüştürün. Satın almadan önce mobilya yerleşimi, renk şemaları ve dekorasyonu görselleştirin.",
-    "start_decorating": "Dekorasyona Başla"
+    "start_decorating": "Dekorasyona Başla",
+    "virtual_fitting.enter_fitting_room": "Denemeyi Başlat",
+    "virtual_fitting.virtual_fitting_room": "Denemeyi Başlat",
+    "virtual_fitting.try_on_clothes": "AI destekli sanal deneme aracımızla kıyafetleri sanal olarak deneyin. Fotoğrafınızı yükleyin ve satın almadan önce herhangi bir kıyafette nasıl göründüğünüzü görün!"
   },
   "homepage": {
     "shop": "Mağaza",
@@ -227,7 +240,64 @@
     "image": "Görsel ile ara",
     "upload_image_tooltip": "Benzer ürünleri bulmak için bir görsel yükleyin"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Seçilmiş Koleksiyonlar",
+      "subtitle": "Stili Yükselt",
+      "alt": "Lüks Moda"
+    },
+    "slide2": {
+      "title": "Akıllı Cihazlar",
+      "subtitle": "Yarının Teknolojisi",
+      "alt": "Premium Teknoloji"
+    },
+    "slide3": {
+      "title": "Yaratıcı Tasarımlar",
+      "subtitle": "Sanatsal İfadeler",
+      "alt": "Soyut Sanat"
+    },
+    "slide4": {
+      "title": "Trend Moda",
+      "subtitle": "Trend Belirleyici Stiller",
+      "alt": "Moda Modeli"
+    },
+    "slide5": {
+      "title": "Modern Yaşam",
+      "subtitle": "Kolay Konfor",
+      "alt": "Ev Aletleri"
+    },
+    "slide6": {
+      "title": "Doğal Parlaklık",
+      "subtitle": "Sağlıklı Cilt",
+      "alt": "Cilt Bakım Ürünleri"
+    }
+  },
+  "footer": {
+    "shop": "Mağaza",
+    "about": "Hakkımızda",
+    "help": "Yardım",
+    "contact_us": "İletişim",
+    "new_arrivals": "Yeni Gelenler",
+    "best_sellers": "Çok Satanlar",
+    "sale": "İndirim",
+    "men": "Erkek",
+    "women": "Kadın",
+    "our_story": "Hikayemiz",
+    "blog": "Blog",
+    "careers": "Kariyer",
+    "press": "Basın",
+    "faqs": "SSS",
+    "shipping": "Kargo",
+    "returns": "İade",
+    "privacy_policy": "Gizlilik Politikası",
+    "terms_and_conditions": "Şartlar ve Koşullar",
+    "secure_payment_options": "Güvenli Ödeme Seçenekleri",
+    "follow_us": "Bizi Takip Edin",
+    "all_rights_reserved": "Tüm hakları saklıdır"
+  },
   "welcome": "Mağazamıza hoş geldiniz!",
   "description": "Dünya çapında trend ürünlerde en iyi fırsatları bulun.",
-  "addToCart": "Sepete Ekle"
+  "addToCart": "Sepete Ekle",
+  "metadata.title": "UMetha - Premium Moda ve Yaşam Tarzı",
+  "metadata.description": "Moda, aksesuar ve yaşam tarzı ürünlerindeki en son trendleri satın alın."
 }

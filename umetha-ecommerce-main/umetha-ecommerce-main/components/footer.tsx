@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   MapPin,
   Phone,
@@ -38,6 +39,7 @@ export default function Footer() {
   const [year, setYear] = useState("");
   const [email, setEmail] = useState("");
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setYear(new Date().getFullYear().toString());
@@ -84,48 +86,48 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-base font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-              Shop
+              {t("footer.shop")}
             </h3>
             <ul className="space-y-2">
-              <FooterLink href="/new-arrivals" label="New Arrivals" />
-              <FooterLink href="/bestsellers" label="Best Sellers" />
-              <FooterLink href="/category/bargains" label="Sale" />
-              <FooterLink href="/category/fashion/men" label="Men" />
-              <FooterLink href="/category/fashion/women" label="Women" />
+              <FooterLink href="/new-arrivals" label={t("footer.new_arrivals")} />
+              <FooterLink href="/bestsellers" label={t("footer.best_sellers")} />
+              <FooterLink href="/category/bargains" label={t("footer.sale")} />
+              <FooterLink href="/category/fashion/men" label={t("footer.men")} />
+              <FooterLink href="/category/fashion/women" label={t("footer.women")} />
             </ul>
           </div>
 
           {/* About */}
           <div>
             <h3 className="text-base font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-              About
+              {t("footer.about")}
             </h3>
             <ul className="space-y-2">
-              <FooterLink href="/about" label="Our Story" />
-              <FooterLink href="/blog" label="Blog" />
-              <FooterLink href="/careers" label="Careers" />
-              <FooterLink href="/press" label="Press" />
+              <FooterLink href="/about" label={t("footer.our_story")} />
+              <FooterLink href="/blog" label={t("footer.blog")} />
+              <FooterLink href="/careers" label={t("footer.careers")} />
+              <FooterLink href="/press" label={t("footer.press")} />
             </ul>
           </div>
 
           {/* Help */}
           <div>
             <h3 className="text-base font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-              Help
+              {t("footer.help")}
             </h3>
             <ul className="space-y-2">
-              <FooterLink href="/faqs" label="FAQs" />
-              <FooterLink href="/shipping" label="Shipping" />
-              <FooterLink href="/returns" label="Returns" />
-              <FooterLink href="/privacy-policy" label="Privacy Policy" />
-              <FooterLink href="/terms-and-conditions" label="Terms & Conditions" />
+              <FooterLink href="/faqs" label={t("footer.faqs")} />
+              <FooterLink href="/shipping" label={t("footer.shipping")} />
+              <FooterLink href="/returns" label={t("footer.returns")} />
+              <FooterLink href="/privacy-policy" label={t("footer.privacy_policy")} />
+              <FooterLink href="/terms-and-conditions" label={t("footer.terms_and_conditions")} />
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
             <h3 className="text-base font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-              Contact Us
+              {t("footer.contact_us")}
             </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
@@ -166,7 +168,7 @@ export default function Footer() {
             {/* Payment Methods */}
             <div className="w-full md:w-auto">
               <h3 className="text-base text-center md:text-left font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-                Secure Payment Options
+                {t("footer.secure_payment_options")}
               </h3>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 {[
@@ -195,7 +197,7 @@ export default function Footer() {
             {/* Socials */}
             <div className="w-full md:w-auto text-center md:text-left">
               <h3 className="text-base font-semibold text-indigo-800 dark:text-violet-200 mb-3">
-                Follow Us
+                {t("footer.follow_us")}
               </h3>
               <div className="flex items-center justify-center md:justify-start gap-4">
                 <Link href="https://facebook.com" target="_blank" className="text-indigo-600 hover:text-indigo-800 dark:text-violet-300">
@@ -216,7 +218,7 @@ export default function Footer() {
       {/* Copyright */}
       <div className="flex items-center justify-center border-t border-indigo-100 dark:border-violet-900/30 py-2">
         <p className="text-indigo-600/80 dark:text-violet-400/80 text-center">
-          © {year} UMetha. All rights reserved.
+          © {year} UMetha. {t("footer.all_rights_reserved")}.
         </p>
       </div>
     </footer>

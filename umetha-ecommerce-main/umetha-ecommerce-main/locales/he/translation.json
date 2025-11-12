@@ -137,12 +137,25 @@
     "standard_shipping": "משלוח סטנדרטי",
     "pickup_available": "איסוף זמין",
     "same_day_delivery": "משלוח באותו יום",
-    "next_day_delivery": "משלוח למחרת"
+    "next_day_delivery": "משלוח למחרת",
+    "categories.fashion": "אופנה",
+    "categories.beauty": "יופי",
+    "categories.baby": "תינוק",
+    "categories.home_decor": "עיצוב בית",
+    "categories.electronics": "אלקטרוניקה",
+    "categories.gaming": "משחקים",
+    "categories.influencer_market": "שוק המשפיעים",
+    "categories.bargains": "מציאות",
+    "categories.unique_finds": "ממצאים ייחודיים",
+    "categories.virtual_tryon": "ניסיון וירטואלי"
   },
   "room_visualizer": {
     "decoration_visualizer": "ממחיש עיצוב",
     "room_design": "שנה את החלל שלך עם כלי עיצוב החדרים המונע על ידי בינה מלאכותית שלנו. דמיין את מיקום הרהיטים, סכמות הצבעים והעיצוב לפני הקנייה.",
-    "start_decorating": "התחל לעיצוב"
+    "start_decorating": "התחל לעיצוב",
+    "virtual_fitting.enter_fitting_room": "התחל להתאים",
+    "virtual_fitting.virtual_fitting_room": "התחל להתאים",
+    "virtual_fitting.try_on_clothes": "נסה בגדים וירטואלית עם מערכת הניסיון הווירטואלית המונעת על ידי AI שלנו. העלה את התמונה שלך וראה איך אתה נראה בכל תלבושת לפני הקנייה!"
   },
   "homepage": {
     "shop": "חנות",
@@ -227,7 +240,64 @@
     "image": "חיפוש עם תמונה",
     "upload_image_tooltip": "העלה תמונה כדי לחפש מוצרים דומים"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "אוספים מאוצרים",
+      "subtitle": "העלה את הסגנון",
+      "alt": "אופנה יוקרתית"
+    },
+    "slide2": {
+      "title": "גאדג'טים חכמים",
+      "subtitle": "טכנולוגיית המחר",
+      "alt": "טכנולוגיה פרמיום"
+    },
+    "slide3": {
+      "title": "עיצובים יצירתיים",
+      "subtitle": "ביטויים אמנותיים",
+      "alt": "אמנות מופשטת"
+    },
+    "slide4": {
+      "title": "אופנה טרנדית",
+      "subtitle": "סגנונות מובילי טרנד",
+      "alt": "דוגמנית אופנה"
+    },
+    "slide5": {
+      "title": "חיים מודרניים",
+      "subtitle": "נוחות ללא מאמץ",
+      "alt": "מכשירי בית"
+    },
+    "slide6": {
+      "title": "זהר טבעי",
+      "subtitle": "עור בריא",
+      "alt": "מוצרי טיפוח עור"
+    }
+  },
+  "footer": {
+    "shop": "חנות",
+    "about": "אודות",
+    "help": "עזרה",
+    "contact_us": "צור קשר",
+    "new_arrivals": "חדשים",
+    "best_sellers": "רבי מכר",
+    "sale": "מבצע",
+    "men": "גברים",
+    "women": "נשים",
+    "our_story": "הסיפור שלנו",
+    "blog": "בלוג",
+    "careers": "קריירה",
+    "press": "תקשורת",
+    "faqs": "שאלות נפוצות",
+    "shipping": "משלוח",
+    "returns": "החזרות",
+    "privacy_policy": "מדיניות פרטיות",
+    "terms_and_conditions": "תנאים והגבלות",
+    "secure_payment_options": "אפשרויות תשלום מאובטחות",
+    "follow_us": "עקוב אחרינו",
+    "all_rights_reserved": "כל הזכויות שמורות"
+  },
   "welcome": "ברוכים הבאים לחנות שלנו!",
   "description": "מצא את המבצעים הטובים ביותר על מוצרים טרנדיים ברחבי העולם.",
-  "addToCart": "הוסף לעגלה"
+  "addToCart": "הוסף לעגלה",
+  "metadata.title": "UMetha - אופנה פרמיום ואורח חיים",
+  "metadata.description": "קנו את המגמות האחרונות באופנה, אביזרים ומוצרי אורח חיים."
 }

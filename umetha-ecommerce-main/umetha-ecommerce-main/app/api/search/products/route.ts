@@ -120,6 +120,10 @@ async function searchWithSupabase(params: {
   const { query, language, categoryId, minPrice, maxPrice, sortBy, order, limit, offset } = params;
 
   try {
+    // Fetch from multiple sources like new arrivals does
+    const sources: any[] = [];
+    
+    // Fetch from Supabase
     const { data: products, error } = await db.searchProductsAdvanced({
       query,
       language,
@@ -132,240 +136,124 @@ async function searchWithSupabase(params: {
       offset,
     });
 
+    if (products && products.length > 0) {
+      sources.push(...products);
+    }
+
     if (error) {
       console.error("Supabase search error:", error);
       console.log("Supabase connection failed, will try alternative approach");
     }
-
-    // Get total count for pagination by running the same query without limit
-    const { data: allProducts } = await db.searchProductsAdvanced({
-      query,
-      language,
-      categoryId,
-      minPrice,
-      maxPrice,
-      sortBy,
-      order,
-      limit: 1000, // Get a large number to count total
-      offset: 0,
-    });
-
-    const totalItems = allProducts?.length || 0;
     
-    // Try a simple product query if advanced search fails
-    if (totalItems === 0 && error) {
-      console.log("Advanced search failed, trying simple product query...");
-      try {
-        // First try to get CJ Dropshipping products
-        const { data: cjProducts, error: cjError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_dropshipping', true)
-          .limit(limit)
-          .range(offset, offset + limit - 1);
-        
-        if (!cjError && cjProducts && cjProducts.length > 0) {
-          console.log(`Found ${cjProducts.length} CJ Dropshipping products`);
-          // Transform and return the CJ products
-          const transformedProducts = cjProducts.map(product => ({
-            id: product.id.toString(),
-            name: product.name,
-            description: product.description || '',
-            price: product.price,
-            image: product.images && product.images.length > 0 ? product.images[0] : '/placeholder-product.jpg',
-            images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.jpg'],
-            category: {
-              id: product.category_id || 'default',
-              name: product.cj_category || (product.category_id ? product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1) : 'General'),
-              slug: product.category_id || 'general'
-            },
-            stock: product.stock || 0,
-            sku: product.sku || '',
-            supplier: product.supplier || 'CJ Dropshipping',
-            isDropshipping: true,
-            createdAt: product.created_at,
-            updatedAt: product.updated_at,
-          }));
-
-          return successResponse({
-            products: transformedProducts,
-            pagination: {
-              currentPage: Math.floor(offset / limit) + 1,
-              totalPages: Math.ceil(cjProducts.length / limit),
-              totalItems: cjProducts.length,
-              hasNext: offset + limit < cjProducts.length,
-              hasPrevious: offset > 0,
-              limit,
-            },
-          });
-        }
-
-        // If no CJ products, try regular products
-        const { data: simpleProducts, error: simpleError } = await supabase
-          .from('products')
-          .select('*')
-          .limit(limit)
-          .range(offset, offset + limit - 1);
-        
-        if (!simpleError && simpleProducts && simpleProducts.length > 0) {
-          console.log(`Found ${simpleProducts.length} regular products with simple query`);
-          // Transform and return the simple products
-          const transformedProducts = simpleProducts.map(product => ({
-            id: product.id.toString(),
-            name: product.name,
-            description: product.description || '',
-            price: product.price,
-            image: product.images && product.images.length > 0 ? product.images[0] : '/placeholder-product.jpg',
-            images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.jpg'],
-            category: {
-              id: product.category_id || 'default',
-              name: product.category_id ? product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1) : 'General',
-              slug: product.category_id || 'general'
-            },
-            stock: product.stock || 10,
-            sku: product.sku || '',
-            supplier: product.supplier || 'Local',
-            isDropshipping: product.is_dropshipping || false,
-            createdAt: product.created_at,
-            updatedAt: product.updated_at,
-          }));
-
-          return successResponse({
-            products: transformedProducts,
-            pagination: {
-              currentPage: Math.floor(offset / limit) + 1,
-              totalPages: Math.ceil(simpleProducts.length / limit),
-              totalItems: simpleProducts.length,
-              hasNext: offset + limit < simpleProducts.length,
-              hasPrevious: offset > 0,
-              limit,
-            },
-          });
-        }
-      } catch (fallbackError) {
-        console.error("Simple query also failed:", fallbackError);
+    // Also fetch from CJ products with query and category filters
+    try {
+      let cjQuery = supabase
+        .from('products')
+        .select('*')
+        .eq('is_dropshipping', true)
+        .limit(50);
+      
+      // Apply query filter at the database level for CJ products
+      if (query && query.trim()) {
+        const searchTerm = query.trim();
+        cjQuery = cjQuery.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
       
-      console.log("No products found in Supabase, using sample data as fallback");
-      const sampleProducts = [
-        {
-          products_id: 1,
-          name: "Classic White T-Shirt",
-          description: "Comfortable cotton t-shirt perfect for everyday wear",
-          price: 29.99,
-          url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-          sku: "TSH001",
-          date_created: new Date().toISOString(),
-          category_id: "fashion"
-        },
-        {
-          products_id: 2,
-          name: "Blue Denim Jeans",
-          description: "Classic blue denim jeans with a comfortable fit",
-          price: 79.99,
-          url: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400",
-          sku: "JNS001",
-          date_created: new Date().toISOString(),
-          category_id: "fashion"
-        },
-        {
-          products_id: 3,
-          name: "Running Shoes",
-          description: "High-performance running shoes for athletes",
-          price: 129.99,
-          url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-          sku: "SHO001",
-          date_created: new Date().toISOString(),
-          category_id: "sports"
-        },
-        {
-          products_id: 4,
-          name: "Smartphone",
-          description: "Latest smartphone with advanced features",
-          price: 699.99,
-          url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
-          sku: "PHN001",
-          date_created: new Date().toISOString(),
-          category_id: "electronics"
-        },
-        {
-          products_id: 5,
-          name: "Laptop Computer",
-          description: "High-performance laptop for work and gaming",
-          price: 1299.99,
-          url: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
-          sku: "LPT001",
-          date_created: new Date().toISOString(),
-          category_id: "electronics"
-        },
-        {
-          products_id: 6,
-          name: "Wireless Headphones",
-          description: "Premium wireless headphones with noise cancellation",
-          price: 199.99,
-          url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-          sku: "HDP001",
-          date_created: new Date().toISOString(),
-          category_id: "electronics"
-        },
-        {
-          products_id: 7,
-          name: "Coffee Mug",
-          description: "Ceramic coffee mug perfect for your morning brew",
-          price: 12.99,
-          url: "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=400",
-          sku: "MUG001",
-          date_created: new Date().toISOString(),
-          category_id: "home"
-        },
-        {
-          products_id: 8,
-          name: "Backpack",
-          description: "Durable backpack for travel and daily use",
-          price: 59.99,
-          url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-          sku: "BPK001",
-          date_created: new Date().toISOString(),
-          category_id: "fashion"
-        },
-        {
-          products_id: 9,
-          name: "Lipstick Set",
-          description: "Premium lipstick collection in various shades. Long-lasting and moisturizing formula.",
-          price: 29.99,
-          url: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400",
-          sku: "LIP001",
-          date_created: new Date().toISOString(),
-          category_id: "beauty"
-        },
-      ];
-
-      // Filter sample products by search query if provided
-      let filteredProducts = sampleProducts;
+      // Apply category filter if provided
+      if (categoryId && categoryId !== "All") {
+        cjQuery = cjQuery.or(`category_id.eq.${categoryId},cj_category.ilike.%${categoryId}%`);
+      }
+      
+      const { data: cjProducts } = await cjQuery;
+      
+      if (cjProducts && cjProducts.length > 0) {
+        sources.push(...cjProducts);
+      }
+    } catch (cjError) {
+      console.error("Error fetching CJ products:", cjError);
+    }
+    
+    // Fetch regular local products with query and category filters
+    try {
+      let localQuery = supabase
+        .from('products')
+        .select('*')
+        .eq('is_dropshipping', false)
+        .limit(50);
+      
+      // Apply query filter at the database level for local products
+      if (query && query.trim()) {
+        const searchTerm = query.trim();
+        localQuery = localQuery.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+      
+      // Apply category filter if provided
+      if (categoryId && categoryId !== "All") {
+        localQuery = localQuery.eq('category_id', categoryId);
+      }
+      
+      const { data: localProducts } = await localQuery;
+      
+      if (localProducts && localProducts.length > 0) {
+        sources.push(...localProducts);
+      }
+    } catch (localError) {
+      console.error("Error fetching local products:", localError);
+    }
+    
+    // If we have products from any source
+    if (sources.length > 0) {
+      // Apply client-side filtering, sorting, and pagination
+      let filteredProducts = sources;
+      
+      // Apply search query filter - THIS IS CRITICAL for exact matches
       if (query && query.trim()) {
         const searchTerm = query.toLowerCase().trim();
-        filteredProducts = sampleProducts.filter(product => 
-          product.name.toLowerCase().includes(searchTerm) ||
-          product.description.toLowerCase().includes(searchTerm) ||
-          product.sku.toLowerCase().includes(searchTerm)
-        );
+        const searchWords = searchTerm.split(' ').filter(w => w.length > 0);
+        
+        filteredProducts = filteredProducts.filter(p => {
+          const name = p.name?.toLowerCase() || '';
+          const description = p.description?.toLowerCase() || '';
+          const sku = p.sku?.toLowerCase() || '';
+          const category = p.category_id?.toLowerCase() || '';
+          
+          // Check if all search words appear in at least one field
+          const matches = searchWords.every(word => 
+            name.includes(word) || 
+            description.includes(word) || 
+            sku.includes(word) ||
+            category.includes(word)
+          );
+          
+          return matches;
+        });
       }
-
-      // Apply category filter if provided
-      if (categoryId) {
-        filteredProducts = filteredProducts.filter(product => 
-          product.category_id === categoryId
-        );
+      
+      // Apply category filter - must match category_id or category name/slug
+      if (categoryId && categoryId !== "All") {
+        filteredProducts = filteredProducts.filter(p => {
+          // Check if category_id matches
+          if (p.category_id?.toLowerCase() === categoryId.toLowerCase()) return true;
+          
+          // Check if cj_category matches
+          if (p.cj_category?.toLowerCase() === categoryId.toLowerCase()) return true;
+          
+          // Check if category slug matches (for fashion, electronics, etc.)
+          const categorySlug = p.category_id?.toLowerCase().replace(/\s+/g, '-');
+          if (categorySlug === categoryId.toLowerCase().replace(/\s+/g, '-')) return true;
+          
+          return false;
+        });
       }
-
-      // Apply price range filter if provided
+      
+      // Apply price range filter
       if (minPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(product => product.price >= minPrice);
+        filteredProducts = filteredProducts.filter(p => p.price >= minPrice);
       }
       if (maxPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(product => product.price <= maxPrice);
+        filteredProducts = filteredProducts.filter(p => p.price <= maxPrice);
       }
-
+      
       // Apply sorting
       filteredProducts.sort((a, b) => {
         switch (sortBy) {
@@ -376,41 +264,40 @@ async function searchWithSupabase(params: {
           case 'createdAt':
           default:
             return order === 'asc' ? 
-              new Date(a.date_created).getTime() - new Date(b.date_created).getTime() :
-              new Date(b.date_created).getTime() - new Date(a.date_created).getTime();
+              new Date(a.date_created || a.created_at).getTime() - new Date(b.date_created || b.created_at).getTime() :
+              new Date(b.date_created || b.created_at).getTime() - new Date(a.date_created || a.created_at).getTime();
         }
       });
-
-      // Apply pagination
+      
+      const totalFilteredItems = filteredProducts.length;
       const paginatedProducts = filteredProducts.slice(offset, offset + limit);
-
-      // Transform filtered products
-      const transformedSampleProducts = paginatedProducts.map(product => ({
-        id: product.products_id.toString(),
+      
+      // Transform products
+      const transformedProducts = paginatedProducts.map(product => ({
+        id: product.products_id?.toString() || product.id?.toString(),
         name: product.name,
         description: product.description || '',
         price: product.price,
-        image: product.url || '/placeholder-product.jpg',
-        images: product.url ? [product.url] : ['/placeholder-product.jpg'],
+        image: product.images && product.images.length > 0 ? product.images[0] : product.url || null,
+        images: product.images && product.images.length > 0 ? product.images : (product.url ? [product.url] : []),
         category: {
-          id: product.category_id,
-          name: product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1),
-          slug: product.category_id
+          id: product.category_id || 'default',
+          name: product.cj_category || (product.category_id ? product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1) : 'General'),
+          slug: product.category_id || 'general'
         },
-        stock: 10,
+        stock: product.stock || 10,
         sku: product.sku || '',
-        createdAt: product.date_created,
-        updatedAt: product.date_created,
+        createdAt: product.date_created || product.created_at,
+        updatedAt: product.updated_at,
       }));
-
-      const totalFilteredItems = filteredProducts.length;
+      
       const totalPages = Math.ceil(totalFilteredItems / limit);
       const currentPage = Math.floor(offset / limit) + 1;
       const hasNext = currentPage < totalPages;
       const hasPrevious = currentPage > 1;
-
+      
       return successResponse({
-        products: transformedSampleProducts,
+        products: transformedProducts,
         pagination: {
           currentPage,
           totalPages,
@@ -421,63 +308,19 @@ async function searchWithSupabase(params: {
         },
       });
     }
-    const totalPages = Math.ceil(totalItems / limit);
-    const currentPage = Math.floor(offset / limit) + 1;
-    const hasNext = currentPage < totalPages;
-    const hasPrevious = currentPage > 1;
-
-    // Get category information for products
-    const categoryMap = new Map();
-    if (products && products.length > 0) {
-      const categoryIds = [...new Set(products.map(p => p.category_id).filter(Boolean))];
-      if (categoryIds.length > 0) {
-        const { data: categories } = await supabase
-          .from('categories')
-          .select('id, name, slug')
-          .in('id', categoryIds);
-        
-        if (categories) {
-          categories.forEach(cat => {
-            categoryMap.set(cat.id, cat);
-          });
-        }
-      }
-    }
-
-    // Transform products to match expected format
-    const transformedProducts = (products || []).map(product => {
-      const category = product.category_id ? categoryMap.get(product.category_id) : null;
-      return {
-        id: product.id.toString(),
-        name: product.name,
-        description: product.description || '',
-        price: product.price,
-        image: product.images && product.images.length > 0 ? product.images[0] : '/placeholder-product.jpg',
-        images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.jpg'],
-        category: category ? {
-          id: category.id,
-          name: category.name,
-          slug: category.slug
-        } : {
-          id: 'default',
-          name: 'General',
-          slug: 'general'
-        },
-        stock: product.stock || 10,
-        sku: product.sku || '',
-        createdAt: product.created_at,
-        updatedAt: product.updated_at,
-      };
-    });
-
+    
+    // If no products found from any source, return empty results
+    console.log("No products found from any source");
+    
+    // Return empty result set
     return successResponse({
-      products: transformedProducts,
+      products: [],
       pagination: {
-        currentPage,
-        totalPages,
-        totalItems,
-        hasNext,
-        hasPrevious,
+        currentPage: Math.floor(offset / limit) + 1,
+        totalPages: 0,
+        totalItems: 0,
+        hasNext: false,
+        hasPrevious: false,
         limit,
       },
     });

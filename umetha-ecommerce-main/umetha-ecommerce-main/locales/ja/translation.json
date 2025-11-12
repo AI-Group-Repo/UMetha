@@ -137,12 +137,25 @@
     "standard_shipping": "標準配送",
     "pickup_available": "店舗受取可能",
     "same_day_delivery": "当日配送",
-    "next_day_delivery": "翌日配送"
+    "next_day_delivery": "翌日配送",
+    "categories.fashion": "ファッション",
+    "categories.beauty": "美容",
+    "categories.baby": "ベビー",
+    "categories.home_decor": "ホームデコレーション",
+    "categories.electronics": "電子機器",
+    "categories.gaming": "ゲーム",
+    "categories.influencer_market": "インフルエンサーマーケット",
+    "categories.bargains": "お買い得",
+    "categories.unique_finds": "ユニークな発見",
+    "categories.virtual_tryon": "バーチャルトライオン"
   },
   "room_visualizer": {
     "decoration_visualizer": "装飾ビジュアライザー",
     "room_design": "AI搭載のルームデザインツールで空間を変身させましょう。購入前に家具の配置、カラースキーム、装飾を可視化できます。",
-    "start_decorating": "装飾を始める"
+    "start_decorating": "装飾を始める",
+    "virtual_fitting.enter_fitting_room": "試着を開始",
+    "virtual_fitting.virtual_fitting_room": "試着を開始",
+    "virtual_fitting.try_on_clothes": "AI搭載のバーチャル試着で服を試着しましょう。写真をアップロードして、購入前にどんな服装でも自分がどう見えるか確認できます！"
   },
   "homepage": {
     "shop": "ショップ",
@@ -227,7 +240,64 @@
     "image": "画像で検索",
     "upload_image_tooltip": "類似商品を検索するために画像をアップロード"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "キュレーテッドコレクション",
+      "subtitle": "スタイルを向上",
+      "alt": "高級ファッション"
+    },
+    "slide2": {
+      "title": "スマートガジェット",
+      "subtitle": "明日の技術",
+      "alt": "プレミアムテック"
+    },
+    "slide3": {
+      "title": "クリエイティブデザイン",
+      "subtitle": "アーティスティックな表現",
+      "alt": "抽象芸術"
+    },
+    "slide4": {
+      "title": "トレンディングファッション",
+      "subtitle": "トレンドセッティングスタイル",
+      "alt": "ファッションモデル"
+    },
+    "slide5": {
+      "title": "モダンリビング",
+      "subtitle": "簡単な快適さ",
+      "alt": "家庭用電化製品"
+    },
+    "slide6": {
+      "title": "自然に輝く",
+      "subtitle": "健康的な肌",
+      "alt": "スキンケア製品"
+    }
+  },
+  "footer": {
+    "shop": "ショップ",
+    "about": "について",
+    "help": "ヘルプ",
+    "contact_us": "お問い合わせ",
+    "new_arrivals": "新着商品",
+    "best_sellers": "ベストセラー",
+    "sale": "セール",
+    "men": "メンズ",
+    "women": "レディース",
+    "our_story": "私たちのストーリー",
+    "blog": "ブログ",
+    "careers": "キャリア",
+    "press": "プレス",
+    "faqs": "よくある質問",
+    "shipping": "配送",
+    "returns": "返品",
+    "privacy_policy": "プライバシーポリシー",
+    "terms_and_conditions": "利用規約",
+    "secure_payment_options": "安全な支払いオプション",
+    "follow_us": "フォローする",
+    "all_rights_reserved": "全著作権所有"
+  },
   "welcome": "当店へようこそ！",
   "description": "世界中のトレンド商品の最高のお得情報を見つけましょう。",
-  "addToCart": "カートに追加"
+  "addToCart": "カートに追加",
+  "metadata.title": "UMetha - プレミアムファッション＆ライフスタイル",
+  "metadata.description": "最新のファッション、アクセサリー、ライフスタイル製品のトレンドをお買い物ください。"
 }

@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
         name: product.name,
         description: product.description || '',
         price: parseFloat(product.price.toString()),
-        image: product.url || '/placeholder-product.jpg',
-        images: product.url ? [product.url] : ['/placeholder-product.jpg'],
+        image: product.url || null,
+        images: product.url ? [product.url] : [],
         category: {
           id: 'general',
           name: 'General',
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
       // Simulate image search by returning products with images
       const imageSearchResults = transformedProducts.filter(product => 
-        product.image && product.image !== '/placeholder-product.jpg'
+        product.image && product.image !== null
       );
 
       return NextResponse.json({

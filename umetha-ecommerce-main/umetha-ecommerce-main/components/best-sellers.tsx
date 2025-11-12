@@ -10,6 +10,7 @@ import Image from "next/image";
 import PriceCartButton from "@/components/ui/price-cart-button";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from 'react-i18next';
+import axios from "axios";
 
 interface Product {
   id: string;
@@ -21,7 +22,6 @@ interface Product {
   currentPrice: number;
   originalPrice: number;
 }
-
 
 const bestSellerProducts: Product[] = [
   {

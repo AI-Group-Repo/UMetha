@@ -137,12 +137,25 @@
     "standard_shipping": "Standaard verzending",
     "pickup_available": "Afhaling beschikbaar",
     "same_day_delivery": "Zelfde dag levering",
-    "next_day_delivery": "Volgende dag levering"
+    "next_day_delivery": "Volgende dag levering",
+    "categories.fashion": "Mode",
+    "categories.beauty": "Schoonheid",
+    "categories.baby": "Baby",
+    "categories.home_decor": "Huisdecoratie",
+    "categories.electronics": "Elektronica",
+    "categories.gaming": "Gaming",
+    "categories.influencer_market": "Influencer Markt",
+    "categories.bargains": "Aanbiedingen",
+    "categories.unique_finds": "Unieke Vondsten",
+    "categories.virtual_tryon": "Virtueel Passen"
   },
   "room_visualizer": {
     "decoration_visualizer": "Decoratie Visualisator",
     "room_design": "Transformeer je ruimte met onze AI-aangedreven kamerontwerp tool. Visualiseer meubelplaatsing, kleurenschema's en decoratie voordat je koopt.",
-    "start_decorating": "Begin met Decoreren"
+    "start_decorating": "Begin met Decoreren",
+    "virtual_fitting.enter_fitting_room": "Passen Starten",
+    "virtual_fitting.virtual_fitting_room": "Passen Starten",
+    "virtual_fitting.try_on_clothes": "Probeer kleding virtueel met ons AI-aangedreven virtuele passysteem. Upload je foto en zie hoe je eruitziet in elke outfit voordat je koopt!"
   },
   "homepage": {
     "shop": "Winkel",
@@ -227,7 +240,64 @@
     "image": "Zoeken met afbeelding",
     "upload_image_tooltip": "Upload een afbeelding om vergelijkbare producten te vinden"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Curated Collecties",
+      "subtitle": "Verhoog de Stijl",
+      "alt": "Luxe Mode"
+    },
+    "slide2": {
+      "title": "Slimme Gadgets",
+      "subtitle": "Technologie van Morgen",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Creatieve Ontwerpen",
+      "subtitle": "Artistieke Expressies",
+      "alt": "Abstracte Kunst"
+    },
+    "slide4": {
+      "title": "Trendy Mode",
+      "subtitle": "Trendsettende Styles",
+      "alt": "Mode Model"
+    },
+    "slide5": {
+      "title": "Modern Leven",
+      "subtitle": "Moeiteloos Comfort",
+      "alt": "Huishoudapparaten"
+    },
+    "slide6": {
+      "title": "Stralend Natuurlijk",
+      "subtitle": "Gezonde Huid",
+      "alt": "Huidverzorgingsproducten"
+    }
+  },
+  "footer": {
+    "shop": "Winkel",
+    "about": "Over ons",
+    "help": "Hulp",
+    "contact_us": "Neem contact op",
+    "new_arrivals": "Nieuw binnen",
+    "best_sellers": "Bestsellers",
+    "sale": "Uitverkoop",
+    "men": "Heren",
+    "women": "Dames",
+    "our_story": "Ons Verhaal",
+    "blog": "Blog",
+    "careers": "Carrières",
+    "press": "Pers",
+    "faqs": "Veelgestelde vragen",
+    "shipping": "Verzending",
+    "returns": "Retourneren",
+    "privacy_policy": "Privacybeleid",
+    "terms_and_conditions": "Algemene Voorwaarden",
+    "secure_payment_options": "Veilige Betaalmogelijkheden",
+    "follow_us": "Volg ons",
+    "all_rights_reserved": "Alle rechten voorbehouden"
+  },
   "welcome": "Welkom in onze winkel!",
   "description": "Vind de beste deals op trending producten wereldwijd.",
-  "addToCart": "Toevoegen aan winkelwagen"
+  "addToCart": "Toevoegen aan winkelwagen",
+  "metadata.title": "UMetha - Premium Mode & Lifestyle",
+  "metadata.description": "Shop de nieuwste trends in mode, accessoires en lifestyle producten."
 }

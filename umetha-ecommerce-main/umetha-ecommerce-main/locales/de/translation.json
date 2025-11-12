@@ -137,12 +137,25 @@
     "standard_shipping": "Standard-Versand",
     "pickup_available": "Abholung verfügbar",
     "same_day_delivery": "Same-Day-Lieferung",
-    "next_day_delivery": "Lieferung am nächsten Tag"
+    "next_day_delivery": "Lieferung am nächsten Tag",
+    "categories.fashion": "Mode",
+    "categories.beauty": "Schönheit",
+    "categories.baby": "Baby",
+    "categories.home_decor": "Wohndekoration",
+    "categories.electronics": "Elektronik",
+    "categories.gaming": "Gaming",
+    "categories.influencer_market": "Influencer-Markt",
+    "categories.bargains": "Schnäppchen",
+    "categories.unique_finds": "Einzigartige Funde",
+    "categories.virtual_tryon": "Virtuelles Anprobieren"
   },
   "room_visualizer": {
     "decoration_visualizer": "Dekorations-Visualisierer",
     "room_design": "Verwandeln Sie Ihren Raum mit unserem KI-gestützten Raumdesign-Tool. Visualisieren Sie Möbelplatzierung, Farbschemata und Dekoration vor dem Kauf.",
-    "start_decorating": "Dekorieren Beginnen"
+    "start_decorating": "Dekorieren Beginnen",
+    "virtual_fitting.enter_fitting_room": "Anprobieren Starten",
+    "virtual_fitting.virtual_fitting_room": "Anprobieren Starten",
+    "virtual_fitting.try_on_clothes": "Probieren Sie Kleidung virtuell mit unserem KI-gestützten virtuellen Anprobiertool aus. Laden Sie Ihr Foto hoch und sehen Sie, wie Sie in jedem Outfit aussehen, bevor Sie kaufen!"
   },
   "homepage": {
     "shop": "Shop",
@@ -227,7 +240,64 @@
     "image": "Mit Bild suchen",
     "upload_image_tooltip": "Laden Sie ein Bild hoch, um ähnliche Produkte zu finden"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Kuratierte Kollektionen",
+      "subtitle": "Stil Erheben",
+      "alt": "Luxus Mode"
+    },
+    "slide2": {
+      "title": "Smart Gadgets",
+      "subtitle": "Technologie von Morgen",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Kreative Designs",
+      "subtitle": "Künstlerische Ausdrücke",
+      "alt": "Abstrakte Kunst"
+    },
+    "slide4": {
+      "title": "Trend Mode",
+      "subtitle": "Trendsetter Styles",
+      "alt": "Mode Model"
+    },
+    "slide5": {
+      "title": "Modernes Wohnen",
+      "subtitle": "Müheloser Komfort",
+      "alt": "Haushaltsgeräte"
+    },
+    "slide6": {
+      "title": "Natürlich Strahlen",
+      "subtitle": "Gesunde Haut",
+      "alt": "Hautpflegeprodukte"
+    }
+  },
+  "footer": {
+    "shop": "Einkaufen",
+    "about": "Über uns",
+    "help": "Hilfe",
+    "contact_us": "Kontaktieren Sie uns",
+    "new_arrivals": "Neuheiten",
+    "best_sellers": "Bestseller",
+    "sale": "Verkauf",
+    "men": "Herren",
+    "women": "Damen",
+    "our_story": "Unsere Geschichte",
+    "blog": "Blog",
+    "careers": "Karriere",
+    "press": "Presse",
+    "faqs": "FAQ",
+    "shipping": "Versand",
+    "returns": "Rückgaben",
+    "privacy_policy": "Datenschutzrichtlinie",
+    "terms_and_conditions": "Allgemeine Geschäftsbedingungen",
+    "secure_payment_options": "Sichere Zahlungsoptionen",
+    "follow_us": "Folgen Sie uns",
+    "all_rights_reserved": "Alle Rechte vorbehalten"
+  },
   "welcome": "Willkommen in unserem Shop!",
   "description": "Finden Sie die besten Angebote für trendige Produkte weltweit.",
-  "addToCart": "In den Warenkorb"
+  "addToCart": "In den Warenkorb",
+  "metadata.title": "UMetha - Premium Mode & Lifestyle",
+  "metadata.description": "Shoppen Sie die neuesten Trends in Mode, Accessoires und Lifestyle-Produkten."
 }

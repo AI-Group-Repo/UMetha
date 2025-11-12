@@ -153,7 +153,7 @@ export default function InfluencerStorePage({ params }: { params: { id: string }
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.images[0] || '/placeholder-product.jpg',
+      image: product.images[0] || '',
     });
     toast.success(`${product.name} added to cart!`);
     setSelectedProduct(null);

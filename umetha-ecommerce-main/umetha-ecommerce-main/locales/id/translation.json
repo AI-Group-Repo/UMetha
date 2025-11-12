@@ -137,12 +137,25 @@
     "standard_shipping": "Pengiriman Standar",
     "pickup_available": "Ambil di Tempat Tersedia",
     "same_day_delivery": "Pengiriman Hari yang Sama",
-    "next_day_delivery": "Pengiriman Hari Berikutnya"
+    "next_day_delivery": "Pengiriman Hari Berikutnya",
+    "categories.fashion": "Fashion",
+    "categories.beauty": "Kecantikan",
+    "categories.baby": "Bayi",
+    "categories.home_decor": "Dekorasi Rumah",
+    "categories.electronics": "Elektronik",
+    "categories.gaming": "Gaming",
+    "categories.influencer_market": "Pasar Influencer",
+    "categories.bargains": "Penawaran",
+    "categories.unique_finds": "Temuan Unik",
+    "categories.virtual_tryon": "Coba Virtual"
   },
   "room_visualizer": {
     "decoration_visualizer": "Visualizer Dekorasi",
     "room_design": "Ubah ruang Anda dengan alat desain kamar bertenaga AI kami. Visualisasikan penempatan furnitur, skema warna, dan dekorasi sebelum membeli.",
-    "start_decorating": "Mulai Dekorasi"
+    "start_decorating": "Mulai Dekorasi",
+    "virtual_fitting.enter_fitting_room": "Mulai Mencoba",
+    "virtual_fitting.virtual_fitting_room": "Mulai Mencoba",
+    "virtual_fitting.try_on_clothes": "Coba pakaian secara virtual dengan sistem percobaan virtual bertenaga AI kami. Unggah foto Anda dan lihat bagaimana Anda terlihat dengan pakaian apa pun sebelum membeli!"
   },
   "homepage": {
     "shop": "Toko",
@@ -227,7 +240,64 @@
     "image": "Cari dengan gambar",
     "upload_image_tooltip": "Unggah gambar untuk mencari produk serupa"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Koleksi Kurasi",
+      "subtitle": "Tingkatkan Gaya",
+      "alt": "Fashion Mewah"
+    },
+    "slide2": {
+      "title": "Gadget Cerdas",
+      "subtitle": "Teknologi Masa Depan",
+      "alt": "Teknologi Premium"
+    },
+    "slide3": {
+      "title": "Desain Kreatif",
+      "subtitle": "Ekspresi Artistik",
+      "alt": "Seni Abstrak"
+    },
+    "slide4": {
+      "title": "Fashion Tren",
+      "subtitle": "Gaya Trendsetter",
+      "alt": "Model Fashion"
+    },
+    "slide5": {
+      "title": "Hidup Modern",
+      "subtitle": "Kenyamanan Tanpa Usaha",
+      "alt": "Perabotan Rumah"
+    },
+    "slide6": {
+      "title": "Bercahaya Alami",
+      "subtitle": "Kulit Sehat",
+      "alt": "Produk Perawatan Kulit"
+    }
+  },
+  "footer": {
+    "shop": "Toko",
+    "about": "Tentang",
+    "help": "Bantuan",
+    "contact_us": "Hubungi Kami",
+    "new_arrivals": "Baru Tiba",
+    "best_sellers": "Terlaris",
+    "sale": "Diskon",
+    "men": "Pria",
+    "women": "Wanita",
+    "our_story": "Kisah Kami",
+    "blog": "Blog",
+    "careers": "Karir",
+    "press": "Pers",
+    "faqs": "FAQ",
+    "shipping": "Pengiriman",
+    "returns": "Pengembalian",
+    "privacy_policy": "Kebijakan Privasi",
+    "terms_and_conditions": "Syarat dan Ketentuan",
+    "secure_payment_options": "Opsi Pembayaran Aman",
+    "follow_us": "Ikuti Kami",
+    "all_rights_reserved": "Hak cipta dilindungi"
+  },
   "welcome": "Selamat datang di toko kami!",
   "description": "Temukan deal terbaik untuk produk trending di seluruh dunia.",
-  "addToCart": "Tambah ke Keranjang"
+  "addToCart": "Tambah ke Keranjang",
+  "metadata.title": "UMetha - Fashion Premium & Gaya Hidup",
+  "metadata.description": "Belanja tren terbaru dalam fashion, aksesoris, dan produk gaya hidup."
 }

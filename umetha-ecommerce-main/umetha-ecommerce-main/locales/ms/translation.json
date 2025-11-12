@@ -137,12 +137,25 @@
     "standard_shipping": "Penghantaran Standard",
     "pickup_available": "Ambil di Tempat Tersedia",
     "same_day_delivery": "Penghantaran Hari Sama",
-    "next_day_delivery": "Penghantaran Hari Seterusnya"
+    "next_day_delivery": "Penghantaran Hari Seterusnya",
+    "categories.fashion": "Fesyen",
+    "categories.beauty": "Kecantikan",
+    "categories.baby": "Bayi",
+    "categories.home_decor": "Hiasan Rumah",
+    "categories.electronics": "Elektronik",
+    "categories.gaming": "Permainan",
+    "categories.influencer_market": "Pasaran Influencer",
+    "categories.bargains": "Tawaran",
+    "categories.unique_finds": "Penemuan Unik",
+    "categories.virtual_tryon": "Cuba Maya"
   },
   "room_visualizer": {
     "decoration_visualizer": "Pemvisualisasi Hiasan",
     "room_design": "Ubah ruang anda dengan alat reka bentuk bilik yang didorong oleh AI kami. Visualisasikan penempatan perabot, skema warna dan hiasan sebelum membeli.",
-    "start_decorating": "Mula Menghias"
+    "start_decorating": "Mula Menghias",
+    "virtual_fitting.enter_fitting_room": "Mula Mencuba",
+    "virtual_fitting.virtual_fitting_room": "Mula Mencuba",
+    "virtual_fitting.try_on_clothes": "Cuba pakaian secara maya dengan sistem percubaan maya yang didorong oleh AI kami. Muat naik foto anda dan lihat bagaimana anda kelihatan dengan sebarang pakaian sebelum membeli!"
   },
   "homepage": {
     "shop": "Kedai",
@@ -227,7 +240,64 @@
     "image": "Cari dengan gambar",
     "upload_image_tooltip": "Muat naik gambar untuk mencari produk yang serupa"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Koleksi Terpilih",
+      "subtitle": "Tingkatkan Gaya",
+      "alt": "Fesyen Mewah"
+    },
+    "slide2": {
+      "title": "Gajet Pintar",
+      "subtitle": "Teknologi Masa Depan",
+      "alt": "Teknologi Premium"
+    },
+    "slide3": {
+      "title": "Reka Bentuk Kreatif",
+      "subtitle": "Ekspresi Artistik",
+      "alt": "Seni Abstrak"
+    },
+    "slide4": {
+      "title": "Fesyen Tren",
+      "subtitle": "Gaya Trendsetter",
+      "alt": "Model Fesyen"
+    },
+    "slide5": {
+      "title": "Kehidupan Moden",
+      "subtitle": "Keselesaan Tanpa Usaha",
+      "alt": "Perkakas Rumah"
+    },
+    "slide6": {
+      "title": "Bersinar Semula Jadi",
+      "subtitle": "Kulit Sihat",
+      "alt": "Produk Penjagaan Kulit"
+    }
+  },
+  "footer": {
+    "shop": "Kedai",
+    "about": "Tentang",
+    "help": "Bantuan",
+    "contact_us": "Hubungi Kami",
+    "new_arrivals": "Kemas Kini",
+    "best_sellers": "Paling Laris",
+    "sale": "Jualan",
+    "men": "Lelaki",
+    "women": "Wanita",
+    "our_story": "Cerita Kami",
+    "blog": "Blog",
+    "careers": "Kerjaya",
+    "press": "Akhbar",
+    "faqs": "Soalan Lazim",
+    "shipping": "Penghantaran",
+    "returns": "Pemulangan",
+    "privacy_policy": "Dasar Privasi",
+    "terms_and_conditions": "Terma dan Syarat",
+    "secure_payment_options": "Pilihan Pembayaran Selamat",
+    "follow_us": "Ikuti Kami",
+    "all_rights_reserved": "Hak cipta terpelihara"
+  },
   "welcome": "Selamat datang ke kedai kami!",
   "description": "Cari tawaran terbaik untuk produk trending di seluruh dunia.",
-  "addToCart": "Tambah ke Troli"
+  "addToCart": "Tambah ke Troli",
+  "metadata.title": "UMetha - Fesyen Premium & Gaya Hidup",
+  "metadata.description": "Beli tren terkini dalam fesyen, aksesori dan produk gaya hidup."
 }

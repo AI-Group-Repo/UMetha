@@ -137,12 +137,25 @@
     "standard_shipping": "معیاری شپنگ",
     "pickup_available": "پک اپ دستیاب",
     "same_day_delivery": "اسی دن ڈیلیوری",
-    "next_day_delivery": "اگلے دن ڈیلیوری"
+    "next_day_delivery": "اگلے دن ڈیلیوری",
+    "categories.fashion": "فیشن",
+    "categories.beauty": "بیوٹی",
+    "categories.baby": "بچہ",
+    "categories.home_decor": "گھر کی سجاوٹ",
+    "categories.electronics": "الیکٹرانکس",
+    "categories.gaming": "گیمنگ",
+    "categories.influencer_market": "انفلوئنسر مارکیٹ",
+    "categories.bargains": "سستے سودے",
+    "categories.unique_finds": "منفرد دریافت",
+    "categories.virtual_tryon": "ورچوئل ٹرائی آن"
   },
   "room_visualizer": {
     "decoration_visualizer": "سجاوٹ کا بصری بنانے والا",
     "room_design": "ہمارے AI سے چلنے والے کمرے کے ڈیزائن ٹول کے ساتھ اپنی جگہ کو تبدیل کریں۔ خریدنے سے پہلے فرنیچر کی جگہ، رنگ کے اسکیم اور سجاوٹ کو بصری بنائیں۔",
-    "start_decorating": "سجاوٹ شروع کریں"
+    "start_decorating": "سجاوٹ شروع کریں",
+    "virtual_fitting.enter_fitting_room": "فٹنگ شروع کریں",
+    "virtual_fitting.virtual_fitting_room": "فٹنگ شروع کریں",
+    "virtual_fitting.try_on_clothes": "ہمارے AI سے چلنے والے ورچوئل ٹرائی-آن سسٹم کے ساتھ کپڑے ورچوئلی آزمائیں۔ اپنی تصویر اپ لوڈ کریں اور خریدنے سے پہلے دیکھیں کہ آپ کسی بھی آؤٹ فٹ میں کیسے نظر آتے ہیں!"
   },
   "homepage": {
     "shop": "شاپ",
@@ -227,7 +240,64 @@
     "image": "تصویر کے ساتھ تلاش کریں",
     "upload_image_tooltip": "مشابہ مصنوعات تلاش کرنے کے لیے تصویر اپ لوڈ کریں"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "منتخب کالیکشنز",
+      "subtitle": "سٹائل بلند کریں",
+      "alt": "لگژری فیشن"
+    },
+    "slide2": {
+      "title": "اسمارٹ گیجٹس",
+      "subtitle": "کل کی ٹیکنالوجی",
+      "alt": "پریمیئم ٹیک"
+    },
+    "slide3": {
+      "title": "تخلیقی ڈیزائنز",
+      "subtitle": "فنکارانہ اظہار",
+      "alt": "خلاصہ آرٹ"
+    },
+    "slide4": {
+      "title": "ٹرینڈنگ فیشن",
+      "subtitle": "ٹرینڈ سیٹنگ اسٹائلز",
+      "alt": "فیشن ماڈل"
+    },
+    "slide5": {
+      "title": "جدید زندگی",
+      "subtitle": "آسان آرام",
+      "alt": "گھریلو آلات"
+    },
+    "slide6": {
+      "title": "قدرتی چمک",
+      "subtitle": "صحت مند جلد",
+      "alt": "جلد کی دیکھ بھال کی مصنوعات"
+    }
+  },
+  "footer": {
+    "shop": "شاپ",
+    "about": "کے بارے میں",
+    "help": "مدد",
+    "contact_us": "رابطہ کریں",
+    "new_arrivals": "نئے آنے والے",
+    "best_sellers": "بہترین فروخت کنندگان",
+    "sale": "سیل",
+    "men": "مرد",
+    "women": "خواتین",
+    "our_story": "ہماری کہانی",
+    "blog": "بلاگ",
+    "careers": "کیریئر",
+    "press": "پریس",
+    "faqs": "اکثر پوچھے جانے والے سوالات",
+    "shipping": "شپنگ",
+    "returns": "واپسی",
+    "privacy_policy": "رازداری کی پالیسی",
+    "terms_and_conditions": "شرائط و ضوابط",
+    "secure_payment_options": "محفوظ ادائیگی کے اختیارات",
+    "follow_us": "ہمیں فالو کریں",
+    "all_rights_reserved": "تمام حقوق محفوظ ہیں"
+  },
   "welcome": "ہمارے اسٹور میں خوش آمدید!",
   "description": "دنیا بھر میں ٹرینڈنگ مصنوعات پر بہترین ڈیلز تلاش کریں۔",
-  "addToCart": "کارٹ میں شامل کریں"
+  "addToCart": "کارٹ میں شامل کریں",
+  "metadata.title": "UMetha - پریمیم فیشن اور طرز زندگی",
+  "metadata.description": "فیشن، ایکسسریز اور طرز زندگی کی مصنوعات میں تازہ ترین رجحانات خریدیں۔"
 }

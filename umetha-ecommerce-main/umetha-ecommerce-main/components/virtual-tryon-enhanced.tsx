@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Upload, X, Loader, Download, RotateCcw, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { Camera, Upload, X, Loader, Download, RotateCcw, Plus, ShoppingBag, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,8 @@ interface VirtualTryOnEnhancedProps {
 
 export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedProps) {
   const [userImage, setUserImage] = useState<string | null>(null);
-  const [resultImage, setResultImage] = useState<string | null>(null);
+  const [keptImage, setKeptImage] = useState<string | null>(null); // Store image for reuse
+  const [isDisplayingResult, setIsDisplayingResult] = useState(false); // Track if we're showing result
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
@@ -34,6 +35,7 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
@@ -42,7 +44,7 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
     const fetchProducts = async () => {
       try {
         setLoadingProducts(true);
-        const { data, error } = await db.getProducts(20); // Get 20 products for try-on
+        const { data, error } = await db.getProducts(50); // Get 20 products for try-on
         
         if (error) {
           throw new Error(error.message);
@@ -79,8 +81,9 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
       const reader = new FileReader();
       reader.onload = (e) => {
         setUserImage(e.target?.result as string);
+        setKeptImage(null); // Clear kept image as well
+        setIsDisplayingResult(false); // Reset display flag
         setError(null);
-        setResultImage(null); // Clear previous result when new image is uploaded
       };
       reader.readAsDataURL(file);
     }
@@ -100,7 +103,8 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
   const clearAllSelections = () => {
     setSelectedProducts([]);
     setUserImage(null);
-    setResultImage(null);
+    setKeptImage(null);
+    setIsDisplayingResult(false);
     setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -108,7 +112,10 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
   };
 
   const handleVirtualTryOn = async () => {
-    if (!userImage || selectedProducts.length === 0) {
+    // Use current user image or kept image
+    const imageToUse = userImage || keptImage;
+    
+    if (!imageToUse || selectedProducts.length === 0) {
       setError("Please upload your photo and select at least one product to try on");
       return;
     }
@@ -131,7 +138,7 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
       
       // Convert base64 to blob for user image
       setGenerationProgress(10);
-      const userImageBlob = await fetch(userImage).then(r => r.blob());
+      const userImageBlob = await fetch(imageToUse).then(r => r.blob());
       formData.append("userImage", userImageBlob, "user.jpg");
       
       // For multiple products, we'll try the first one for now
@@ -158,7 +165,10 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
       setGenerationProgress(100);
 
       if (data.success) {
-        setResultImage(data.resultImage);
+        // Replace userImage with result to show in the same section
+        setUserImage(data.resultImage);
+        setIsDisplayingResult(true); // Mark that we're displaying a result
+        setKeptImage(null); // Clear kept image as we have a new result
         console.log("Virtual try-on generated successfully!");
       } else {
         setError(data.error || "Failed to generate virtual try-on");
@@ -175,13 +185,33 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
   };
 
   const downloadResult = () => {
-    if (resultImage) {
+    if (userImage) {
       const link = document.createElement("a");
-      link.href = resultImage;
+      link.href = userImage;
       link.download = `virtual-tryon-${selectedProducts.map(p => p.name).join('-') || "result"}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+  };
+
+  const handleUploadAgain = () => {
+    // Reset to upload interface
+    setUserImage(null);
+    setKeptImage(null);
+    setIsDisplayingResult(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleKeepImage = () => {
+    // Store current image for reuse
+    if (userImage) {
+      setKeptImage(userImage);
+      // Clear userImage so interface shows upload prompt, but keptImage holds the data
+      setUserImage(null);
+      setIsDisplayingResult(false);
     }
   };
 
@@ -199,56 +229,88 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
         )}
       </div>
 
-      {/* Upload Section */}
+      {/* Upload & Result Section (Combined) */}
       <Card>
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <Camera className="w-5 h-5 mr-2 text-indigo-600" />
-            {t("virtual_tryon.upload_photo")}
+            {isDisplayingResult ? t("virtual_tryon.result_title") : t("virtual_tryon.upload_photo")}
           </h3>
           
-          {/* Tips */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-            <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">{t("virtual_tryon.tips_title")}</h4>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <li>• {t("virtual_tryon.tip_1")}</li>
-              <li>• {t("virtual_tryon.tip_2")}</li>
-              <li>• {t("virtual_tryon.tip_3")}</li>
-              <li>• {t("virtual_tryon.tip_4")}</li>
-            </ul>
-          </div>
+          {/* Show Tips Only when no image uploaded */}
+          {!userImage && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">{t("virtual_tryon.tips_title")}</h4>
+              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <li>• {t("virtual_tryon.tip_1")}</li>
+                <li>• {t("virtual_tryon.tip_2")}</li>
+                <li>• {t("virtual_tryon.tip_3")}</li>
+                <li>• {t("virtual_tryon.tip_4")}</li>
+              </ul>
+            </div>
+          )}
           
           <div className="space-y-4">
             {!userImage ? (
-              <div
-                className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 dark:text-gray-400 mb-2">
-                  {t("virtual_tryon.upload_placeholder")}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t("virtual_tryon.upload_hint")}
-                </p>
-              </div>
+              <>
+                <div
+                  className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400 mb-2">
+                    {t("virtual_tryon.upload_placeholder")}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {t("virtual_tryon.upload_hint")}
+                  </p>
+                </div>
+                
+                {/* Show indicator if there's a kept image ready to use */}
+                {keptImage && (
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      ✓ You have a saved image ready to use with selected products
+                    </p>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="relative">
                 <Image
                   src={userImage}
-                  alt="Your photo"
-                  width={300}
-                  height={400}
-                  className="w-full max-w-sm mx-auto rounded-lg"
+                  alt={isDisplayingResult ? "Virtual try-on result" : "Your photo"}
+                  width={400}
+                  height={600}
+                  className="w-full max-w-md mx-auto rounded-lg shadow-lg"
                 />
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  className="absolute top-2 right-2"
-                  onClick={() => setUserImage(null)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+                
+                {/* Download button for results */}
+                {isDisplayingResult && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute top-2 right-2"
+                    onClick={downloadResult}
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                )}
+                
+                {/* Remove button (only show for uploaded images, not results) */}
+                {!isDisplayingResult && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setUserImage(null);
+                      setIsDisplayingResult(false);
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
             )}
             
@@ -259,6 +321,28 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
               onChange={handleImageUpload}
               className="hidden"
             />
+            
+            {/* Action buttons after result is generated */}
+            {isDisplayingResult && (
+              <div className="flex gap-3 justify-center mt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleUploadAgain}
+                  className="border-indigo-300 text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Again
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleKeepImage}
+                  className="border-green-300 text-green-600 hover:bg-green-50"
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Keep Image
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -329,10 +413,24 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
       {/* Product Selection */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
-            <Plus className="w-5 h-5 mr-2 text-indigo-600" />
-            Choose Products to Try On
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold flex items-center">
+              <Plus className="w-5 h-5 mr-2 text-indigo-600" />
+              {t("virtual_tryon.select_product")}
+            </h3>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder={t("search.placeholder") || "Search for products..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
           
           {loadingProducts ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -341,8 +439,40 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {availableProducts.map((product) => {
+            <>
+              {(() => {
+                // Filter products based on search query
+                const filteredProducts = availableProducts.filter((product) => {
+                  const query = searchQuery.toLowerCase();
+                  return (
+                    product.name.toLowerCase().includes(query) ||
+                    product.category.toLowerCase().includes(query) ||
+                    product.price.toString().includes(query)
+                  );
+                });
+
+                if (filteredProducts.length === 0 && searchQuery) {
+                  return (
+                    <div className="text-center py-12">
+                      <Search className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-gray-600 dark:text-gray-400">
+                        No products found matching "{searchQuery}"
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSearchQuery("")}
+                        className="mt-4"
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {filteredProducts.map((product) => {
                 const isSelected = selectedProducts.find(p => p.id === product.id);
                 return (
                   <motion.div
@@ -384,9 +514,12 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
                       </Badge>
                     )}
                   </motion.div>
+                    );
+                  })}
+                  </div>
                 );
-              })}
-            </div>
+              })()}
+            </>
           )}
         </CardContent>
       </Card>
@@ -396,7 +529,7 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
         <div className="flex gap-4">
           <Button
             onClick={handleVirtualTryOn}
-            disabled={!userImage || selectedProducts.length === 0 || isLoading}
+            disabled={(!userImage && !keptImage) || selectedProducts.length === 0 || isLoading}
             className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             {isLoading ? (
@@ -407,7 +540,7 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
             ) : (
               <>
                 <Camera className="w-4 h-4 mr-2" />
-                Try On Selected Items
+                {keptImage && !userImage ? "Generate with Saved Image" : "Try On Selected Items"}
               </>
             )}
           </Button>
@@ -445,81 +578,6 @@ export default function VirtualTryOnEnhanced({ onClose }: VirtualTryOnEnhancedPr
         </div>
       )}
 
-      {/* Result Display */}
-      {resultImage && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Your Virtual Try-On Result</h3>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={downloadResult}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download
-              </Button>
-            </div>
-            
-            {/* Success Message */}
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <h4 className="text-sm font-medium text-green-800 dark:text-green-200">
-                    Virtual Try-On Generated Successfully!
-                  </h4>
-                  <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                    Here's how you look wearing the selected product.
-                  </p>
-                  <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
-                    <p className="text-xs text-blue-800 dark:text-blue-200">
-                      ✨ Powered by Nano Banana API for realistic virtual try-on results!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <Image
-                src={resultImage}
-                alt="Virtual try-on result"
-                width={400}
-                height={600}
-                className="w-full max-w-md mx-auto rounded-lg shadow-lg"
-              />
-            </div>
-            
-            <div className="mt-4 text-center space-y-2">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                How do you like your virtual try-on? You can try on more items or start over!
-              </p>
-              <div className="flex justify-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setResultImage(null)}
-                >
-                  Try Another Product
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={clearAllSelections}
-                >
-                  Start Over
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   User,
   Phone,
   Mail,
+  Coins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,11 @@ export default function CheckoutPage() {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  // OTP verification state
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpError, setOtpError] = useState('');
 
   // Calculate totals
   const subtotal = items.reduce(
@@ -112,9 +118,8 @@ export default function CheckoutPage() {
         else if (!/^\d{3,4}$/.test(formData.cardCvc))
           errors.cardCvc = "Invalid CVC";
       } else if (formData.paymentMethod === "paypal") {
-        if (!formData.paypalEmail) errors.paypalEmail = "PayPal email is required";
-        else if (!/\S+@\S+\.\S+/.test(formData.paypalEmail))
-          errors.paypalEmail = "PayPal email is invalid";
+        // PayPal doesn't require email validation on frontend - user will login on PayPal site
+        // Email validation is optional for PayPal
       }
       // Apple Pay doesn't require additional validation as it uses the device's built-in validation
     }
@@ -161,10 +166,96 @@ export default function CheckoutPage() {
     }
   };
 
+  // Send OTP to user's email
+  const sendOTP = async () => {
+    try {
+      const response = await fetch('/api/checkout/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setOtpSent(true);
+        setOtpError('');
+        toast({
+          title: "OTP Sent",
+          description: `Verification code sent to ${formData.email}. ${process.env.NODE_ENV === 'development' && data.otp ? `Code: ${data.otp}` : ''}`,
+        });
+      } else {
+        setOtpError(data.error || 'Failed to send OTP');
+        toast({
+          title: "Error",
+          description: data.error || 'Failed to send OTP',
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      setOtpError('Failed to send OTP');
+      toast({
+        title: "Error",
+        description: "Failed to send OTP. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Verify OTP code
+  const verifyOTP = async () => {
+    if (!otpCode || otpCode.length !== 5) {
+      setOtpError('Please enter a valid 5-digit code');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setOtpError('');
+
+    try {
+      const response = await fetch('/api/checkout/send-otp', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, code: otpCode })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // OTP verified, proceed to payment
+        setActiveStep("payment");
+        toast({
+          title: "Email Verified",
+          description: "Your email has been verified successfully.",
+        });
+      } else {
+        setOtpError(data.error || 'Invalid OTP code');
+        toast({
+          title: "Invalid Code",
+          description: data.error || 'Invalid OTP code. Please try again.',
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setOtpError('Failed to verify OTP');
+      toast({
+        title: "Error",
+        description: "Failed to verify OTP. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
   const handleContinue = () => {
     if (validateForm(activeStep)) {
       if (activeStep === "shipping") {
-        setActiveStep("payment");
+        // Send OTP when moving from shipping to verification
+        sendOTP();
+        setActiveStep("otp");
       } else if (activeStep === "payment") {
         handleSubmitOrder();
       }
@@ -173,6 +264,8 @@ export default function CheckoutPage() {
 
   const handleBack = () => {
     if (activeStep === "payment") {
+      setActiveStep("otp");
+    } else if (activeStep === "otp") {
       setActiveStep("shipping");
     }
   };
@@ -286,15 +379,14 @@ export default function CheckoutPage() {
 
     // Process payment based on selected payment method
     const processPayment = async () => {
-      // In a real application, you would integrate with actual payment processors here
-      // For now, we'll simulate successful payments for all methods
-      
       let paymentSuccess = true;
       let paymentError = null;
+      let paypalOrderId = null;
+      let paypalApprovalUrl = null;
       
       switch (formData.paymentMethod) {
         case 'credit-card':
-          // Simulate credit card processing
+          // Simulate credit card processing (can be integrated with Stripe or other providers later)
           console.log('Processing credit card payment with:', {
             cardNumber: formData.cardNumber.replace(/\s/g, '').slice(-4), // Only log last 4 digits for security
             cardName: formData.cardName,
@@ -303,8 +395,70 @@ export default function CheckoutPage() {
           break;
           
         case 'paypal':
-          // Simulate PayPal processing
-          console.log('Processing PayPal payment with email:', formData.paypalEmail);
+          // Process PayPal payment
+          try {
+            setIsProcessing(true);
+            
+            // Create PayPal order
+            const createOrderResponse = await fetch('/api/checkout/paypal/create-order', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                amount: total,
+                currency: 'USD',
+                items: items.map(item => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                })),
+                shipping_address: {
+                  firstName: formData.firstName,
+                  lastName: formData.lastName,
+                  address: formData.address,
+                  city: formData.city,
+                  state: formData.state,
+                  postalCode: formData.postalCode,
+                  country: formData.country,
+                  shipping_cost: shippingCost,
+                  tax: tax,
+                },
+              }),
+            });
+
+            const createOrderData = await createOrderResponse.json();
+
+            if (!createOrderResponse.ok || !createOrderData.success) {
+              throw new Error(createOrderData.error || 'Failed to create PayPal order');
+            }
+
+            paypalOrderId = createOrderData.orderId;
+            paypalApprovalUrl = createOrderData.approvalUrl;
+
+            // Store order ID in sessionStorage for later use
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('paypal_order_id', paypalOrderId);
+              sessionStorage.setItem('paypal_order_data', JSON.stringify({
+                items,
+                formData,
+                total,
+                shippingCost,
+                tax,
+              }));
+            }
+
+            // Redirect to PayPal
+            if (paypalApprovalUrl) {
+              window.location.href = paypalApprovalUrl;
+              return { success: true, redirect: true };
+            }
+          } catch (error: any) {
+            console.error('PayPal payment error:', error);
+            paymentSuccess = false;
+            paymentError = error.message || 'Failed to process PayPal payment';
+            setIsProcessing(false);
+          }
           break;
           
         case 'apple-pay':
@@ -312,12 +466,83 @@ export default function CheckoutPage() {
           console.log('Processing Apple Pay payment');
           break;
           
+        case 'coinbase':
+          // Process Coinbase payment
+          try {
+            setIsProcessing(true);
+            
+            // Create Coinbase charge (similar to PayPal flow)
+            const createSessionResponse = await fetch('/api/checkout/coinbase/create-charge', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                amount: total,
+                currency: 'USD',
+                items: items.map(item => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                })),
+                shipping_address: {
+                  firstName: formData.firstName,
+                  lastName: formData.lastName,
+                  address: formData.address,
+                  city: formData.city,
+                  state: formData.state,
+                  postalCode: formData.postalCode,
+                  country: formData.country,
+                  shipping_cost: shippingCost,
+                  tax: tax,
+                },
+              }),
+            });
+
+            const createSessionData = await createSessionResponse.json();
+
+            if (!createSessionResponse.ok || !createSessionData.success) {
+              throw new Error(createSessionData.error || 'Failed to initialise Coinbase session');
+            }
+
+            // Store charge ID in sessionStorage for later use
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('coinbase_payment_reference');
+              if (createSessionData.referenceId) {
+                sessionStorage.setItem('coinbase_payment_reference', createSessionData.referenceId);
+              }
+              sessionStorage.setItem('coinbase_order_data', JSON.stringify({
+                items,
+                formData,
+                total,
+                shippingCost,
+                tax,
+                coinbaseQuote: createSessionData.quote,
+                destinationAddress: createSessionData.destinationAddress,
+                purchaseCurrency: createSessionData.purchaseCurrency,
+                destinationNetwork: createSessionData.destinationNetwork,
+              }));
+            }
+
+            // Redirect to Coinbase
+            if (createSessionData.onrampUrl) {
+              window.location.href = createSessionData.onrampUrl;
+              return { success: true, redirect: true };
+            }
+          } catch (error: any) {
+            console.error('Coinbase payment error:', error);
+            paymentSuccess = false;
+            paymentError = error.message || 'Failed to process Coinbase payment';
+            setIsProcessing(false);
+          }
+          break;
+          
         default:
           paymentSuccess = false;
           paymentError = 'Invalid payment method';
       }
       
-      return { success: paymentSuccess, error: paymentError };
+      return { success: paymentSuccess, error: paymentError, paypalOrderId, paypalApprovalUrl };
     };
 
     // Execute payment and order creation
@@ -325,6 +550,11 @@ export default function CheckoutPage() {
       try {
         // Process payment
         const paymentResult = await processPayment();
+        
+        // If PayPal redirect, don't process further (user will be redirected)
+        if (paymentResult.redirect) {
+          return; // User is being redirected to PayPal
+        }
         
         if (!paymentResult.success) {
           throw new Error(paymentResult.error || 'Payment failed');
@@ -358,7 +588,7 @@ export default function CheckoutPage() {
         // Redirect to the order confirmation page
         router.push(`/orders/${orderId}`);
         
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error during checkout:', error);
         setIsProcessing(false);
         
@@ -414,6 +644,12 @@ export default function CheckoutPage() {
       logo: "/applepay.svg",
       description: "Quick checkout with Apple Pay"
     },
+    { 
+      id: "coinbase", 
+      name: "Coinbase", 
+      logo: "/coinbase.svg",
+      description: "Pay with cryptocurrency using Coinbase"
+    },
   ];
 
   return (
@@ -446,22 +682,22 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {["shipping", "payment", "confirmation"].map((step, index) => (
+            {["shipping", "otp", "payment", "confirmation"].map((step, index) => (
               <React.Fragment key={step}>
                 <div className={`flex items-center ${index > 0 ? "ml-2" : ""}`}>
                   <div
                     className={`h-8 w-8 rounded-full flex items-center justify-center ${
                       activeStep === step
                         ? "bg-indigo-600 text-white"
-                        : ["shipping", "payment"].includes(activeStep) &&
+                        : ["shipping", "otp", "payment"].includes(activeStep) &&
                           index <
-                            ["shipping", "payment"].indexOf(activeStep) + 1
+                            ["shipping", "otp", "payment"].indexOf(activeStep) + 1
                         ? "bg-green-500 text-white"
                         : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {["shipping", "payment"].includes(activeStep) &&
-                    index < ["shipping", "payment"].indexOf(activeStep) + 1 ? (
+                    {["shipping", "otp", "payment"].includes(activeStep) &&
+                    index < ["shipping", "otp", "payment"].indexOf(activeStep) + 1 ? (
                       <Check className="h-4 w-4" />
                     ) : (
                       index + 1
@@ -471,14 +707,15 @@ export default function CheckoutPage() {
                     className={`ml-2 text-sm font-medium ${
                       activeStep === step
                         ? "text-indigo-600 dark:text-violet-400"
-                        : ["shipping", "payment"].includes(activeStep) &&
+                        : ["shipping", "otp", "payment"].includes(activeStep) &&
                           index <
-                            ["shipping", "payment"].indexOf(activeStep) + 1
+                            ["shipping", "otp", "payment"].indexOf(activeStep) + 1
                         ? "text-green-500 dark:text-green-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {step.charAt(0).toUpperCase() + step.slice(1)}
+                    {step === 'otp' ? 'Verification' : step.charAt(
+                      0).toUpperCase() + step.slice(1)}
                   </span>
                 </div>
                 {index < 2 && (
@@ -667,9 +904,19 @@ export default function CheckoutPage() {
 
                   <Separator className="my-8" />
 
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                    Shipping Method
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                      Shipping Method
+                    </h3>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push('/dashboard')}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>Back to Dashboard</span>
+                    </Button>
+                  </div>
 
                   <RadioGroup
                     name="shippingMethod"
@@ -728,6 +975,89 @@ export default function CheckoutPage() {
                       className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white py-6 px-6 rounded-lg shadow-md hover:shadow-lg transition-all font-medium text-base"
                     >
                       <span>Continue to Payment</span>
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeStep === "otp" && (
+                <motion.div
+                  key="otp"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="space-y-6"
+                >
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      Email Verification
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2">
+                      We've sent a 5-digit verification code to <strong>{formData.email}</strong>
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="otp">Enter Verification Code</Label>
+                      <Input
+                        id="otp"
+                        type="text"
+                        maxLength={5}
+                        value={otpCode}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          if (value.length <= 5) {
+                            setOtpCode(value);
+                            setOtpError('');
+                          }
+                        }}
+                        placeholder="00000"
+                        className={`mt-1 text-center text-2xl tracking-widest font-bold ${
+                          otpError ? "border-red-500" : ""
+                        }`}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && otpCode.length === 5) {
+                            verifyOTP();
+                          }
+                        }}
+                      />
+                      {otpError && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {otpError}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <Mail className="h-4 w-4" />
+                      <span>Didn't receive the code? </span>
+                      <button
+                        onClick={sendOTP}
+                        className="text-indigo-600 dark:text-violet-400 hover:underline"
+                        disabled={isVerifyingOtp}
+                      >
+                        Resend Code
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between pt-6">
+                    <Button
+                      onClick={handleBack}
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Back to Shipping
+                    </Button>
+                    <Button
+                      onClick={verifyOTP}
+                      disabled={otpCode.length !== 5 || isVerifyingOtp}
+                      className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white py-6 px-6 rounded-lg shadow-md hover:shadow-lg transition-all font-medium text-base"
+                    >
+                      {isVerifyingOtp ? 'Verifying...' : 'Verify & Continue'}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </div>
@@ -928,48 +1258,39 @@ export default function CheckoutPage() {
                       transition={{ duration: 0.3 }}
                       className="grid grid-cols-1 gap-6"
                     >
-                      <div>
-                        <Label htmlFor="paypalEmail">PayPal Email</Label>
-                        <div className="relative mt-1">
-                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                          <Input
-                            id="paypalEmail"
-                            name="paypalEmail"
-                            type="email"
-                            value={formData.paypalEmail}
-                            onChange={handleChange}
-                            placeholder="your-email@example.com"
-                            className={`pl-10 ${
-                              formErrors.paypalEmail ? "border-red-500" : ""
-                            }`}
-                          />
-                        </div>
-                        {formErrors.paypalEmail && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {formErrors.paypalEmail}
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
                             <Image 
                               src="/paypal.svg" 
                               alt="PayPal" 
-                              width={24} 
-                              height={24} 
-                              className="h-5 w-auto" 
+                              width={32} 
+                              height={32} 
+                              className="h-8 w-auto" 
                             />
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                              PayPal Checkout
+                          <div className="flex-1">
+                            <p className="text-base font-semibold text-blue-900 dark:text-blue-100">
+                              PayPal Secure Checkout
                             </p>
-                            <p className="text-xs text-blue-600 dark:text-blue-400">
-                              You'll be securely redirected to complete your payment
+                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                              Click "Complete Purchase" to continue
                             </p>
                           </div>
+                        </div>
+                        <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            You'll be redirected to PayPal to complete your payment
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            Secure payment processing with PayPal
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            No need to enter your PayPal email here
+                          </p>
                         </div>
                       </div>
                     </motion.div>
@@ -1010,6 +1331,51 @@ export default function CheckoutPage() {
                     </motion.div>
                   )}
 
+                  {formData.paymentMethod === "coinbase" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="grid grid-cols-1 gap-6"
+                    >
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
+                            <Image 
+                              src="/coinbase.svg" 
+                              alt="Coinbase" 
+                              width={32} 
+                              height={32} 
+                              className="h-8 w-auto" 
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-base font-semibold text-blue-900 dark:text-blue-100">
+                              Coinbase Secure Checkout
+                            </p>
+                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                              Click "Complete Purchase" to continue
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            You'll be redirected to Coinbase to complete your payment
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            Pay with Bitcoin, Ethereum, or other cryptocurrencies
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            Secure and instant cryptocurrency payments
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Billing same as shipping checkbox */}
                   <div className="mt-6 flex items-center">
                     <input
@@ -1037,6 +1403,7 @@ export default function CheckoutPage() {
                           { id: "visa", src: "/visa.svg" },
                           { id: "mastercard", src: "/mastercard.svg" },
                           { id: "paypal", src: "/paypal.svg" },
+                          { id: "coinbase", src: "/coinbase.svg" },
                           { id: "bitcoin", src: "/bitcoin.svg" },
                         ].map((payment) => (
                           <motion.div

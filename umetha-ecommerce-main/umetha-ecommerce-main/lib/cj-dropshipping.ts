@@ -1,9 +1,11 @@
 import axios from "axios";
 import { supabase } from "./supabase";
+import Email from "next-auth/providers/email";
 
 // CJ Dropshipping API configuration
 const CJ_BASE_URL = "https://developers.cjdropshipping.com/api2.0/v1";
 const CJ_API_KEY = process.env.CJ_API_KEY;
+
 
 // Cache for CJ token
 let cachedToken: string | null = null;
@@ -61,7 +63,10 @@ export async function getCJAccessToken(): Promise<string | null> {
   try {
     const response = await axios.post<CJApiResponse>(
       `${CJ_BASE_URL}/authentication/getAccessToken`,
-      { apiKey: CJ_API_KEY },
+      { email: "mphomodiba623@gmail.com",
+        apiKey: CJ_API_KEY
+        
+       },
       {
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +97,7 @@ export async function getCJAccessToken(): Promise<string | null> {
 export async function fetchCJProducts(
   keyword: string = "trending",
   pageNum: number = 1,
-  pageSize: number = 20
+  pageSize: number = 5
 ): Promise<CJProduct[]> {
   const token = await getCJAccessToken();
   
@@ -213,22 +218,23 @@ export async function saveCJProductsToSupabase(products: CJProduct[]): Promise<b
   try {
     // Transform CJ products to match our Supabase schema
     const formattedProducts = products.map((product) => ({
-      name: product.name,
+      productNameEn: product.name,
       description: product.description || "",
-      price: product.price,
-      sku: product.sku || product.id,
-      images: product.images || [product.Url],
-      category_id: product.Category?.toLowerCase() || "general",
-      stock: product.stock || 0,
-      cj_product_id: product.id,
+      sellPrice: product.price,
+      productSku: product.sku || product.id,
+      productImage: product.images || [product.Url],
+      categoryId: product.Category?.toLowerCase() || "general",
+      listedNum: product.stock || 0,
+      pid: product.id,
       cj_product_link: product.product_link,
-      cj_category: product.Category || "General",
+      categoryName: product.Category || "General",
       // Add additional fields for CJ integration
       supplier: "CJ Dropshipping",
       supplier_product_id: product.id,
-      is_dropshipping: true,
+      
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+          
     }));
 
     // Use upsert to avoid duplicates based on CJ product ID
@@ -263,8 +269,7 @@ export async function deleteOldCJProducts(): Promise<boolean> {
     const { error } = await supabase
       .from('products')
       .delete()
-      .eq('is_dropshipping', true)
-      .not('cj_product_id', 'is', null);
+      .eq('stock', 0);
 
     if (error) {
       console.error("❌ Error deleting old products:", error);
@@ -282,7 +287,7 @@ export async function deleteOldCJProducts(): Promise<boolean> {
 /**
  * Fetch trending products from CJ Dropshipping
  */
-export async function fetchTrendingCJProducts(limit: number = 50): Promise<CJProduct[]> {
+export async function fetchTrendingCJProducts(limit: number = 5): Promise<CJProduct[]> {
   try {
     console.log("🔥 Fetching trending products from CJ Dropshipping...");
     

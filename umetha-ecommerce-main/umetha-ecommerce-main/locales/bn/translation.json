@@ -137,12 +137,25 @@
     "standard_shipping": "স্ট্যান্ডার্ড শিপিং",
     "pickup_available": "পিকআপ উপলব্ধ",
     "same_day_delivery": "একই দিন ডেলিভারি",
-    "next_day_delivery": "পরের দিন ডেলিভারি"
+    "next_day_delivery": "পরের দিন ডেলিভারি",
+    "categories.fashion": "ফ্যাশন",
+    "categories.beauty": "সৌন্দর্য",
+    "categories.baby": "শিশু",
+    "categories.home_decor": "বাড়ির সাজসজ্জা",
+    "categories.electronics": "ইলেকট্রনিক্স",
+    "categories.gaming": "গেমিং",
+    "categories.influencer_market": "ইনফ্লুয়েন্সার মার্কেট",
+    "categories.bargains": "সস্তা পণ্য",
+    "categories.unique_finds": "অনন্য আবিষ্কার",
+    "categories.virtual_tryon": "ভার্চুয়াল ট্রাই-অন"
   },
   "room_visualizer": {
     "decoration_visualizer": "সজ্জা ভিজ্যুয়ালাইজার",
     "room_design": "আমাদের AI-চালিত রুম ডিজাইন টুল দিয়ে আপনার স্থান রূপান্তর করুন। কেনার আগে আসবাবপত্রের অবস্থান, রঙের স্কিম এবং সজ্জা ভিজ্যুয়ালাইজ করুন।",
-    "start_decorating": "সজ্জা শুরু করুন"
+    "start_decorating": "সজ্জা শুরু করুন",
+    "virtual_fitting.enter_fitting_room": "ফিটিং শুরু করুন",
+    "virtual_fitting.virtual_fitting_room": "ফিটিং শুরু করুন",
+    "virtual_fitting.try_on_clothes": "আমাদের AI-চালিত ভার্চুয়াল ট্রাই-অন দিয়ে ভার্চুয়ালি পোশাক পরুন। আপনার ফটো আপলোড করুন এবং কেনার আগে দেখুন আপনি যে কোনো আউটফিটে কেমন দেখাচ্ছেন!"
   },
   "homepage": {
     "shop": "দোকান",
@@ -227,7 +240,64 @@
     "image": "ছবি দিয়ে খুঁজুন",
     "upload_image_tooltip": "অনুরূপ পণ্য খুঁজতে একটি ছবি আপলোড করুন"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "কিউরেটেড সংগ্রহ",
+      "subtitle": "স্টাইল উন্নত করুন",
+      "alt": "বিলাসী ফ্যাশন"
+    },
+    "slide2": {
+      "title": "স্মার্ট গ্যাজেট",
+      "subtitle": "আগামীর প্রযুক্তি",
+      "alt": "প্রিমিয়াম টেক"
+    },
+    "slide3": {
+      "title": "সৃজনশীল নকশা",
+      "subtitle": "শৈল্পিক অভিব্যক্তি",
+      "alt": "অমূর্ত শিল্প"
+    },
+    "slide4": {
+      "title": "ট্রেন্ডিং ফ্যাশন",
+      "subtitle": "ট্রেন্ডসেটিং স্টাইল",
+      "alt": "ফ্যাশন মডেল"
+    },
+    "slide5": {
+      "title": "আধুনিক জীবন",
+      "subtitle": "সহজ আরাম",
+      "alt": "গৃহ সরঞ্জাম"
+    },
+    "slide6": {
+      "title": "প্রাকৃতিকভাবে উজ্জ্বল",
+      "subtitle": "স্বাস্থ্যকর ত্বক",
+      "alt": "ত্বক যত্নের পণ্য"
+    }
+  },
+  "footer": {
+    "shop": "দোকান",
+    "about": "সম্পর্কে",
+    "help": "সাহায্য",
+    "contact_us": "যোগাযোগ করুন",
+    "new_arrivals": "নতুন আগমন",
+    "best_sellers": "সবচেয়ে বিক্রিত",
+    "sale": "বিক্রয়",
+    "men": "পুরুষ",
+    "women": "নারী",
+    "our_story": "আমাদের গল্প",
+    "blog": "ব্লগ",
+    "careers": "ক্যারিয়ার",
+    "press": "প্রেস",
+    "faqs": "প্রায়শই জিজ্ঞাসিত প্রশ্ন",
+    "shipping": "শিপিং",
+    "returns": "রিটার্ন",
+    "privacy_policy": "গোপনীয়তা নীতি",
+    "terms_and_conditions": "শর্তাবলী",
+    "secure_payment_options": "নিরাপদ পেমেন্ট বিকল্প",
+    "follow_us": "আমাদের অনুসরণ করুন",
+    "all_rights_reserved": "সমস্ত অধিকার সংরক্ষিত"
+  },
   "welcome": "আমাদের দোকানে স্বাগতম!",
   "description": "বিশ্বব্যাপী ট্রেন্ডিং পণ্যগুলিতে সেরা ডিল খুঁজুন।",
-  "addToCart": "কার্টে যোগ করুন"
+  "addToCart": "কার্টে যোগ করুন",
+  "metadata.title": "UMetha - প্রিমিয়াম ফ্যাশন এবং লাইফস্টাইল",
+  "metadata.description": "ফ্যাশন, আনুষাঙ্গিক এবং লাইফস্টাইল পণ্যে সর্বশেষ ট্রেন্ড শপ করুন।"
 }

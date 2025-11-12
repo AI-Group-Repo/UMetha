@@ -137,12 +137,25 @@
     "standard_shipping": "Τυπική αποστολή",
     "pickup_available": "Διαθέσιμη παραλαβή",
     "same_day_delivery": "Παράδοση την ίδια μέρα",
-    "next_day_delivery": "Παράδοση την επόμενη μέρα"
+    "next_day_delivery": "Παράδοση την επόμενη μέρα",
+    "categories.fashion": "Μόδα",
+    "categories.beauty": "Ομορφιά",
+    "categories.baby": "Μωρό",
+    "categories.home_decor": "Διακόσμηση Σπιτιού",
+    "categories.electronics": "Ηλεκτρονικά",
+    "categories.gaming": "Παιχνίδια",
+    "categories.influencer_market": "Αγορά Επηρεαστών",
+    "categories.bargains": "Συμφωνίες",
+    "categories.unique_finds": "Μοναδικές Ανακαλύψεις",
+    "categories.virtual_tryon": "Εικονική Δοκιμή"
   },
   "room_visualizer": {
     "decoration_visualizer": "Οπτικοποιητής Διακόσμησης",
     "room_design": "Μεταμορφώστε τον χώρο σας με το εργαλείο σχεδιασμού δωματίων που τροφοδοτείται από AI. Οπτικοποιήστε την τοποθέτηση επίπλων, σχέδια χρωμάτων και διακόσμηση πριν αγοράσετε.",
-    "start_decorating": "Ξεκινήστε τη Διακόσμηση"
+    "start_decorating": "Ξεκινήστε τη Διακόσμηση",
+    "virtual_fitting.enter_fitting_room": "Ξεκινήστε τη Δοκιμή",
+    "virtual_fitting.virtual_fitting_room": "Ξεκινήστε τη Δοκιμή",
+    "virtual_fitting.try_on_clothes": "Δοκιμάστε ρούχα εικονικά με το εικονικό σύστημα δοκιμής που τροφοδοτείται από AI. Ανεβάστε τη φωτογραφία σας και δείτε πώς φαίνεστε με οποιοδήποτε outfit πριν αγοράσετε!"
   },
   "homepage": {
     "shop": "Κατάστημα",
@@ -227,7 +240,64 @@
     "image": "Αναζήτηση με εικόνα",
     "upload_image_tooltip": "Ανεβάστε μια εικόνα για να βρείτε παρόμοια προϊόντα"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Επιλεγμένες Συλλογές",
+      "subtitle": "Ανεβάστε το Στυλ",
+      "alt": "Πολυτελής Μόδα"
+    },
+    "slide2": {
+      "title": "Έξυπνες Συσκευές",
+      "subtitle": "Η Τεχνολογία του Αύριο",
+      "alt": "Premium Tech"
+    },
+    "slide3": {
+      "title": "Δημιουργικά Σχέδια",
+      "subtitle": "Καλλιτεχνικές Εκφράσεις",
+      "alt": "Αφηρημένη Τέχνη"
+    },
+    "slide4": {
+      "title": "Τάση Μόδα",
+      "subtitle": "Στυλ Trendsetting",
+      "alt": "Μοντέλο Μόδας"
+    },
+    "slide5": {
+      "title": "Σύγχρονη Ζωή",
+      "subtitle": "Άνεση Χωρίς Προσπάθεια",
+      "alt": "Οικιακές Συσκευές"
+    },
+    "slide6": {
+      "title": "Λάμψη Φυσικά",
+      "subtitle": "Υγιής Δέρμα",
+      "alt": "Προϊόντα Περιποίησης Δέρματος"
+    }
+  },
+  "footer": {
+    "shop": "Κατάστημα",
+    "about": "Σχετικά",
+    "help": "Βοήθεια",
+    "contact_us": "Επικοινωνήστε μαζί μας",
+    "new_arrivals": "Νέες Αφίξεις",
+    "best_sellers": "Bestsellers",
+    "sale": "Προσφορά",
+    "men": "Ανδρικά",
+    "women": "Γυναικεία",
+    "our_story": "Η Ιστορία Μας",
+    "blog": "Μπλόγκ",
+    "careers": "Καριέρα",
+    "press": "Τύπος",
+    "faqs": "Συχνές Ερωτήσεις",
+    "shipping": "Αποστολή",
+    "returns": "Επιστροφές",
+    "privacy_policy": "Πολιτική Απορρήτου",
+    "terms_and_conditions": "Όροι και Προϋποθέσεις",
+    "secure_payment_options": "Ασφαλείς Επιλογές Πληρωμής",
+    "follow_us": "Ακολουθήστε μας",
+    "all_rights_reserved": "Όλα τα δικαιώματα κατοχυρωμένα"
+  },
   "welcome": "Καλώς ήρθατε στο κατάστημά μας!",
   "description": "Βρείτε τις καλύτερες προσφορές σε τάσεις προϊόντων παγκοσμίως.",
-  "addToCart": "Προσθήκη στο καλάθι"
+  "addToCart": "Προσθήκη στο καλάθι",
+  "metadata.title": "UMetha - Premium Μόδα & Στυλ Ζωής",
+  "metadata.description": "Αγοράστε τις τελευταίες τάσεις στη μόδα, αξεσουάρ και προϊόντα στυλ ζωής."
 }

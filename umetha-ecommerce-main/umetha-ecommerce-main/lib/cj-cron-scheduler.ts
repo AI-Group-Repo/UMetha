@@ -117,5 +117,5 @@ export function initializeCJCronScheduler(): void {
 }
 
 // Export the sync function for manual use
-export { syncTrendingProducts };
+export default{ syncTrendingProducts };
 

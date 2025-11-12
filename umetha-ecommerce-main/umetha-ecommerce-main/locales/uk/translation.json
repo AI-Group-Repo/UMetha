@@ -137,12 +137,25 @@
     "standard_shipping": "Стандартна доставка",
     "pickup_available": "Доступний самовивіз",
     "same_day_delivery": "Доставка в той же день",
-    "next_day_delivery": "Доставка наступного дня"
+    "next_day_delivery": "Доставка наступного дня",
+    "categories.fashion": "Мода",
+    "categories.beauty": "Краса",
+    "categories.baby": "Діти",
+    "categories.home_decor": "Домашній Декор",
+    "categories.electronics": "Електроніка",
+    "categories.gaming": "Ігри",
+    "categories.influencer_market": "Ринок Інфлюенсерів",
+    "categories.bargains": "Розпродажі",
+    "categories.unique_finds": "Унікальні Знахідки",
+    "categories.virtual_tryon": "Віртуальна Примірка"
   },
   "room_visualizer": {
     "decoration_visualizer": "Візуалізатор Декорації",
     "room_design": "Перетворіть свій простір за допомогою нашого інструменту дизайну кімнат на основі ШІ. Візуалізуйте розміщення меблів, кольорові схеми та декор перед покупкою.",
-    "start_decorating": "Почати Декорування"
+    "start_decorating": "Почати Декорування",
+    "virtual_fitting.enter_fitting_room": "Почати Примірку",
+    "virtual_fitting.virtual_fitting_room": "Почати Примірку",
+    "virtual_fitting.try_on_clothes": "Віртуально приміряйте одяг за допомогою нашого віртуального примірочного, що працює на основі ШІ. Завантажте своє фото та подивіться, як ви виглядаєте в будь-якому наряді перед покупкою!"
   },
   "homepage": {
     "shop": "Магазин",
@@ -227,7 +240,64 @@
     "image": "Пошук за зображенням",
     "upload_image_tooltip": "Завантажте зображення для пошуку схожих товарів"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Кураторські Колекції",
+      "subtitle": "Підніміть Стиль",
+      "alt": "Розкішна Мода"
+    },
+    "slide2": {
+      "title": "Розумні Пристрої",
+      "subtitle": "Технологія Завтра",
+      "alt": "Преміум Технології"
+    },
+    "slide3": {
+      "title": "Креативний Дизайн",
+      "subtitle": "Художні Вирази",
+      "alt": "Абстрактне Мистецтво"
+    },
+    "slide4": {
+      "title": "Трендова Мода",
+      "subtitle": "Стилі Трендсеттерів",
+      "alt": "Модель Моди"
+    },
+    "slide5": {
+      "title": "Сучасне Життя",
+      "subtitle": "Легкий Комфорт",
+      "alt": "Побутова Техніка"
+    },
+    "slide6": {
+      "title": "Сяй Природно",
+      "subtitle": "Здорова Шкіра",
+      "alt": "Засоби Догляду за Шкірою"
+    }
+  },
+  "footer": {
+    "shop": "Магазин",
+    "about": "Про нас",
+    "help": "Допомога",
+    "contact_us": "Зв'яжіться з нами",
+    "new_arrivals": "Новинки",
+    "best_sellers": "Бестселери",
+    "sale": "Розпродаж",
+    "men": "Чоловіки",
+    "women": "Жінки",
+    "our_story": "Наша Історія",
+    "blog": "Блог",
+    "careers": "Кар'єра",
+    "press": "Прес",
+    "faqs": "Часті питання",
+    "shipping": "Доставка",
+    "returns": "Повернення",
+    "privacy_policy": "Політика конфіденційності",
+    "terms_and_conditions": "Умови використання",
+    "secure_payment_options": "Безпечні способи оплати",
+    "follow_us": "Слідкуйте за нами",
+    "all_rights_reserved": "Всі права захищені"
+  },
   "welcome": "Ласкаво просимо до нашого магазину!",
   "description": "Знайдіть найкращі пропозиції на трендові товари по всьому світу.",
-  "addToCart": "Додати до кошика"
+  "addToCart": "Додати до кошика",
+  "metadata.title": "UMetha - Преміум Мода та Стиль Життя",
+  "metadata.description": "Купуйте останні тенденції в моді, аксесуарах та товарах для стилю життя."
 }

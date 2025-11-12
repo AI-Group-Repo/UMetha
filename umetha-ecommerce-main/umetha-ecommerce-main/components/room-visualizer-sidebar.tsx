@@ -10,11 +10,11 @@ export default function RoomVisualizerSidebar() {
   return (
     <aside className="w-full">
       <div className="text-sm text-neutral-700 dark:text-neutral-200">
-        <section>
-          <h3 className="text-[16px] font-semibold text-foreground mb-2">
+        <section className="mb-6">
+          <h3 className="text-[16px] font-semibold text-foreground mb-3">
             {t('room_visualizer.decoration_visualizer')}
           </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+          <p className="text-xs text-muted-foreground leading-relaxed mb-4 whitespace-normal">
             {t('room_visualizer.room_design')}
           </p>
 

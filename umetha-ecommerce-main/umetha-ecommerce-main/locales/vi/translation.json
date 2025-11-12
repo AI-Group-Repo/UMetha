@@ -137,12 +137,25 @@
     "standard_shipping": "Vận chuyển tiêu chuẩn",
     "pickup_available": "Có thể nhận tại cửa hàng",
     "same_day_delivery": "Giao hàng trong ngày",
-    "next_day_delivery": "Giao hàng ngày hôm sau"
+    "next_day_delivery": "Giao hàng ngày hôm sau",
+    "categories.fashion": "Thời Trang",
+    "categories.beauty": "Làm Đẹp",
+    "categories.baby": "Trẻ Em",
+    "categories.home_decor": "Trang Trí Nhà Cửa",
+    "categories.electronics": "Điện Tử",
+    "categories.gaming": "Trò Chơi",
+    "categories.influencer_market": "Thị Trường Người Ảnh Hưởng",
+    "categories.bargains": "Hàng Giá Rẻ",
+    "categories.unique_finds": "Phát Hiện Độc Đáo",
+    "categories.virtual_tryon": "Thử Đồ Ảo"
   },
   "room_visualizer": {
     "decoration_visualizer": "Trình Hiển Thị Trang Trí",
     "room_design": "Biến đổi không gian của bạn với công cụ thiết kế phòng được hỗ trợ bởi AI của chúng tôi. Hình dung việc bố trí đồ nội thất, bảng màu và trang trí trước khi mua.",
-    "start_decorating": "Bắt Đầu Trang Trí"
+    "start_decorating": "Bắt Đầu Trang Trí",
+    "virtual_fitting.enter_fitting_room": "Bắt Đầu Thử Đồ",
+    "virtual_fitting.virtual_fitting_room": "Bắt Đầu Thử Đồ",
+    "virtual_fitting.try_on_clothes": "Thử quần áo ảo với hệ thống thử đồ ảo được hỗ trợ bởi AI của chúng tôi. Tải lên ảnh của bạn và xem bạn trông như thế nào trong bất kỳ trang phục nào trước khi mua!"
   },
   "homepage": {
     "shop": "Cửa hàng",
@@ -227,7 +240,64 @@
     "image": "Tìm kiếm bằng hình ảnh",
     "upload_image_tooltip": "Tải lên hình ảnh để tìm sản phẩm tương tự"
   },
+  "promo_banner": {
+    "slide1": {
+      "title": "Bộ Sưu Tập Được Tuyển Chọn",
+      "subtitle": "Nâng Tầm Phong Cách",
+      "alt": "Thời Trang Sang Trọng"
+    },
+    "slide2": {
+      "title": "Thiết Bị Thông Minh",
+      "subtitle": "Công Nghệ Tương Lai",
+      "alt": "Công Nghệ Cao Cấp"
+    },
+    "slide3": {
+      "title": "Thiết Kế Sáng Tạo",
+      "subtitle": "Biểu Đạt Nghệ Thuật",
+      "alt": "Nghệ Thuật Trừu Tượng"
+    },
+    "slide4": {
+      "title": "Thời Trang Xu Hướng",
+      "subtitle": "Phong Cách Dẫn Đầu",
+      "alt": "Người Mẫu Thời Trang"
+    },
+    "slide5": {
+      "title": "Cuộc Sống Hiện Đại",
+      "subtitle": "Tiện Nghi Dễ Dàng",
+      "alt": "Đồ Gia Dụng"
+    },
+    "slide6": {
+      "title": "Tỏa Sáng Tự Nhiên",
+      "subtitle": "Làn Da Khỏe Mạnh",
+      "alt": "Sản Phẩm Chăm Sóc Da"
+    }
+  },
+  "footer": {
+    "shop": "Cửa hàng",
+    "about": "Về chúng tôi",
+    "help": "Trợ giúp",
+    "contact_us": "Liên hệ",
+    "new_arrivals": "Hàng mới về",
+    "best_sellers": "Bán chạy nhất",
+    "sale": "Giảm giá",
+    "men": "Nam",
+    "women": "Nữ",
+    "our_story": "Câu chuyện của chúng tôi",
+    "blog": "Blog",
+    "careers": "Tuyển dụng",
+    "press": "Báo chí",
+    "faqs": "Câu hỏi thường gặp",
+    "shipping": "Giao hàng",
+    "returns": "Trả hàng",
+    "privacy_policy": "Chính sách bảo mật",
+    "terms_and_conditions": "Điều khoản và Điều kiện",
+    "secure_payment_options": "Tùy chọn thanh toán an toàn",
+    "follow_us": "Theo dõi chúng tôi",
+    "all_rights_reserved": "Bảo lưu mọi quyền"
+  },
   "welcome": "Chào mừng đến với cửa hàng của chúng tôi!",
   "description": "Tìm những ưu đãi tốt nhất cho các sản phẩm xu hướng trên toàn thế giới.",
-  "addToCart": "Thêm vào giỏ hàng"
+  "addToCart": "Thêm vào giỏ hàng",
+  "metadata.title": "UMetha - Thời Trang Premium & Phong Cách Sống",
+  "metadata.description": "Mua sắm những xu hướng mới nhất trong thời trang, phụ kiện và sản phẩm phong cách sống."
 }
