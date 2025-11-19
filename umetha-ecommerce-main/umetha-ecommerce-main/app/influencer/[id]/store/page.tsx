@@ -42,6 +42,7 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useCart } from "@/context/cart-context";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -92,6 +93,7 @@ export default function InfluencerStorePage({ params }: { params: { id: string }
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<StoreProduct | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [isStartingChat, setIsStartingChat] = useState(false);
 
   const categories = [
     "all",
@@ -163,6 +165,49 @@ export default function InfluencerStorePage({ params }: { params: { id: string }
   const handleAddToWishlist = (productId: string) => {
     // TODO: Implement add to wishlist functionality
     toast.success("Product added to wishlist!");
+  };
+
+  const handleStartChat = async () => {
+    if (!influencer) return;
+    if (!user) {
+      toast.error("Sign in to chat with influencers.");
+      router.push("/signin");
+      return;
+    }
+
+    setIsStartingChat(true);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const response = await fetch("/api/chat/create-conversation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token
+            ? { Authorization: `Bearer ${session.access_token}` }
+            : {}),
+        },
+        body: JSON.stringify({
+          influencerId: influencer.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create conversation");
+      }
+
+      const payload = await response.json();
+      if (payload.conversation?.id) {
+        router.push(`/chat/${payload.conversation.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to start chat", error);
+      toast.error("Unable to start chat. Please try again.");
+    } finally {
+      setIsStartingChat(false);
+    }
   };
 
   const ProductCard = ({ product }: { product: StoreProduct }) => (
@@ -370,9 +415,13 @@ export default function InfluencerStorePage({ params }: { params: { id: string }
                 <Share2 className="h-4 w-4 mr-2" />
                 Share Store
               </Button>
-              <Button variant="outline" size="sm">
+              <Button
+                size="sm"
+                onClick={handleStartChat}
+                disabled={isStartingChat}
+              >
                 <MessageCircle className="h-4 w-4 mr-2" />
-                Contact
+                {isStartingChat ? "Starting chat..." : "Chat with this influencer"}
               </Button>
             </div>
           </div>

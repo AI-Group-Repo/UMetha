@@ -107,6 +107,7 @@ export default function Footer() {
               <FooterLink href="/blog" label={t("footer.blog")} />
               <FooterLink href="/careers" label={t("footer.careers")} />
               <FooterLink href="/press" label={t("footer.press")} />
+              <FooterLink href="/influencers" label="Influencer Marketplace" />
             </ul>
           </div>
 

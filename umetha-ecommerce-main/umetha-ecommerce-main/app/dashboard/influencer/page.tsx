@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
+import { supabase } from "@/lib/supabase";
 import {
   Card,
   CardContent,
@@ -10,6 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ChatWorkspace } from "@/components/chat/ChatWorkspace";
 import {
   LineChart,
   BarChart,
@@ -20,56 +25,156 @@ import {
   Camera,
   Share2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+
+
+
+
+function RoleImpersonationBanner() {
+  const getCookieValue = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+    return null;
+  };
+
+  const tempRole = getCookieValue("temp_role");
+  const originalRole = getCookieValue("original_role");
+
+  if (!(tempRole && originalRole && tempRole !== originalRole)) return null;
+
+  return (
+    <div className="mb-4 p-3 rounded-md bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm flex justify-between items-center">
+      <span>
+        ⚠️ You are currently impersonating an <strong>{tempRole}</strong> role (original:{" "}
+        <strong>{originalRole}</strong>).
+      </span>
+      <button
+        onClick={() => {
+          document.cookie = "temp_role=; Max-Age=0; path=/;";
+          document.cookie = "original_role=; Max-Age=0; path=/;";
+          window.location.reload();
+        }}
+        className="ml-3 text-blue-600 hover:underline"
+      >
+        Stop Impersonating
+      </button>
+    </div>
+  );
+}
+
+
 
 export default function InfluencerDashboard() {
   const { user, userRole, isLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [businessModels, setBusinessModels] = useState<string[]>([]);
+
   const [statistics, setStatistics] = useState({
     totalEarnings: "$12,538",
     followers: "128.4K",
     engagementRate: "4.7%",
     productsSold: "843",
-    avgOrderValue: "$78.24",
-    clickThroughRate: "3.2%",
-    pendingMessages: "8",
   });
 
-  // Check for proper role authorization
-  useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        router.push("/signin");
-        return;
+
+
+   useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!isLoading) {
+        if (!user) {
+          router.push("/signin");
+          return;
+        }
+
+        const getCookieValue = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+          return null;
+        };
+
+        const tempRole = getCookieValue("temp_role");
+        const originalRole = getCookieValue("original_role");
+        const isAdminImpersonating =
+          tempRole === "INFLUENCER" && originalRole === "ADMIN";
+
+        if (
+          !userRole ||
+          (userRole.toUpperCase() !== "INFLUENCER" && !isAdminImpersonating)
+        ) {
+          router.push("/dashboard");
+          return;
+        }
+
+        // Check if influencer has completed onboarding
+        try {
+          // Get the mock user ID from cookie if it exists (for test accounts)
+          const mockUserId = getCookieValue("mock-user-id");
+          const userId = mockUserId || user.id;
+          const isDemoAccount = user.email?.includes("@umetha.com");
+
+          // For demo accounts, check localStorage first
+          if (isDemoAccount) {
+            const { loadDemoProfile } = await import("@/lib/demo-account-storage");
+            const demoProfile = loadDemoProfile(user.email);
+            
+            if (demoProfile) {
+              console.log("📦 Loaded demo profile from localStorage:", demoProfile);
+              
+              if (!demoProfile.onboardingCompleted || !demoProfile.businessModels || demoProfile.businessModels.length === 0) {
+                console.log("Demo account onboarding not completed, redirecting...");
+                router.push("/dashboard/influencer/onboarding");
+                return;
+              }
+              
+              console.log("Demo onboarding completed, business models:", demoProfile.businessModels);
+              setBusinessModels(demoProfile.businessModels);
+              setLoading(false);
+              return;
+            } else {
+              // No localStorage profile, redirect to onboarding
+              console.log("No demo profile found, redirecting to onboarding");
+              router.push("/dashboard/influencer/onboarding");
+              return;
+            }
+          }
+
+          // For real accounts, use Supabase
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("onboarding_completed, business_models")
+            .eq("id", userId)
+            .single();
+
+          const profileData = data as any;
+          
+          if (error) {
+            console.error("Error fetching profile:", error);
+            // If profile doesn't exist and it's a test account, redirect to onboarding
+            if (mockUserId) {
+              console.log("Test account profile not found, redirecting to onboarding");
+              router.push("/dashboard/influencer/onboarding");
+              return;
+            }
+          } else if (!profileData?.onboarding_completed || !profileData?.business_models || profileData.business_models.length === 0) {
+            // Redirect to onboarding if not completed
+            console.log("Onboarding not completed, redirecting...");
+            router.push("/dashboard/influencer/onboarding");
+            return;
+          } else {
+            console.log("Onboarding completed, business models:", profileData.business_models);
+            setBusinessModels(profileData.business_models || []);
+          }
+        } catch (error) {
+          console.error("Error checking onboarding status:", error);
+        }
+
+        setLoading(false);
       }
+    };
 
-      // Check for temporary role impersonation by admins
-      const getCookieValue = (name: string) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-        return null;
-      };
-
-      const tempRole = getCookieValue("temp_role");
-      const originalRole = getCookieValue("original_role");
-      const isAdminImpersonating =
-        tempRole === "INFLUENCER" && originalRole === "ADMIN";
-
-      // Allow access if the user is actually an influencer OR an admin impersonating an influencer
-      if (
-        !userRole ||
-        (userRole.toUpperCase() !== "INFLUENCER" && !isAdminImpersonating)
-      ) {
-        router.push("/dashboard");
-        return;
-      }
-
-      setLoading(false);
-    }
+    checkOnboardingStatus();
   }, [user, userRole, isLoading, router]);
 
   if (loading) {
@@ -80,9 +185,12 @@ export default function InfluencerDashboard() {
     );
   }
 
+
   return (
     <div>
-      <RoleImpersonationBanner />
+      <RoleImpersonationBanner/>
+
+      {/* ----------------- Dashboard Content ----------------- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Influencer Dashboard</h1>
@@ -91,16 +199,23 @@ export default function InfluencerDashboard() {
           </p>
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
-          <Button>
-            <Camera className="mr-2 h-4 w-4" />
-            Create Content
-          </Button>
-          <Button variant="outline">
-            <Share2 className="mr-2 h-4 w-4" />
-            Share Profile
-          </Button>
+          <Link href="/dashboard/influencer/content">
+            <Button>
+              <Camera className="mr-2 h-4 w-4" />
+              Create Content
+            </Button>
+          </Link>
+          <Link href="/dashboard/influencer/profile">
+            <Button variant="outline">
+              <Share2 className="mr-2 h-4 w-4" />
+              Share Profile
+            </Button>
+          </Link>
         </div>
       </div>
+
+
+
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -360,6 +475,20 @@ export default function InfluencerDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Messages */}
+      <div className="mt-10 space-y-4">
+        <div>
+          <h2 className="text-2xl font-bold">Messages</h2>
+          <p className="text-gray-500 dark:text-gray-400">
+            Chat with buyers in real time without leaving your dashboard.
+          </p>
+        </div>
+        <ChatWorkspace
+          emptyStateHeading="No conversations yet"
+          emptyStateDescription="When buyers send you messages, they’ll show up here instantly."
+        />
+      </div>
     </div>
   );
 }

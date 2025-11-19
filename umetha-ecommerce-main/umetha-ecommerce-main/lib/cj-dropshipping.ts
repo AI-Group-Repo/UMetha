@@ -4,25 +4,26 @@ import Email from "next-auth/providers/email";
 
 // CJ Dropshipping API configuration
 const CJ_BASE_URL = "https://developers.cjdropshipping.com/api2.0/v1";
-const CJ_API_KEY = process.env.CJ_API_KEY;
-
+const CJ_API_KEY = process.env.CJ_API_KEY || "CJ4815762@api@ab76fe304ce14f85abca3cd5a64e7227";
+const CJ_ACCESS_TOKEN = process.env.CJ_ACCESS_TOKEN || "API@CJ4815762@CJ:eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyOTU4OSIsInR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJzdWIiOiJicUxvYnFRMGxtTm55UXB4UFdMWnlzMWFlbzhRdjNTdXd2MWI0c0lRL1dHTnJmcjlod2V0RllmTk50UkVBVlpEc05jakVvRmFsYXZBdWF2TUs4TDByR0plUEhjKzBTYjk2eEw4ZUprRXFXVnRKRlhBaENobDM2ZTBVMDVkY2NmNFVUZ281WjRpM0J4RTdMZ0FzNDV5UGxsSTRlNHVKbnNNVk5UZnZiT1UzR29JL1E4NkVvZHpUMzQ3cE1QTEc4RjhKaUkwQU9qcE9lUGxDUm5DblhTc2pJL2JOd2lnMTFXVi9DaVdGVllkWUQ1b3BzL0t0dS91UTN1Z1F4dWJiaEVzdXJYVk5kSFNkR3UzZUEyR0hHdEhNV2RGWjNTaEFMcXBSK3N6U0kxYTJkQT0iLCJpYXQiOjE3NjIxNzU1OTF9.k1EXL_-BgRL3_Y9sxwYZoogWN1clVamaNRcD8xo-kaA";
 
 // Cache for CJ token
-let cachedToken: string | null = null;
-let tokenExpiry: number = 0;
+let cachedToken: string | null = CJ_ACCESS_TOKEN; // Use provided token initially
+let tokenExpiry: number = Date.now() + (86400 * 1000); // 24 hours from now
 
 export interface CJProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  Url: string;
-  Category: string;
-  product_link: string;
-  sku?: string;
-  stock?: number;
-  variants?: any[];
-  images?: string[];
+  pid: string;
+  productNameEn: string;
+//  description?: string;
+  sellPrice: number;
+  productImage: string;
+  categoryName: string;
+
+//  product_link?: string;
+  productSku?: string;
+//  stock?: number;
+//  variants?: any[];
+//  images?: string[];
 }
 
 export interface CJApiResponse {
@@ -36,11 +37,16 @@ export interface CJApiResponse {
 
 export interface CJProductResponse {
   code: number;
+  result: boolean;
   message: string;
-  data: CJProduct[];
-  totalCount: number;
-  pageNum: number;
-  pageSize: number;
+  data: {
+    pageNum: number;
+    pageSize: number;
+    total: number;
+    list: CJProduct[];
+  };
+  requestId: string;
+  success: boolean;
 }
 
 /**
@@ -50,10 +56,13 @@ export interface CJProductResponse {
 export async function getCJAccessToken(): Promise<string | null> {
   const now = Date.now();
   
-  // Return cached token if still valid
+  // Return cached token if still valid (using provided token or refreshed token)
   if (cachedToken && now < tokenExpiry) {
+    console.log("✅ Using cached CJ access token");
     return cachedToken;
   }
+
+  console.log("🔄 CJ token expired or not available, requesting new token...");
 
   if (!CJ_API_KEY) {
     console.error("❌ CJ_API_KEY not found in environment variables");
@@ -63,10 +72,9 @@ export async function getCJAccessToken(): Promise<string | null> {
   try {
     const response = await axios.post<CJApiResponse>(
       `${CJ_BASE_URL}/authentication/getAccessToken`,
-      { email: "mphomodiba623@gmail.com",
+      { 
         apiKey: CJ_API_KEY
-        
-       },
+      },
       {
         headers: {
           "Content-Type": "application/json",
@@ -79,25 +87,40 @@ export async function getCJAccessToken(): Promise<string | null> {
       cachedToken = accessToken;
       // Set expiry with 60 second buffer
       tokenExpiry = now + (expiresIn - 60) * 1000;
-      console.log("✅ New CJ access token obtained!");
+      console.log("✅ New CJ access token obtained and cached!");
       return accessToken;
     } else {
       console.error("❌ CJ API error:", response.data.message);
+      // If we can't get a new token, try using the provided token as fallback
+      if (CJ_ACCESS_TOKEN) {
+        console.log("⚠️ Using provided CJ_ACCESS_TOKEN as fallback");
+        cachedToken = CJ_ACCESS_TOKEN;
+        tokenExpiry = now + (86400 * 1000); // 24 hours
+        return CJ_ACCESS_TOKEN;
+      }
       return null;
     }
   } catch (error: any) {
     console.error("❌ Failed to get CJ token:", error.response?.data || error.message);
+    // If we can't get a new token, try using the provided token as fallback
+    if (CJ_ACCESS_TOKEN) {
+      console.log("⚠️ Using provided CJ_ACCESS_TOKEN as fallback after error");
+      cachedToken = CJ_ACCESS_TOKEN;
+      tokenExpiry = now + (86400 * 1000); // 24 hours
+      return CJ_ACCESS_TOKEN;
+    }
     return null;
   }
 }
 
 /**
  * Fetch products from CJ Dropshipping
+ * Simple extraction from /product/list endpoint
  */
 export async function fetchCJProducts(
-  keyword: string = "trending",
+  keyword: string = "",
   pageNum: number = 1,
-  pageSize: number = 5
+  pageSize: number = 20
 ): Promise<CJProduct[]> {
   const token = await getCJAccessToken();
   
@@ -105,32 +128,52 @@ export async function fetchCJProducts(
     console.error("❌ No valid CJ token available");
     return [];
   }
+  
+  console.log(`📡 Fetching CJ products: pageNum=${pageNum}, pageSize=${pageSize}, keyword="${keyword || 'none'}"`);
 
   try {
-    const response = await axios.post<CJProductResponse>(
+    // Build request params
+    const params: any = {
+      pageNum,
+      pageSize,
+    };
+    
+    // Add keyword if provided
+    if (keyword && keyword.trim()) {
+      params.keyword = keyword.trim();
+    }
+    
+    console.log(`🌐 Calling ${CJ_BASE_URL}/product/list with params:`, params);
+
+    // Simple GET request to CJ product list endpoint
+    const response = await axios.get<CJProductResponse>(
       `${CJ_BASE_URL}/product/list`,
       {
-        pageNum,
-        pageSize,
-        keyword,
-      },
-      {
+        params,
         headers: {
           "CJ-Access-Token": token,
           "Content-Type": "application/json",
         },
+        timeout: 30000,
       }
     );
 
-    if (response.data.code === 200) {
-      console.log(`✅ Fetched ${response.data.data.length} products from CJ`);
-      return response.data.data;
+    console.log(`📦 CJ Response: code=${response.data.code}, total=${response.data.data?.total || 0}`);
+
+    if (response.data.code === 200 && response.data.data?.list && Array.isArray(response.data.data.list)) {
+      const products = response.data.data.list;
+      console.log(`✅ Fetched ${products.length} products from CJ`);
+      return products;
     } else {
-      console.error("❌ CJ API error:", response.data.message);
+      console.error("❌ No products in CJ response");
+      console.error("   Full response:", JSON.stringify(response.data, null, 2));
       return [];
     }
   } catch (error: any) {
-    console.error("❌ CJ API request failed:", error.response?.data || error.message);
+    console.error("❌ CJ API request failed:", error.message);
+    if (error.response?.data) {
+      console.error("   Response data:", JSON.stringify(error.response.data, null, 2));
+    }
     return [];
   }
 }
@@ -182,10 +225,11 @@ export async function fetchCJProductDetails(productId: string): Promise<CJProduc
   }
 
   try {
-    const response = await axios.post(
+    // Use GET method with query parameters
+    const response = await axios.get(
       `${CJ_BASE_URL}/product/info`,
-      { productId },
       {
+        params: { productId },
         headers: {
           "CJ-Access-Token": token,
           "Content-Type": "application/json",
@@ -208,6 +252,7 @@ export async function fetchCJProductDetails(productId: string): Promise<CJProduc
 
 /**
  * Save CJ products to Supabase
+ * Note: Disabled for now - use localStorage for demo accounts
  */
 export async function saveCJProductsToSupabase(products: CJProduct[]): Promise<boolean> {
   if (!products.length) {
@@ -215,79 +260,35 @@ export async function saveCJProductsToSupabase(products: CJProduct[]): Promise<b
     return false;
   }
 
-  try {
-    // Transform CJ products to match our Supabase schema
-    const formattedProducts = products.map((product) => ({
-      productNameEn: product.name,
-      description: product.description || "",
-      sellPrice: product.price,
-      productSku: product.sku || product.id,
-      productImage: product.images || [product.Url],
-      categoryId: product.Category?.toLowerCase() || "general",
-      listedNum: product.stock || 0,
-      pid: product.id,
-      cj_product_link: product.product_link,
-      categoryName: product.Category || "General",
-      // Add additional fields for CJ integration
-      supplier: "CJ Dropshipping",
-      supplier_product_id: product.id,
-      
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-          
-    }));
+  console.log("⚠️ Database save skipped - using localStorage for demo accounts");
+  console.log(`ℹ️ ${products.length} products available for approval`);
+  return true;
 
-    // Use upsert to avoid duplicates based on CJ product ID
-    const { data, error } = await supabase
-      .from("products")
-      .upsert(formattedProducts, { 
-        onConflict: "cj_product_id",
-        ignoreDuplicates: false 
-      })
-      .select();
-
-    if (error) {
-      console.error("❌ Supabase insert error:", error);
-      return false;
-    } else {
-      console.log(`✅ ${formattedProducts.length} CJ products synced to Supabase!`);
-      return true;
-    }
-  } catch (error) {
-    console.error("❌ Error saving products to Supabase:", error);
-    return false;
-  }
+  // TODO: Implement proper Supabase save with correct schema
+  // Your schema uses: supplier_id (int foreign key to suppliers table)
+  // Not: supplier (text field)
+  // 
+  // To enable database save:
+  // 1. Create a supplier in suppliers table for "CJ Dropshipping"
+  // 2. Get the supplier_id
+  // 3. Update the mapping below to use supplier_id instead of supplier
 }
 
 /**
  * Delete old CJ Dropshipping products from Supabase
+ * Note: Disabled for now - using localStorage for demo accounts
  */
 export async function deleteOldCJProducts(): Promise<boolean> {
-  try {
-    console.log("🗑️ Deleting old CJ Dropshipping products...");
-    
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('stock', 0);
-
-    if (error) {
-      console.error("❌ Error deleting old products:", error);
-      return false;
-    }
-
-    console.log("✅ Old CJ products deleted successfully");
-    return true;
-  } catch (error: any) {
-    console.error("❌ Error in deleteOldCJProducts:", error.message);
-    return false;
-  }
+  console.log("⚠️ Database cleanup skipped - using localStorage for demo accounts");
+  return true;
+  
+  // TODO: Re-enable for production with proper supplier_id handling
 }
 
 /**
  * Fetch trending products from CJ Dropshipping
  */
-export async function fetchTrendingCJProducts(limit: number = 5): Promise<CJProduct[]> {
+export async function fetchTrendingCJProducts(limit: number = 20): Promise<CJProduct[]> {
   try {
     console.log("🔥 Fetching trending products from CJ Dropshipping...");
     
@@ -316,7 +317,7 @@ export async function fetchTrendingCJProducts(limit: number = 5): Promise<CJProd
 /**
  * Sync trending products with cleanup
  */
-export async function syncTrendingProducts(limit: number = 50): Promise<{
+export async function syncTrendingProducts(limit: number = 20): Promise<{
   success: boolean;
   totalProducts: number;
   errors: string[];

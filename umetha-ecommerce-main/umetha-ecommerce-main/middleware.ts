@@ -82,9 +82,23 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  // Get the access token from the cookie
-  const refreshToken = req.cookies.get("sb-refresh-token")?.value;
-  const accessToken = req.cookies.get("sb-access-token")?.value;
+  // Get the access token from the cookie - Supabase uses project-specific cookie names
+  // The format is: sb-{project-ref}-auth-token
+  let refreshToken: string | undefined;
+  let accessToken: string | undefined;
+  
+  // Try to find Supabase auth cookies (they include the project ref)
+  req.cookies.getAll().forEach(cookie => {
+    if (cookie.name.includes('auth-token') && cookie.name.startsWith('sb-')) {
+      try {
+        const tokenData = JSON.parse(cookie.value);
+        if (tokenData.refresh_token) refreshToken = tokenData.refresh_token;
+        if (tokenData.access_token) accessToken = tokenData.access_token;
+      } catch (e) {
+        // Not JSON, might be different format
+      }
+    }
+  });
 
   // Check for temporary role (user impersonation)
   const tempRole = req.cookies.get("temp_role")?.value;
@@ -94,8 +108,13 @@ export async function middleware(req: NextRequest) {
     `[Middleware] Auth tokens present: ${!!refreshToken && !!accessToken}`
   );
 
-  // No tokens means user is not authenticated
-  if (!refreshToken || !accessToken) {
+  // Check for mock user session (test accounts) - they don't have Supabase tokens
+  const hasMockSession = req.cookies.getAll().some(cookie => 
+    cookie.name.startsWith('mock-user-') || cookie.name === 'test-account-session'
+  );
+
+  // No tokens means user is not authenticated (unless they have a mock session)
+  if (!refreshToken && !accessToken && !hasMockSession) {
     console.log(
       `[Middleware] No auth tokens found, isProtectedRoute: ${isProtectedRoute(
         path
@@ -121,11 +140,24 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    // Set the access token for the Supabase client
-    await supabase.auth.setSession({
-      refresh_token: refreshToken,
-      access_token: accessToken,
-    });
+    // For mock sessions, we skip Supabase auth and just allow access
+    if (hasMockSession && (!refreshToken || !accessToken)) {
+      console.log(`[Middleware] Using mock session for test account`);
+      // Just allow the request through - test accounts don't need Supabase validation
+      return NextResponse.next();
+    }
+
+    // Set the access token for the Supabase client (only if we have real tokens)
+    if (refreshToken && accessToken) {
+      await supabase.auth.setSession({
+        refresh_token: refreshToken,
+        access_token: accessToken,
+      });
+    } else {
+      // No tokens and no mock session - this shouldn't happen at this point
+      console.warn(`[Middleware] Reached token validation without tokens or mock session`);
+      return NextResponse.next();
+    }
 
     // Get the user session
     const {
@@ -142,6 +174,9 @@ export async function middleware(req: NextRequest) {
         response.cookies.delete("sb-access-token");
         response.cookies.delete("temp_role");
         response.cookies.delete("original_role");
+        response.cookies.delete("test-account-session");
+        response.cookies.delete("mock-user-email");
+        response.cookies.delete("mock-user-role");
         return response;
       }
       return NextResponse.next();
@@ -260,6 +295,9 @@ export async function middleware(req: NextRequest) {
       const response = NextResponse.redirect(new URL("/signin", req.url));
       response.cookies.delete("sb-refresh-token");
       response.cookies.delete("sb-access-token");
+      response.cookies.delete("test-account-session");
+      response.cookies.delete("mock-user-email");
+      response.cookies.delete("mock-user-role");
       return response;
     }
     return NextResponse.next();

@@ -104,10 +104,46 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 // Test accounts for development
-const TEST_ACCOUNTS = {
+const TEST_ACCOUNTS: Record<string, { password: string; role: UserRole }> = {
   "admin@umetha.com": { password: "admin123", role: "ADMIN" as UserRole },
   "seller@umetha.com": { password: "seller123", role: "SELLER" as UserRole },
   "influencer@umetha.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha2.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha3.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha4.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha5.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha6.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha7.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha8.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha9.com": {
+    password: "influencer123",
+    role: "INFLUENCER" as UserRole,
+  },
+  "influencer@umetha10.com": {
     password: "influencer123",
     role: "INFLUENCER" as UserRole,
   },
@@ -145,9 +181,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Determine the effective role with fallbacks
       let effectiveRole: UserRole = "USER";
 
-      if (data?.role) {
+      const profileData = data as any;
+      if (profileData?.role) {
         // If role exists in profile, use it
-        effectiveRole = data.role.toUpperCase() as UserRole;
+        effectiveRole = profileData.role.toUpperCase() as UserRole;
       } else if (metadataRole) {
         // If role exists in metadata but not in profile, update profile
         effectiveRole = metadataRole;
@@ -157,19 +194,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: userId,
           role: effectiveRole,
           updated_at: new Date().toISOString(),
-        });
+        } as any);
       } else if (error) {
         // If there was an error fetching from profiles, check special cases
-        if (Object.keys(TEST_ACCOUNTS).includes(userData?.user?.email || "")) {
-          effectiveRole = TEST_ACCOUNTS[userData?.user?.email || ""].role;
+        const userEmail = userData?.user?.email || "";
+        if (userEmail && Object.keys(TEST_ACCOUNTS).includes(userEmail)) {
+          effectiveRole = TEST_ACCOUNTS[userEmail].role;
 
           // Ensure profile exists
           await supabase.from("profiles").upsert({
             id: userId,
             role: effectiveRole,
-            email: userData?.user?.email,
+            email: userEmail,
             updated_at: new Date().toISOString(),
-          });
+          } as any);
         } else {
           console.warn("Error fetching user role:", error);
         }
@@ -305,7 +343,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error loading session:", error);
         } else if (data.session) {
           setSession(data.session);
-          setUser(data.session.user || null);
+          setUser(data.session.user as ExtendedUser || null);
 
           // Fetch role if we have a user
           if (data.session.user) {
@@ -319,7 +357,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { data: authListener } = supabase.auth.onAuthStateChange(
           async (event, session) => {
             setSession(session);
-            setUser(session?.user || null);
+            setUser(session?.user as ExtendedUser || null);
 
             // Fetch role on auth state change
             if (session?.user) {
@@ -385,7 +423,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             id: data.user.id,
             role,
             updated_at: new Date().toISOString(),
-          });
+          } as any);
 
           return { data, error: null };
         }
@@ -417,14 +455,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
 
           // As a last resort for development, use a mock user
+          const testRole = TEST_ACCOUNTS[email].role;
+          const sanitizedEmail = email.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
+          const mockUserId = `test-${sanitizedEmail}-id`;
           const mockUser = {
-            id: `test-${email.split("@")[0]}-id`,
+            id: mockUserId,
             email,
-            role: TEST_ACCOUNTS[email].role,
-          };
+            role: testRole,
+          } as ExtendedUser;
 
-          setUser(mockUser as ExtendedUser);
-          setUserRole(TEST_ACCOUNTS[email].role);
+          setUser(mockUser);
+          setUserRole(testRole);
+
+          // Set a cookie so middleware can detect the mock session
+          Cookies.set("test-account-session", "true", { expires: 1, path: "/" });
+          Cookies.set("mock-user-email", email, { expires: 1, path: "/" });
+          Cookies.set("mock-user-role", testRole, { expires: 1, path: "/" });
+          Cookies.set("mock-user-id", mockUserId, { expires: 1, path: "/" });
+
+          // For influencers, create/update their profile with onboarding_completed = false
+          // This ensures they see the onboarding page
+          if (testRole === "INFLUENCER") {
+            try {
+              await supabase.from("profiles").upsert({
+                id: mockUserId,
+                email: email,
+                role: testRole,
+                onboarding_completed: false,
+                business_models: [],
+                updated_at: new Date().toISOString(),
+              } as any);
+              console.log(`✅ Influencer profile created/updated for onboarding`);
+            } catch (profileError) {
+              console.error("⚠️ Could not create profile:", profileError);
+            }
+          }
+
+          console.log(`Mock user created with role: ${testRole}`);
 
           return {
             data: {
@@ -461,9 +528,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string,
     targetRole: UserRole
   ) => {
+    // Check if it's a test account first
+    const isTestAccount = Object.keys(TEST_ACCOUNTS).includes(email);
+    
     const { data, error } = await signIn(email, password);
     if (error) {
       return { data, error, hasAccess: false };
+    }
+
+    // For test accounts, verify the password and role directly
+    if (isTestAccount && TEST_ACCOUNTS[email].password === password) {
+      const accountRole = TEST_ACCOUNTS[email].role;
+      const hasAccess = accountRole === targetRole;
+      return { data, error, hasAccess };
     }
 
     const hasAccess = await hasRoleAccess(targetRole);
@@ -477,6 +554,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (tempRole) return tempRole;
 
     if (!user) return null;
+    
+    // Check if it's a test account by email
+    if (user.email && Object.keys(TEST_ACCOUNTS).includes(user.email)) {
+      const testRole = TEST_ACCOUNTS[user.email].role;
+      // Update the role state if it's not already set correctly
+      if (userRole !== testRole) {
+        setUserRole(testRole);
+      }
+      return testRole;
+    }
+    
     if (userRole) return userRole;
     return await fetchUserRole(user.id);
   };
@@ -692,6 +780,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Clear role impersonation cookies
       Cookies.remove("temp_role", { path: "/" });
       Cookies.remove("original_role", { path: "/" });
+
+      // Clear mock session cookies
+      Cookies.remove("test-account-session", { path: "/" });
+      Cookies.remove("mock-user-email", { path: "/" });
+      Cookies.remove("mock-user-role", { path: "/" });
+      Cookies.remove("mock-user-id", { path: "/" });
 
       // Also clear dev bypass cookie
       Cookies.remove("dashboard-dev-bypass", { path: "/" });

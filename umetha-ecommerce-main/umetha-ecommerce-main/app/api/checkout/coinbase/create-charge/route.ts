@@ -8,6 +8,105 @@ export const runtime = 'nodejs';
 let cachedClient: CdpClient | null = null;
 let merchantAddressPromise: Promise<string> | null = null;
 
+function isPemPrivateKey(key?: string | null) {
+  if (!key) return false;
+  const trimmed = key.trim();
+  return trimmed.includes('BEGIN') && trimmed.includes('PRIVATE KEY');
+}
+
+function isLikelyBase64(str?: string | null) {
+  if (!str) return false;
+  const s = str.trim();
+  // Base64 strings typically contain A–Z, a–z, 0–9, +, / and may end with =
+  // We allow newlines/spaces which may appear depending on how it was copied.
+  const cleaned = s.replace(/\s+/g, '');
+  // Do not enforce a strict minimum length; Ed25519 private keys from CDP
+  // are commonly ~43–44 chars when Base64-encoded (32 bytes). Some formats
+  // may be longer. Let the SDK perform strict validation.
+  return /^[A-Za-z0-9+/]+={0,2}$/.test(cleaned);
+}
+
+function isValidBase64Ed25519PrivateKey(str?: string | null) {
+  if (!str) return false;
+  const cleaned = str.trim().replace(/\s+/g, '');
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleaned)) return false;
+  try {
+    const bytes = Buffer.from(cleaned, 'base64');
+    // Accept 32-byte seeds or 64-byte expanded keys
+    return bytes.length === 32 || bytes.length === 64;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeNewlines(str?: string | null) {
+  if (!str) return str ?? undefined;
+  // Convert literal "\n" into actual newlines; trim but keep PEM boundaries.
+  return str.replace(/\\n/g, '\n').trim();
+}
+
+function extractApiKeyId(idRaw?: string | null) {
+  if (!idRaw) return undefined;
+  const id = idRaw.trim();
+  // Accept either bare UUID or a path like "organizations/<orgId>/apiKeys/<keyId>"
+  const pathMatch = id.match(/apiKeys\/(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})$/);
+  if (pathMatch) return pathMatch[1];
+  return id;
+}
+
+function isPrivateIp(ip?: string | null) {
+  if (!ip) return false;
+  const value = ip.trim().toLowerCase();
+  // IPv6 private/loopback/link-local ranges
+  if (value.includes(':')) {
+    return (
+      value === '::1' || // loopback
+      value.startsWith('fc') || // unique local (fc00::/7)
+      value.startsWith('fd') || // unique local (fd00::/8)
+      value.startsWith('fe80') // link-local (fe80::/10)
+    );
+  }
+  // IPv4 private ranges
+  const parts = value.split('.').map((p) => parseInt(p, 10));
+  if (parts.length !== 4 || parts.some((n) => Number.isNaN(n))) return false;
+  const [a, b] = parts;
+  return (
+    a === 10 || // 10.0.0.0/8
+    a === 127 || // 127.0.0.0/8 loopback
+    (a === 192 && b === 168) || // 192.168.0.0/16
+    (a === 169 && b === 254) || // 169.254.0.0/16 link-local
+    (a === 172 && b >= 16 && b <= 31) || // 172.16.0.0/12
+    (a === 100 && b >= 64 && b <= 127) || // 100.64.0.0/10 CGNAT
+    a === 0 // 0.0.0.0/8
+  );
+}
+
+function extractPublicClientIp(req: NextRequest) {
+  const header =
+    req.headers.get('x-forwarded-for') ||
+    req.headers.get('x-real-ip') ||
+    req.headers.get('cf-connecting-ip') ||
+    undefined;
+  const candidate = header?.split(',')[0]?.trim();
+  if (candidate && isPrivateIp(candidate)) {
+    console.warn('Client IP appears to be private. Omitting clientIp from onramp session payload:', candidate);
+    return undefined;
+  }
+  return candidate || undefined;
+}
+
+function getValidWalletSecret() {
+  const secret = process.env.CDP_WALLET_SECRET;
+  if (!secret) return undefined;
+  // Accept PEM EC or base64 Ed25519 formats; otherwise ignore to avoid auth errors
+  const normalized = normalizeNewlines(secret);
+  if (isPemPrivateKey(normalized) || isLikelyBase64(normalized)) {
+    return normalized;
+  }
+  console.warn('CDP_WALLET_SECRET is present but not in a valid PEM or base64 format. It will be ignored.');
+  return undefined;
+}
+
 function ensureCdpEnv() {
   const required = ['CDP_API_KEY_ID', 'CDP_API_KEY_SECRET'];
   const missing = required.filter((key) => !process.env[key]);
@@ -24,9 +123,8 @@ function getCdpClient() {
   if (!cachedClient) {
     try {
       cachedClient = new CdpClient({
-        apiKeyId: process.env.CDP_API_KEY_ID,
-        apiKeySecret: process.env.CDP_API_KEY_SECRET,
-        walletSecret: process.env.CDP_WALLET_SECRET,
+        apiKeyId: extractApiKeyId(process.env.CDP_API_KEY_ID),
+        apiKeySecret: normalizeNewlines(process.env.CDP_API_KEY_SECRET),
       });
     } catch (error) {
       cachedClient = null;
@@ -122,12 +220,9 @@ export async function POST(req: NextRequest) {
     })();
     const paymentAmount = total.toFixed(2);
 
-    const clientIpHeader =
-      req.headers.get('x-forwarded-for') ||
-      req.headers.get('x-real-ip') ||
-      req.headers.get('cf-connecting-ip') ||
-      undefined;
-    const clientIp = clientIpHeader?.split(',')[0]?.trim();
+    // Prefer a client-provided public IP if available; otherwise use headers.
+    const providedIp = typeof body?.clientIp === 'string' ? body.clientIp : undefined;
+    const clientIp = (providedIp && !isPrivateIp(providedIp) ? providedIp : undefined) || extractPublicClientIp(req);
 
     const apiHost = process.env.CDP_API_HOST || 'api.cdp.coinbase.com';
     const basePath = process.env.CDP_API_BASE_PATH || '/platform';
@@ -144,10 +239,23 @@ export async function POST(req: NextRequest) {
       clientIp,
     };
 
+    // Validate API key secret format to provide actionable error early
+    const apiKeySecret = normalizeNewlines(process.env.CDP_API_KEY_SECRET!)!;
+    if (!isPemPrivateKey(apiKeySecret) && !isValidBase64Ed25519PrivateKey(apiKeySecret)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid CDP_API_KEY_SECRET format. Provide either a PEM EC private key (multi-line) or a base64 Ed25519 private key from the CDP portal.',
+          hint:
+            'In CDP Access → API Keys, create a key with Ed25519 to get a base64 private key (recommended), or ECDSA to get a PEM. Do not use Coinbase Commerce keys.',
+        },
+        { status: 400 }
+      );
+    }
+
     const authHeaders = await getAuthHeaders({
-      apiKeyId: process.env.CDP_API_KEY_ID!,
-      apiKeySecret: process.env.CDP_API_KEY_SECRET!,
-      walletSecret: process.env.CDP_WALLET_SECRET,
+      apiKeyId: extractApiKeyId(process.env.CDP_API_KEY_ID!)!,
+      apiKeySecret,
       requestMethod: 'POST',
       requestHost: apiHost,
       requestPath: endpointPath,
@@ -171,14 +279,62 @@ export async function POST(req: NextRequest) {
       } catch {
         errorDetails = await sessionResponse.text();
       }
+
+      // Provide actionable guidance based on common failure statuses
+      let hint = '';
+      switch (sessionResponse.status) {
+        case 401:
+          hint = [
+            'Unauthorized: Verify CDP API credentials.',
+            'Ensure CDP_API_KEY_ID is the API Key ID from the CDP portal.',
+            'Ensure CDP_API_KEY_SECRET is the base64-encoded private key (Ed25519) from the CDP portal.',
+            'Do not use Coinbase Commerce keys; this integration uses Coinbase Developer Platform (CDP).',
+          ].join(' ');
+          break;
+        case 403:
+          hint = [
+            'Forbidden: Check domain allowlist and app permissions in CDP portal.',
+            'NEXT_PUBLIC_BASE_URL must match an allowed domain for redirects.',
+          ].join(' ');
+          break;
+        case 422:
+          hint = [
+            'Unprocessable Entity: Validate request parameters.',
+            'Check purchaseCurrency (e.g., USDC), destinationNetwork (e.g., base), and redirectUrl.',
+          ].join(' ');
+          break;
+        case 400:
+          // Often returned for missing/invalid client IP in development
+          hint = [
+            'Bad Request: Ensure a public client IP is provided.',
+            'Send clientIp from the frontend (use https://api64.ipify.org?format=json) or configure your proxy to set X-Forwarded-For.',
+          ].join(' ');
+          break;
+        default:
+          hint = 'Unexpected error: Review environment variables and request payload.';
+      }
+
+      // Add a targeted hint if CDP reports private IP usage
+      try {
+        const msg = String((errorDetails as any)?.errorMessage || '')
+          .toLowerCase();
+        if (msg.includes('private ip')) {
+          hint = [
+            'Client IP is private: omit clientIp or forward the public IP.',
+            'When running locally, do not set clientIp; behind proxies ensure X-Forwarded-For contains a public address.',
+          ].join(' ');
+        }
+      } catch {}
+
       console.error('Coinbase onramp session error:', {
         status: sessionResponse.status,
         statusText: sessionResponse.statusText,
         endpoint: apiUrl,
         details: errorDetails,
+        hint,
       });
       return NextResponse.json(
-        { error: 'Failed to initialise Coinbase onramp session', details: errorDetails },
+        { error: 'Failed to initialise Coinbase onramp session', details: errorDetails, hint },
         { status: sessionResponse.status }
       );
     }

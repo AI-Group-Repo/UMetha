@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Home,
   LayoutDashboard,
@@ -41,12 +41,24 @@ import {
   Shield,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Removed the sidebar logic from DashboardLayout to avoid duplication
 // The sidebar in AdminLayout will be retained for the admin dashboard
-export default function DashboardLayout({ children }) {
+type DashboardLayoutProps = {
+  children: ReactNode;
+};
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { user, userRole, isLoading } = useAuth();
+  const router = useRouter();
+  const { user, userRole, isLoading, signOut } = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,14 +88,32 @@ export default function DashboardLayout({ children }) {
                 <HelpCircle className="h-5 w-5" />
               </button>
               <div className="border-l border-gray-200 dark:border-gray-800 h-6 mx-2"></div>
-              <div className="flex items-center">
-                <span className="text-sm font-medium mr-2 hidden sm:block">
-                  {user?.email}
-                </span>
-                <div className="h-8 w-8 rounded-full bg-indigo-600 dark:bg-indigo-800 flex items-center justify-center text-white">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </div>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-full">
+                    <span className="text-sm font-medium mr-2 hidden sm:block">
+                      {user?.email}
+                    </span>
+                    <div className="h-8 w-8 rounded-full bg-indigo-600 dark:bg-indigo-800 flex items-center justify-center text-white">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">
+                    Signed in as {user?.email}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await signOut?.();
+                      router.push("/signup");
+                    }}
+                    className="text-sm font-medium text-red-600 focus:text-red-600"
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>

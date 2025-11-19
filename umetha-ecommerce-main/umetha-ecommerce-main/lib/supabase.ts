@@ -1,32 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/types/supabase";
+import { getSupabaseBrowserClient } from "./supabaseClient";
 
-// Use the createClient constructor with explicit options to avoid URL validation errors
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://zgdwrrsqjdlxfwjqamxk.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnZHdycnNxamRseGZ3anFhbXhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MzkzNDUsImV4cCI6MjA3NjAxNTM0NX0._4EEFOEIJ6vZMc0aGbgXfmmVi-WedTX6HpTDW4dLeOs";
-
-if (
-  process.env.NODE_ENV !== "development" &&
-  (!supabaseUrl || !supabaseAnonKey)
-) {
-  console.error(
-    "Missing Supabase environment variables. Authentication will not work correctly."
-  );
-}
-
-// Using the createClient method with options object instead of direct URL parameter
-// This avoids the URL constructor validation
-export const supabase = createClient<Database>(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-    },
-  }
-);
+export const supabase = getSupabaseBrowserClient();
 
 // Auth helper functions
 export const auth = {
@@ -223,13 +197,16 @@ export const db = {
 
   // Generic CRUD operations
   create: async (table: string, data: any) => {
-    return await supabase.from(table).insert(data).select();
+    const client = supabase as any;
+    return await client.from(table).insert(data).select();
   },
   update: async (table: string, id: string, data: any, idField = "products_id") => {
-    return await supabase.from(table).update(data).eq(idField, id).select();
+    const client = supabase as any;
+    return await client.from(table).update(data).eq(idField, id).select();
   },
   delete: async (table: string, id: string, idField = "products_ id") => {
-    return await supabase.from(table).delete().eq(idField, id);
+    const client = supabase as any;
+    return await client.from(table).delete().eq(idField, id);
   },
 };
 

@@ -51,6 +51,15 @@ const TEST_ACCOUNTS = {
   admin: { email: "admin@umetha.com", password: "admin123" },
   seller: { email: "seller@umetha.com", password: "seller123" },
   influencer: { email: "influencer@umetha.com", password: "influencer123" },
+influencer2: { email: "influencer@umetha2.com", password: "influencer123" },
+influencer3: { email: "influencer@umetha3.com", password: "influencer123" },
+influencer4: { email: "influencer@umetha4.com", password: "influencer123" },
+influencer5: { email: "influencer@umetha5.com", password: "influencer123" },
+influencer6: { email: "influencer@umetha6.com", password: "influencer123" },
+influencer7: { email: "influencer@umetha7.com", password: "influencer123" },
+influencer8: { email: "influencer@umetha8.com", password: "influencer123" },
+influencer9: { email: "influencer@umetha9.com", password: "influencer123" },
+influencer10: { email: "influencer@umetha10.com", password: "influencer123" },
 };
 
 const DashboardSignInPage = () => {
@@ -60,7 +69,7 @@ const DashboardSignInPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeRole, setActiveRole] = useState<
-    "admin" | "seller" | "influencer"
+    "admin" | "seller" | "influencer" | "influencer2" | "influencer3"
   >("admin");
   const [showSignInDialog, setShowSignInDialog] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState("");
