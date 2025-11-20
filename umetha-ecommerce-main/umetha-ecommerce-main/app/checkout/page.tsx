@@ -470,6 +470,18 @@ export default function CheckoutPage() {
           // Process Coinbase payment
           try {
             setIsProcessing(true);
+            // Obtain public client IP to satisfy CDP compliance in development
+            const getClientIp = async (): Promise<string | undefined> => {
+              try {
+                const res = await fetch('https://api64.ipify.org?format=json');
+                const data = await res.json();
+                const ip = typeof data?.ip === 'string' ? data.ip : undefined;
+                return ip;
+              } catch {
+                return undefined;
+              }
+            };
+            const clientIp = await getClientIp();
             
             // Create Coinbase charge (similar to PayPal flow)
             const createSessionResponse = await fetch('/api/checkout/coinbase/create-charge', {
@@ -496,6 +508,8 @@ export default function CheckoutPage() {
                   shipping_cost: shippingCost,
                   tax: tax,
                 },
+                // Include client public IP if available; backend will validate
+                clientIp,
               }),
             });
 

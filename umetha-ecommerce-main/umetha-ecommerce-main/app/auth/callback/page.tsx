@@ -20,6 +20,31 @@ export default function AuthCallbackPage() {
         }
 
         if (data?.session) {
+          // Ensure profile exists for OAuth users
+          const user = data.session.user;
+          
+          // Check if profile exists
+          const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+
+          // Create profile if it doesn't exist
+          if (!profile || profileError) {
+            await supabase.from("profiles").upsert({
+              id: user.id,
+              email: user.email,
+              role: "USER",
+              full_name: user.user_metadata?.full_name || user.user_metadata?.name || "",
+              first_name: user.user_metadata?.given_name || "",
+              last_name: user.user_metadata?.family_name || "",
+              avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || "",
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            });
+          }
+
           toast({
             title: t("authentication_successful"),
             description: "Welcome to UMetha!",

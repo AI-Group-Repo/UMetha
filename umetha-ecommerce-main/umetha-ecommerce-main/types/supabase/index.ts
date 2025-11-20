@@ -281,6 +281,105 @@ export interface Database {
           total_price?: number;
         };
       };
+      profiles: {
+        Row: {
+          id: string;
+          email: string | null;
+          full_name: string | null;
+          username: string | null;
+          avatar_url: string | null;
+          role: string | null;
+          onboarding_completed: boolean | null;
+          business_models: string[] | null;
+          created_at: string | null;
+          updated_at: string | null;
+          last_seen_at: string | null;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          full_name?: string | null;
+          username?: string | null;
+          avatar_url?: string | null;
+          role?: string | null;
+          onboarding_completed?: boolean | null;
+          business_models?: string[] | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          last_seen_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          full_name?: string | null;
+          username?: string | null;
+          avatar_url?: string | null;
+          role?: string | null;
+          onboarding_completed?: boolean | null;
+          business_models?: string[] | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          last_seen_at?: string | null;
+        };
+      };
+      conversations: {
+        Row: {
+          id: string;
+          buyer_id: string | null;
+          influencer_id: string | null;
+          last_message: string | null;
+          last_message_time: string | null;
+          unread_buyer: number | null;
+          unread_influencer: number | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          buyer_id?: string | null;
+          influencer_id?: string | null;
+          last_message?: string | null;
+          last_message_time?: string | null;
+          unread_buyer?: number | null;
+          unread_influencer?: number | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          buyer_id?: string | null;
+          influencer_id?: string | null;
+          last_message?: string | null;
+          last_message_time?: string | null;
+          unread_buyer?: number | null;
+          unread_influencer?: number | null;
+          created_at?: string | null;
+        };
+      };
+      messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          sender_id: string;
+          text: string | null;
+          image_url: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          sender_id: string;
+          text?: string | null;
+          image_url?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          conversation_id?: string;
+          sender_id?: string;
+          text?: string | null;
+          image_url?: string | null;
+          created_at?: string | null;
+        };
+      };
       payments: {
         Row: {
           payment_id: number;
