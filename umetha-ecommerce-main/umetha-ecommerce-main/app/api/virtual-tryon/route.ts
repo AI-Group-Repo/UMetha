@@ -4,8 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 
 // Google Gemini API key (using user's provided key as dev fallback)
 const GOOGLE_GENERATIVE_AI_API_KEY =
-  process.env.nanoBananaApiKey ||
-  "AIzaSyAlDFVyERRgGemp3hMLjPRuch3Q7-Z8BDM";
+  process.env.nanoBananaApiKey
 const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
 export async function POST(request: NextRequest) {
