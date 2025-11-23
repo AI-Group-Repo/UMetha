@@ -4,7 +4,7 @@ import axios from "axios";
 import { GoogleGenAI, Modality } from "@google/genai";
 // Environment variables for API keys
 const FURNITURE_NANO_BANANA_API_KEY = process.env.nanoBananaApiKey || "AIzaSyAlDFVyERRgGemp3hMLjPRuch3Q7-Z8BDM";
-const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
+//const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 const api = new GoogleGenAI({ apiKey: FURNITURE_NANO_BANANA_API_KEY });
 export async function POST(request: NextRequest) {
   try {

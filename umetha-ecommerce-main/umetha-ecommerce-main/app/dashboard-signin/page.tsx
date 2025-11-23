@@ -76,7 +76,7 @@ const DashboardSignInPage = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const forceSignIn = searchParams?.get("force") === "true";
+  const {forceSignIn} = searchParams?.get("force") === "true";
 
   const {
     user,

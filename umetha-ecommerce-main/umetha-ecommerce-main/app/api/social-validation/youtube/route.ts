@@ -1,49 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const API_KEY = process.env.RAPIDAPI_KEY!;
+const API_HOST = 'youtube138.p.rapidapi.com';
+
 export async function POST(request: NextRequest) {
   try {
     const { username } = await request.json();
 
     if (!username) {
-      return NextResponse.json(
-        { error: 'Username is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Username is required' }, { status: 400 });
     }
 
-    // Clean username (remove @ symbol if present)
-    const cleanUsername = username.replace('@', '').trim();
+    // Accept username or full YouTube URL
+    const cleanInput = username.replace('@', '').trim();
 
-    if (!cleanUsername) {
-      return NextResponse.json(
-        { error: 'Invalid username format' },
-        { status: 400 }
-      );
+    // Extract channel query from URL or handle
+    const query = extractYouTubeQuery(cleanInput);
+
+    if (!query) {
+      return NextResponse.json({ error: 'Invalid YouTube username/URL' }, { status: 400 });
     }
 
-    const isValidUsername = await validateYouTubeUsername(cleanUsername);
-    
-    if (!isValidUsername.exists) {
+    // 🔹 YouTube (RapidAPI) Search Endpoint
+    const url = `https://${API_HOST}/channel/search/?id=UCJ5v_MCY6GNUBTO8-D3XoAg&q=${encodeURIComponent(
+      query
+    )}&hl=en&gl=US`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': API_KEY,
+        'X-RapidAPI-Host': API_HOST,
+      },
+    });
+
+    const data = await response.json();
+
+    // If the response is bad or empty
+    if (!response.ok || !data || !data.contents || data.contents.length === 0) {
       return NextResponse.json(
-        { 
+        {
+          exists: false,
           error: 'Channel not found',
-          message: `@${cleanUsername} does not exist on YouTube. Please check the channel name and try again.`
+          message: `YouTube channel "${query}" could not be found.`,
         },
         { status: 404 }
       );
     }
 
+    // Preferred objects (channel or author)
+    const channelData =
+      data.contents[0]?.channel ||
+      data.contents[0]?.video?.author ||
+      null;
+
+    if (!channelData) {
+      return NextResponse.json(
+        {
+          exists: false,
+          error: 'No valid channel returned',
+          message: `No valid YouTube channel found for "${query}".`,
+        },
+        { status: 404 }
+      );
+    }
+
+    const subscribersRaw =
+      channelData.stats?.subscribersText ||
+      channelData.subscriberCountText ||
+      '';
+
+    const subscribers = parseSubscriberCount(subscribersRaw);
+
     return NextResponse.json({
-      username: cleanUsername,
       platform: 'youtube',
       exists: true,
-      subscribers: isValidUsername.subscribers,
-      verified: isValidUsername.verified || false,
-      channel_name: isValidUsername.channel_name || cleanUsername,
-      profile_pic: isValidUsername.profile_pic || null,
-      description: isValidUsername.description || null
+      username: query,
+      channel_name: channelData.title || query,
+      verified: Array.isArray(channelData.badges)
+        ? channelData.badges.some((b: any) => b.text?.toLowerCase().includes('verified'))
+        : false,
+      subscribers,
+      // No profile image needed for your frontend
+      link: channelData.channelId
+        ? `https://www.youtube.com/channel/${channelData.channelId}`
+        : `https://www.youtube.com/@${query}`,
     });
-
   } catch (error) {
     console.error('YouTube validation error:', error);
     return NextResponse.json(
@@ -53,65 +95,58 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Simulated YouTube validation function
-async function validateYouTubeUsername(username: string) {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1200));
+/* ---------------------------------------------------------------------- */
+/* 🔧 Helper: Clean input (username, URL, or handle → "channelName")      */
+/* ---------------------------------------------------------------------- */
+function extractYouTubeQuery(input: string): string | null {
+  try {
+    if (input.includes('youtube.com') || input.includes('youtu.be')) {
+      const url = new URL(
+        input.startsWith('http') ? input : 'https://' + input
+      );
 
-  // Mock validation logic - in production, use real YouTube API
-  const mockChannels = {
-    'sophiastyleofficial': {
-      exists: true,
-      subscribers: 850000,
-      verified: true,
-      channel_name: 'Sophia Style Official',
-      profile_pic: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-      description: 'Fashion and lifestyle content'
-    },
-    'michellifestyle': {
-      exists: true,
-      subscribers: 320000,
-      verified: false,
-      channel_name: 'Michael Lifestyle',
-      profile_pic: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
-      description: 'Lifestyle and travel vlogs'
-    },
-    'emmabeauty': {
-      exists: true,
-      subscribers: 1200000,
-      verified: true,
-      channel_name: 'Emma Beauty',
-      profile_pic: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04',
-      description: 'Beauty tutorials and reviews'
-    },
-    'testchannel': {
-      exists: true,
-      subscribers: 25000,
-      verified: false,
-      channel_name: 'Test Channel',
-      profile_pic: null,
-      description: 'Test channel for demo'
+      // Handle @username URL
+      if (url.pathname.startsWith('/@')) {
+        return url.pathname.replace('/@', '').trim();
+      }
+
+      // Example: /channel/UC12345
+      if (url.pathname.includes('/channel/')) {
+        return url.pathname.split('/channel/')[1];
+      }
+
+      // Example: /c/SomeCustomName
+      if (url.pathname.includes('/c/')) {
+        return url.pathname.split('/c/')[1];
+      }
+
+      // Example: /user/SomeUser
+      if (url.pathname.includes('/user/')) {
+        return url.pathname.split('/user/')[1];
+      }
     }
-  };
 
-  // Check if username exists in mock data
-  if (mockChannels[username.toLowerCase() as keyof typeof mockChannels]) {
-    return mockChannels[username.toLowerCase() as keyof typeof mockChannels];
+    // Otherwise treat as username
+    return input.trim();
+  } catch {
+    return input.trim();
   }
+}
 
-  // For demo purposes, randomly determine if channel exists
-  const randomExists = Math.random() > 0.4; // 60% chance of existing
-  
-  if (randomExists) {
-    return {
-      exists: true,
-      subscribers: Math.floor(Math.random() * 2000000) + 1000,
-      verified: Math.random() > 0.8,
-      channel_name: username,
-      profile_pic: null,
-      description: null
-    };
-  }
+/* ---------------------------------------------------------------------- */
+/* 🔧 Helper: Convert "1.2M subscribers" → 1200000                        */
+/* ---------------------------------------------------------------------- */
+function parseSubscriberCount(text: string): number {
+  if (!text) return 0;
 
-  return { exists: false };
+  const match = text.match(/([\d.]+)\s*([MK]?)/i);
+  if (!match) return 0;
+
+  const value = parseFloat(match[1]);
+  const unit = match[2]?.toUpperCase();
+
+  if (unit === 'M') return Math.round(value * 1_000_000);
+  if (unit === 'K') return Math.round(value * 1_000);
+
+  return Math.round(value);
 }
