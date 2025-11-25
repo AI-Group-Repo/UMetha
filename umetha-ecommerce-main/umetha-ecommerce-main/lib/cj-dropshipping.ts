@@ -1,5 +1,7 @@
 import axios from "axios";
 import { supabase } from "./supabase";
+import { getSupabaseServiceRoleClient } from "./supabaseClient";
+import type { TablesInsert } from "@/types/supabase";
 import Email from "next-auth/providers/email";
 
 // CJ Dropshipping API configuration
@@ -260,18 +262,134 @@ export async function saveCJProductsToSupabase(products: CJProduct[]): Promise<b
     return false;
   }
 
-  console.log("⚠️ Database save skipped - using localStorage for demo accounts");
-  console.log(`ℹ️ ${products.length} products available for approval`);
-  return true;
+  try {
+    // Use service-role client to bypass RLS for backend ingestion
+    const admin = getSupabaseServiceRoleClient();
 
-  // TODO: Implement proper Supabase save with correct schema
-  // Your schema uses: supplier_id (int foreign key to suppliers table)
-  // Not: supplier (text field)
-  // 
-  // To enable database save:
-  // 1. Create a supplier in suppliers table for "CJ Dropshipping"
-  // 2. Get the supplier_id
-  // 3. Update the mapping below to use supplier_id instead of supplier
+    // Pick correct category table name (try "Category" then fallback to "category")
+    let categoryTable = "Category";
+    const probe = await admin.from(categoryTable).select("categoryId").limit(1);
+    if (probe.error) {
+      categoryTable = "category";
+    }
+
+    // Resolve categoryIds (int8 FK) from CJ categoryName strings
+    const uniqueCategoryNames = Array.from(
+      new Set(products.map((p) => (p.categoryName || "").trim()).filter(Boolean))
+    );
+
+    const categoryNameToId: Record<string, number> = {};
+
+    if (uniqueCategoryNames.length > 0) {
+      // 1) Fetch existing categories by name
+      const { data: existingCats, error: fetchCatError } = await admin
+        .from(categoryTable)
+        .select("*")
+        .in("categoryName", uniqueCategoryNames);
+
+      if (fetchCatError) {
+        console.warn("⚠️ Could not read categories, will attempt insert anyway:", fetchCatError.message);
+      } else if (Array.isArray(existingCats)) {
+        for (const row of existingCats as any[]) {
+          const idCandidate =
+            typeof row.id === "number"
+              ? row.id
+              : typeof row.category_id === "number"
+              ? row.category_id
+              : typeof row.categoryId === "number"
+              ? row.categoryId
+              : undefined;
+          if (idCandidate) {
+            categoryNameToId[row.categoryName] = idCandidate;
+          }
+        }
+      }
+
+      // 2) Insert any missing category names
+      const missingNames = uniqueCategoryNames.filter((n) => categoryNameToId[n] === undefined);
+      if (missingNames.length > 0) {
+        const payload = missingNames.map((name) => ({
+          // minimal payload; adjust if your schema requires more
+          categoryName: name,
+        }));
+
+        const { error: insertCatError } = await admin.from(categoryTable).insert(payload);
+        if (insertCatError) {
+          console.warn("⚠️ Category insert failed (will proceed without linking):", insertCatError.message);
+        } else {
+          // Re-fetch to get numeric IDs
+          const { data: afterInsertCats } = await admin
+            .from(categoryTable)
+            .select("*")
+            .in("categoryName", missingNames);
+          if (Array.isArray(afterInsertCats)) {
+            for (const row of afterInsertCats as any[]) {
+              const idCandidate =
+                typeof row.id === "number"
+                  ? row.id
+                  : typeof row.category_id === "number"
+                  ? row.category_id
+                  : typeof row.categoryId === "number"
+                  ? row.categoryId
+                  : undefined;
+              if (idCandidate) {
+                categoryNameToId[row.categoryName] = idCandidate;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Map CJ products -> your products table schema
+    // products_id is required in your types; derive a numeric ID from CJ pid safely
+    const mapped = products.map((p) => {
+      const numericId = (() => {
+        const digits = (p.pid || "").replace(/\D/g, "");
+        if (digits) return Number(digits.slice(-9)); // keep it within int range
+        // fallback: simple hash to number
+        let hash = 0;
+        for (let i = 0; i < (p.pid || "").length; i++) {
+          hash = (hash * 31 + (p.pid.charCodeAt(i) || 0)) >>> 0;
+        }
+        return hash % 1000000000;
+      })();
+
+      const categoryId =
+        categoryNameToId[(p.categoryName || "").trim()] ?? null;
+
+      return {
+        products_id: numericId,
+        name: p.productNameEn,
+        Category: p.categoryName ?? null,
+        sku: p.productSku ?? null,
+        price: Number(p.sellPrice) || 0,
+        productWeight: null,
+        date_created: new Date().toISOString(),
+        Url: p.productImage ?? null,
+        categoryId,
+        stock: 10,
+        productType: "dropshipping",
+        productUnit: "unit",
+      };
+    });
+
+    // Upsert to avoid duplicates on products_id
+    const { error } = await admin
+      .from("products")
+      .upsert(mapped as TablesInsert<"products">[], { onConflict: "products_id" });
+
+    if (error) {
+      console.error("❌ Failed to save CJ products to Supabase:", error);
+      return false;
+    }
+
+    console.log(`✅ Saved ${mapped.length} CJ products to Supabase`);
+    return true;
+  } catch (error: any) {
+    console.error("❌ Error saving CJ products:", error.message);
+    return false;
+  }
 }
 
 /**

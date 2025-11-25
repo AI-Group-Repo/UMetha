@@ -213,6 +213,7 @@ const SignUpPage = () => {
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <Lock className="h-5 w-5 text-indigo-400" />
                   </div>
+                  {/*Password Input*/}
                   <Input
                     type={passwordVisible ? "text" : "password"}
                     placeholder="Create Password"

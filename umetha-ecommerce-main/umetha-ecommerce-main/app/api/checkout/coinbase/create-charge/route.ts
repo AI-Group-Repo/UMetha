@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { CdpClient } from '@coinbase/cdp-sdk';
 import { getAuthHeaders } from '@coinbase/cdp-sdk/auth';
+import { getBaseUrl } from '@/lib/get-base-url';
 
 export const runtime = 'nodejs';
 
@@ -206,7 +207,7 @@ export async function POST(req: NextRequest) {
 
     const purchaseCurrency = process.env.CDP_PURCHASE_CURRENCY || 'USDC';
     const destinationNetwork = process.env.CDP_ONRAMP_NETWORK || 'base';
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const baseUrl = getBaseUrl(req);
     const referenceId = randomUUID();
     const redirectUrl = (() => {
       try {

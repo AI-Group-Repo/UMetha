@@ -46,41 +46,27 @@ export const db = {
     return await supabase
       .from("products")
       .select("*")
-      .eq("products_id", productId)
+      .eq("products_id", isNaN(Number(productId)) ? productId : Number(productId))
       .single();
   },
   searchProducts: async (query: string, language = "en") => {
-    // Enhanced search with fuzzy matching for the actual database schema
-    const searchPatterns = [];
-    
-    // Exact match patterns
-    searchPatterns.push(`name.ilike.%${query}%`);
-    if (query.length > 0) {
-      searchPatterns.push(`description.ilike.%${query}%`);
+    // Search on fields that exist in the new schema
+    const trimmed = query.trim();
+    if (!trimmed) {
+      return await supabase.from("products").select("*").order("name", { ascending: true }).limit(20);
     }
-    
-    // Multi-word patterns
-    const words = query.split(' ').filter(word => word.length > 0);
-    words.forEach(word => {
-      searchPatterns.push(`name.ilike.%${word}%`);
-      if (word.length > 0) {
-        searchPatterns.push(`description.ilike.%${word}%`);
-      }
-    });
-    
-    // 2+ consecutive letter patterns for better fuzzy matching
-    if (query.length >= 2) {
-      for (let i = 0; i <= query.length - 2; i++) {
-        const substring = query.substring(i, i + 2);
-        searchPatterns.push(`name.ilike.%${substring}%`);
-        searchPatterns.push(`description.ilike.%${substring}%`);
-      }
+
+    // Build a simple OR pattern on name (and SKU if present)
+    const patterns: string[] = [`name.ilike.%${trimmed}%`];
+    const words = trimmed.split(" ").filter(Boolean);
+    for (const word of words) {
+      patterns.push(`name.ilike.%${word}%`);
     }
-    
+
     return await supabase
       .from("products")
       .select("*")
-      .or(searchPatterns.join(','))
+      .or(patterns.join(","))
       .order("name", { ascending: true });
   },
   searchProductsAdvanced: async (params: {
@@ -106,44 +92,23 @@ export const db = {
       offset = 0
     } = params;
 
-    let queryBuilder = supabase
-      .from("products")
-      .select("*");
+    let queryBuilder = supabase.from("products").select("*");
 
     // Text search with fuzzy matching - at least 2 consecutive letters
     if (query) {
-      const searchPatterns = [];
-      
-      // Exact match patterns
-      searchPatterns.push(`name.ilike.%${query}%`);
-      if (query.length > 0) {
-        searchPatterns.push(`description.ilike.%${query}%`);
-      }
-      
-      // Multi-word patterns
-      const words = query.split(' ').filter(word => word.length > 0);
-      words.forEach(word => {
+      const trimmed = query.trim();
+      const searchPatterns: string[] = [`name.ilike.%${trimmed}%`];
+      const words = trimmed.split(" ").filter(Boolean);
+      for (const word of words) {
         searchPatterns.push(`name.ilike.%${word}%`);
-        if (word.length > 0) {
-          searchPatterns.push(`description.ilike.%${word}%`);
-        }
-      });
-      
-      // 2+ consecutive letter patterns for better fuzzy matching
-      if (query.length >= 2) {
-        for (let i = 0; i <= query.length - 2; i++) {
-          const substring = query.substring(i, i + 2);
-          searchPatterns.push(`name.ilike.%${substring}%`);
-          searchPatterns.push(`description.ilike.%${substring}%`);
-        }
       }
-      
-      queryBuilder = queryBuilder.or(searchPatterns.join(','));
+      queryBuilder = queryBuilder.or(searchPatterns.join(","));
     }
 
     // Category filter
     if (Category) {
-      queryBuilder = queryBuilder.eq("Category", Category);
+      // New schema uses Category (capitalized) and categoryId for mapping; try both
+      queryBuilder = queryBuilder.or(`Category.ilike.%${Category}%,categoryId.ilike.%${Category}%`);
     }
 
     // Price range filter
@@ -155,9 +120,8 @@ export const db = {
     }
 
     // Sorting
-    const sortField = sortBy === "price" ? "price" : 
-                     sortBy === "date_created" ? "date_created" : 
-                     "name";
+    const sortField =
+      sortBy === "price" ? "price" : sortBy === "date_created" ? "date_created" : "name";
     queryBuilder = queryBuilder.order(sortField, { ascending: order === "asc" });
 
     // Pagination
@@ -170,15 +134,7 @@ export const db = {
     // For now, we'll return a placeholder implementation
     return await supabase
       .from("products")
-      .select(`
-        *,
-        product_translations!inner(
-          name,
-          description,
-          language
-        )
-      `)
-      .eq("product_translations.language", language)
+      .select(`*`)
       .limit(10);
   },
 

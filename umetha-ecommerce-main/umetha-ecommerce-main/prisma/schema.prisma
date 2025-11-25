@@ -29,7 +29,6 @@ model Product {
   price             Float
   images            String[]
   category          Category  @relation(fields: [categoryId], references: [id])
-  categoryId        String
   stock             Int
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
