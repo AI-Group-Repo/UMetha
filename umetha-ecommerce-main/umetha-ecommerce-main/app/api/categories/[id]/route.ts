@@ -135,10 +135,11 @@ export async function PATCH(
       }
 
       // Check if the new parent is not a child of this category (to avoid circular references)
-      const potentialChildren = await prisma.category.findMany({
+      const potentialChildren: Array<{ id: string }> = await prisma.category.findMany({
         where: {
           OR: [{ parentId: id }, { parent: { parentId: id } }],
         },
+        select: { id: true },
       });
 
       const childIds = potentialChildren.map((child) => child.id);
