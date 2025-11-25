@@ -10,6 +10,8 @@ import {
 import { authOptions } from "@/lib/auth";
 //import { authOptions } from "../../auth/[...nextauth]/route";
 
+type RevenueStatus = { status: string; _sum: { total: number | null } };
+
 // Get sales data (admin only)
 export async function GET(req: NextRequest) {
   try {
@@ -109,11 +111,11 @@ export async function GET(req: NextRequest) {
 
     // Format status revenue data
     const statusRevenue = revenueByStatus.reduce(
-      (acc: Record<string, number>, curr) => {
+      (acc: Record<string, number>, curr: RevenueStatus) => {
         acc[curr.status] = curr._sum.total || 0;
         return acc;
       },
-      {}
+      {} as Record<string, number>
     );
 
     return successResponse({
