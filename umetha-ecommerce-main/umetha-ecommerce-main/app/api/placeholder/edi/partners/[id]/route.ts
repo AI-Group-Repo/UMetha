@@ -47,7 +47,7 @@ export async function GET(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+   { params }: any
 ) {
   try {
     // Check authentication - only admins should be able to manage partners
@@ -131,7 +131,7 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Check authentication - only admins should be able to manage partners
