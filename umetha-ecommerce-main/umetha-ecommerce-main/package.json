@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "cj-cron": "node scripts/start-cj-cron.js",
+    "cj-cron": "tsx scripts/start-cj-cron.ts",
     "cj-demo": "node scripts/cj-trending-sync-demo.js"
   },
   "dependencies": {
@@ -124,6 +124,7 @@
     "postcss": "^8",
     "prisma": "^6.6.0",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "tsx": "^4.19.0"
   }
 }

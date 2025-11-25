@@ -128,9 +128,7 @@ export default function SearchSuggestions({
       setLoading(true);
       try {
         // Use regular search for now
-        const response = await fetch(
-          `/api/search/products?q=${query}&limit=8&source=prisma`
-        );
+        const response = await fetch(`/api/search/products?q=${encodeURIComponent(query)}&limit=8&source=supabase`);
         const data = await response.json();
 
         if (data.status === "success") {

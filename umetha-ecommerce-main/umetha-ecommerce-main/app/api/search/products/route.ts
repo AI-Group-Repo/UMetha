@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { db, supabase } from "@/lib/supabase";
+import { db } from "@/lib/supabase";
 import {
   successResponse,
   errorResponse,
@@ -63,7 +62,7 @@ export async function GET(req: NextRequest) {
     const sortBy = searchParams.get("sort") || "createdAt";
     const order =
       searchParams.get("order")?.toLowerCase() === "asc" ? "asc" : "desc";
-    const source = searchParams.get("source") || "prisma";
+    const source = searchParams.get("source") || "supabase";
 
     // Pagination parameters
     // Default page size is 12 products, which works well for grid layouts
@@ -72,22 +71,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "12");
     const skip = (page - 1) * limit;
 
-    // Use Supabase for multilingual search, Prisma for local data
-    if (source === "supabase") {
-      return await searchWithSupabase({
-        query,
-        language,
-        categoryId,
-        minPrice,
-        maxPrice,
-        sortBy,
-        order: order as "asc" | "desc",
-        limit,
-        offset: skip,
-      });
-    }
-
-    // Always use Supabase since Prisma schema doesn't match the actual database
+    // Always use Supabase (source param kept for forward compatibility)
     return await searchWithSupabase({
       query,
       language,
@@ -120,10 +104,7 @@ async function searchWithSupabase(params: {
   const { query, language, categoryId, minPrice, maxPrice, sortBy, order, limit, offset } = params;
 
   try {
-    // Fetch from multiple sources like new arrivals does
-    const sources: any[] = [];
-    
-    // Fetch from Supabase
+    // Fetch strictly from Supabase using the new schema
     const { data: products, error } = await db.searchProductsAdvanced({
       query,
       language,
@@ -136,191 +117,46 @@ async function searchWithSupabase(params: {
       offset,
     });
 
-    if (products && products.length > 0) {
-      sources.push(...products);
-    }
-
     if (error) {
       console.error("Supabase search error:", error);
-      console.log("Supabase connection failed, will try alternative approach");
+      return errorResponse("Search failed");
     }
-    
-    // Also fetch from CJ products with query and category filters
-    try {
-      let cjQuery = supabase
-        .from('products')
-        .select('*')
-        .eq('is_dropshipping', true)
-        .limit(50);
-      
-      // Apply query filter at the database level for CJ products
-      if (query && query.trim()) {
-        const searchTerm = query.trim();
-        cjQuery = cjQuery.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      // Apply category filter if provided
-      if (categoryId && categoryId !== "All") {
-        cjQuery = cjQuery.or(`category_id.eq.${categoryId},cj_category.ilike.%${categoryId}%`);
-      }
-      
-      const { data: cjProducts } = await cjQuery;
-      
-      if (cjProducts && cjProducts.length > 0) {
-        sources.push(...cjProducts);
-      }
-    } catch (cjError) {
-      console.error("Error fetching CJ products:", cjError);
-    }
-    
-    // Fetch regular local products with query and category filters
-    try {
-      let localQuery = supabase
-        .from('products')
-        .select('*')
-        .eq('is_dropshipping', false)
-        .limit(50);
-      
-      // Apply query filter at the database level for local products
-      if (query && query.trim()) {
-        const searchTerm = query.trim();
-        localQuery = localQuery.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      // Apply category filter if provided
-      if (categoryId && categoryId !== "All") {
-        localQuery = localQuery.eq('category_id', categoryId);
-      }
-      
-      const { data: localProducts } = await localQuery;
-      
-      if (localProducts && localProducts.length > 0) {
-        sources.push(...localProducts);
-      }
-    } catch (localError) {
-      console.error("Error fetching local products:", localError);
-    }
-    
-    // If we have products from any source
-    if (sources.length > 0) {
-      // Apply client-side filtering, sorting, and pagination
-      let filteredProducts = sources;
-      
-      // Apply search query filter - THIS IS CRITICAL for exact matches
-      if (query && query.trim()) {
-        const searchTerm = query.toLowerCase().trim();
-        const searchWords = searchTerm.split(' ').filter(w => w.length > 0);
-        
-        filteredProducts = filteredProducts.filter(p => {
-          const name = p.name?.toLowerCase() || '';
-          const description = p.description?.toLowerCase() || '';
-          const sku = p.sku?.toLowerCase() || '';
-          const category = p.category_id?.toLowerCase() || '';
-          
-          // Check if all search words appear in at least one field
-          const matches = searchWords.every(word => 
-            name.includes(word) || 
-            description.includes(word) || 
-            sku.includes(word) ||
-            category.includes(word)
-          );
-          
-          return matches;
-        });
-      }
-      
-      // Apply category filter - must match category_id or category name/slug
-      if (categoryId && categoryId !== "All") {
-        filteredProducts = filteredProducts.filter(p => {
-          // Check if category_id matches
-          if (p.category_id?.toLowerCase() === categoryId.toLowerCase()) return true;
-          
-          // Check if cj_category matches
-          if (p.cj_category?.toLowerCase() === categoryId.toLowerCase()) return true;
-          
-          // Check if category slug matches (for fashion, electronics, etc.)
-          const categorySlug = p.category_id?.toLowerCase().replace(/\s+/g, '-');
-          if (categorySlug === categoryId.toLowerCase().replace(/\s+/g, '-')) return true;
-          
-          return false;
-        });
-      }
-      
-      // Apply price range filter
-      if (minPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(p => p.price >= minPrice);
-      }
-      if (maxPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(p => p.price <= maxPrice);
-      }
-      
-      // Apply sorting
-      filteredProducts.sort((a, b) => {
-        switch (sortBy) {
-          case 'price':
-            return order === 'asc' ? a.price - b.price : b.price - a.price;
-          case 'name':
-            return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-          case 'createdAt':
-          default:
-            return order === 'asc' ? 
-              new Date(a.date_created || a.created_at).getTime() - new Date(b.date_created || b.created_at).getTime() :
-              new Date(b.date_created || b.created_at).getTime() - new Date(a.date_created || a.created_at).getTime();
-        }
-      });
-      
-      const totalFilteredItems = filteredProducts.length;
-      const paginatedProducts = filteredProducts.slice(offset, offset + limit);
-      
-      // Transform products
-      const transformedProducts = paginatedProducts.map(product => ({
-        id: product.products_id?.toString() || product.id?.toString(),
-        name: product.name,
-        description: product.description || '',
-        price: product.price,
-        image: product.images && product.images.length > 0 ? product.images[0] : product.url || null,
-        images: product.images && product.images.length > 0 ? product.images : (product.url ? [product.url] : []),
-        category: {
-          id: product.category_id || 'default',
-          name: product.cj_category || (product.category_id ? product.category_id.charAt(0).toUpperCase() + product.category_id.slice(1) : 'General'),
-          slug: product.category_id || 'general'
-        },
-        stock: product.stock || 10,
-        sku: product.sku || '',
-        createdAt: product.date_created || product.created_at,
-        updatedAt: product.updated_at,
-      }));
-      
-      const totalPages = Math.ceil(totalFilteredItems / limit);
-      const currentPage = Math.floor(offset / limit) + 1;
-      const hasNext = currentPage < totalPages;
-      const hasPrevious = currentPage > 1;
-      
-      return successResponse({
-        products: transformedProducts,
-        pagination: {
-          currentPage,
-          totalPages,
-          totalItems: totalFilteredItems,
-          hasNext,
-          hasPrevious,
-          limit,
-        },
-      });
-    }
-    
-    // If no products found from any source, return empty results
-    console.log("No products found from any source");
-    
-    // Return empty result set
+
+    const list = products ?? [];
+
+    // Transform to UI shape (map to new schema fields)
+    const transformedProducts = list.map((product: any) => ({
+      id: product.products_id?.toString() ?? product.id?.toString(),
+      name: product.name,
+      description: "", // not present in new schema
+      price: product.price,
+      image: product.Url ?? null,
+      images: product.Url ? [product.Url] : [],
+      category: {
+        id: product.categoryId ?? "default",
+        name: product.Category ?? product.categoryId ?? "General",
+        slug: (product.categoryId ?? "general").toLowerCase().replace(/\s+/g, "-"),
+      },
+      stock: product.stock ?? 0,
+      sku: product.sku ?? "",
+      createdAt: product.date_created,
+      updatedAt: product.updated_at,
+    }));
+
+    const totalItems = list.length;
+    const totalPages = Math.ceil(totalItems / (limit || 1));
+    const currentPage = Math.floor(offset / limit) + 1;
+    const hasNext = currentPage < totalPages;
+    const hasPrevious = currentPage > 1;
+
     return successResponse({
-      products: [],
+      products: transformedProducts,
       pagination: {
-        currentPage: Math.floor(offset / limit) + 1,
-        totalPages: 0,
-        totalItems: 0,
-        hasNext: false,
-        hasPrevious: false,
+        currentPage,
+        totalPages,
+        totalItems,
+        hasNext,
+        hasPrevious,
         limit,
       },
     });

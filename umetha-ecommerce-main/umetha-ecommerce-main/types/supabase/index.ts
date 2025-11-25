@@ -88,122 +88,124 @@ export interface Database {
         Row: {
           products_id: number;
           name: string;
-          description: string | null;
+          Category: string | null;
           sku: string | null;
           price: number;
-          supplier_id: number | null;
+          productWeight: number | null;
           date_created: string;
-          url: string | null;
-          category_id: string | null;
+          Url: string | null;
+          categoryId: number | null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
+
         };
         Insert: {
-          products_id?: number;
+          products_id: number;
           name: string;
-          description?: string | null;
-          sku?: string | null;
+          Category: string | null;
+          sku: string | null;
           price: number;
-          supplier_id?: number | null;
-          date_created?: string;
-          url?: string | null;
-          category_id?: string | null;
+          productWeight: number | null;
+          date_created: string;
+          Url: string | null;
+          categoryId: number | null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
         };
         Update: {
-          products_id?: number;
-          name?: string;
-          description?: string | null;
-          sku?: string | null;
-          price?: number;
-          supplier_id?: number | null;
-          date_created?: string;
-          url?: string | null;
-          category_id?: string | null;
+          products_id: number;
+          name: string;
+          Category: string | null;
+          sku: string | null;
+          price: number;
+          productWeight: number | null;
+          date_created: string;
+          Url: string | null;
+          categoryId: number| null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
         };
       };
-      categories: {
+      category: {
         Row: {
-          id: string;
-          name: string;
-          slug: string;
-          description: string | null;
-          image: string | null;
-          created_at: string;
-          updated_at: string;
+          categoryId: number;
+          categoryName: string;
+         
         };
         Insert: {
-          id?: string;
-          name: string;
-          slug: string;
-          description?: string | null;
-          image?: string | null;
-          created_at?: string;
-          updated_at?: string;
+         categoryId: string;
+          categoryName: string;
         };
         Update: {
-          id?: string;
-          name?: string;
-          slug?: string;
-          description?: string | null;
-          image?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          categoryId: string;
+          categoryName: string;
         };
       };
       product_translations: {
         Row: {
-          id: string;
-          product_id: string;
-          language: string;
+          products_id: number;
           name: string;
-          description: string;
-          created_at: string;
-          updated_at: string;
+          language: string;
+          Category: string | null;
+          sku: string | null;
+          price: number;
+          productWeight: number | null;
+          date_created: string;
+          Url: string | null;
+          categoryId: string | null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
         };
         Insert: {
-          id?: string;
-          product_id: string;
-          language: string;
+         products_id: number;
           name: string;
-          description: string;
-          created_at?: string;
-          updated_at?: string;
+          language: string;
+          Category: string | null;
+          sku: string | null;
+          price: number;
+          productWeight: number | null;
+          date_created: string;
+          Url: string | null;
+          categoryId: string | null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
         };
         Update: {
-          id?: string;
-          product_id?: string;
-          language?: string;
-          name?: string;
-          description?: string;
-          created_at?: string;
-          updated_at?: string;
+          products_id: number;
+          name: string;
+          language: string;
+          Category: string | null;
+          sku: string | null;
+          price: number;
+          productWeight: number | null;
+          date_created: string;
+          Url: string | null;
+          categoryId: string | null;
+          stock: number | null;
+          productType: string | null;
+          productUnit: string | null;
         };
       };
       category_translations: {
         Row: {
-          id: string;
-          category_id: string;
+           categoryId: string;
           language: string;
-          name: string;
-          description: string | null;
-          created_at: string;
-          updated_at: string;
+          categoryName: string;
         };
         Insert: {
-          id?: string;
-          category_id: string;
+           categoryId: string;
           language: string;
-          name: string;
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          categoryName: string;
         };
         Update: {
-          id?: string;
-          category_id?: string;
-          language?: string;
-          name?: string;
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
+         categoryId: string;
+        language: string;
+        categoryName: string;
         };
       };
       suppliers: {

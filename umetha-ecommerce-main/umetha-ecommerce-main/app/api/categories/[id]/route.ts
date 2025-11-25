@@ -12,6 +12,9 @@ import {
 } from "@/lib/api-utils";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
+// Ensure Node.js runtime (Prisma is not supported on Edge)
+export const runtime = "nodejs";
+
 // Update category schema
 const updateCategorySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
@@ -24,7 +27,7 @@ const updateCategorySchema = z.object({
 // Get single category by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const id = params.id;
@@ -66,7 +69,7 @@ export async function GET(
 // Update category by ID (admin only)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Check if admin
@@ -163,7 +166,7 @@ export async function PATCH(
 // Delete category by ID (admin only)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Check if admin

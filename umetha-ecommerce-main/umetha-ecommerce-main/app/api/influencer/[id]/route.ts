@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase'; // Import the initialized supabase client
-import { Database } from '@/types/supabase'; // Import the types from your supabase types
+import { supabase } from '@/lib/supabase'; // initialized client
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +8,8 @@ export async function GET(
   try {
     // Fetch influencer profile from the profiles table
     const { data: profile, error: profileError } = await supabase
-      .from<Database['profiles']>('profiles') // Ensure we're querying the correct table with the right type
-      .select('*')
+      .from('profiles')
+      .select('id, email, full_name, username, avatar_url, role, business_models, created_at, updated_at, last_seen_at')
       .eq('id', params.id) // Filter by the 'id' parameter in the URL
       .eq('role', 'INFLUENCER') // Ensure the role is 'INFLUENCER'
       .single(); // Get one record
@@ -26,17 +25,14 @@ export async function GET(
     // Transform the profile data into a more usable format
     const influencer = {
       id: profile.id,
-      name: profile.full_name || `${profile.first_name} ${profile.last_name}`,
-      bio: profile.bio || 'Fashion influencer passionate about sustainable fashion.',
+      name: profile.full_name || profile.username || 'Influencer',
       avatar_url: profile.avatar_url || null,
-      social_links: profile.social_links || {},
-      followers_count: profile.followers_count || 0,
-      verified: profile.verified || false,
-      store_theme: profile.store_theme || {
-        primary_color: '#6366F1', // Default primary color
-        secondary_color: '#8B5CF6', // Default secondary color
-        font_family: 'Inter' // Default font family
-      }
+      email: profile.email || null,
+      role: profile.role || 'INFLUENCER',
+      business_models: profile.business_models || [],
+      created_at: profile.created_at,
+      updated_at: profile.updated_at,
+      last_seen_at: profile.last_seen_at,
     };
 
     return NextResponse.json({ influencer }); // Return the transformed influencer data
