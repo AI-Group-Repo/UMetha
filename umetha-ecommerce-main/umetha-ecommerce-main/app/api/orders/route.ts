@@ -10,7 +10,8 @@ import {
   serverErrorResponse,
   unauthorizedResponse,
 } from "@/lib/api-utils";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
+//import { authOptions } from "../auth/[...nextauth]/route";
 
 // Schema for creating a new order
 const createOrderSchema = z.object({
