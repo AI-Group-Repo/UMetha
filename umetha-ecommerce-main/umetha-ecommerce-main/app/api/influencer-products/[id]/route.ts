@@ -73,9 +73,9 @@ export async function PUT(
     if (seo_title !== undefined) updateData.seo_title = seo_title;
     if (seo_description !== undefined) updateData.seo_description = seo_description;
 
-    const { data: product, error } = await supabase
-      .from('influencer_products')
-      .update(updateData)
+    const tableAny = supabase.from('influencer_products') as any;
+    const { data: product, error } = await tableAny
+      .update(updateData as any)
       .eq('id', params.id)
       .select()
       .single();

@@ -97,9 +97,9 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString()
     };
 
-    const { data: product, error } = await supabase
-      .from('influencer_products')
-      .insert([productData])
+    const tableAny = supabase.from('influencer_products') as any;
+    const { data: product, error } = await tableAny
+      .insert([productData] as any[])
       .select()
       .single();
 
