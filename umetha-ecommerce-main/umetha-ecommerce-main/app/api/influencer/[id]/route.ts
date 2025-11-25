@@ -1,26 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase'; // initialized client
 
+type InfluencerProfile = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  role: string | null;
+  business_models: string[] | null;
+  created_at: string | null;
+  updated_at: string | null;
+  last_seen_at: string | null;
+};
+
 export async function GET(
   request: NextRequest,
   { params }: any
 ) {
   try {
     // Fetch influencer profile from the profiles table
-    const { data: profile, error: profileError } = await supabase
+    const { data: profileRaw, error: profileError } = await supabase
       .from('profiles')
       .select('id, email, full_name, username, avatar_url, role, business_models, created_at, updated_at, last_seen_at')
       .eq('id', params.id) // Filter by the 'id' parameter in the URL
       .eq('role', 'INFLUENCER') // Ensure the role is 'INFLUENCER'
       .single(); // Get one record
 
-    if (profileError) {
+    if (profileError || !profileRaw) {
       console.error('Error fetching influencer profile:', profileError);
       return NextResponse.json(
         { error: 'Influencer not found' },
         { status: 404 }
       );
     }
+
+    const profile = profileRaw as InfluencerProfile;
 
     // Transform the profile data into a more usable format
     const influencer = {

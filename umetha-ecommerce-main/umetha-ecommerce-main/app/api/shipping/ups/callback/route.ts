@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const data = await tokenRes.json();
 
   const user_id = searchParams.get("user_id")!;
-  await supabase.from("shipping_tokens").insert({
+  await (supabase.from("shipping_tokens") as any).insert({
     user_id,
     carrier: "ups",
     access_token: data.access_token,

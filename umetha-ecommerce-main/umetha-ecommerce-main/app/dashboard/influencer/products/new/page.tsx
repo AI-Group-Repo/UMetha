@@ -216,9 +216,8 @@ export default function NewProductPage() {
         updated_at: new Date().toISOString()
       };
 
-      const { data, error } = await supabase
-        .from('influencer_products')
-        .insert([productData])
+      const { data, error } = await (supabase.from('influencer_products') as any)
+        .insert([productData] as any[])
         .select()
         .single();
 
