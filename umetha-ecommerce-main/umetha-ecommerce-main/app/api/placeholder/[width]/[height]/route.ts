@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Record<string, string> }
-)  {
+export async function GET(request: NextRequest, { params }: any) {
+const DEFAULT_WIDTH = 300;
+  const DEFAULT_HEIGHT = 150;
+  const MIN_SIZE = 50;
+  const MAX_SIZE = 2000;
   const { width, height } = params;
   
   let w = parseInt(width, 10) || DEFAULT_WIDTH;
