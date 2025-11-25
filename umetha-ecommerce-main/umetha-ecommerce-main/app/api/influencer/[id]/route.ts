@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'; // initialized client
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Fetch influencer profile from the profiles table

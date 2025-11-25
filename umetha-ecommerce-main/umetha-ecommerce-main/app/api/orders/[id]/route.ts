@@ -26,7 +26,7 @@ const updateOrderSchema = z.object({
 // Get order by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const session = await getServerSession(authOptions);

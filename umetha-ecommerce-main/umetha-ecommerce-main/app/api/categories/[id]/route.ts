@@ -23,7 +23,6 @@ const updateCategorySchema = z.object({
   image: z.string().url("Invalid image URL").optional(),
   parentId: z.string().optional().nullable(),
 });
-import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 
