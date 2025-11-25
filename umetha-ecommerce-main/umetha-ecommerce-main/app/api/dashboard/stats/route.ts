@@ -10,6 +10,11 @@ import {
 import { authOptions } from "@/lib/auth";
 //import { authOptions } from "../../auth/[...nextauth]/route";
 
+type TopSellingGroup = {
+  productId: string;
+  _sum: { quantity: number | null; price: number | null };
+};
+
 // Get dashboard statistics (admin only)
 export async function GET(req: NextRequest) {
   try {
@@ -154,7 +159,7 @@ export async function GET(req: NextRequest) {
             },
           },
         })
-        .then(async (items) => {
+        .then(async (items: TopSellingGroup[]) => {
           // Get product details for the top sellers
           if (items.length === 0) return [];
 
