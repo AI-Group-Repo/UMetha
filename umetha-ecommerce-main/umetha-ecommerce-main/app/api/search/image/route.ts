@@ -46,13 +46,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Transform products to match expected format
-      const transformedProducts = (products || []).map(product => ({
+      const productList: any[] = (products as any[]) ?? [];
+      const transformedProducts = productList.map((product: any) => ({
         id: product.products_id.toString(),
         name: product.name,
         description: product.description || '',
         price: parseFloat(product.price.toString()),
-        image: product.url || null,
-        images: product.url ? [product.url] : [],
+        image: product.url || product.Url || null,
+        images: product.url ? [product.url] : (product.Url ? [product.Url] : []),
         category: {
           id: 'general',
           name: 'General',

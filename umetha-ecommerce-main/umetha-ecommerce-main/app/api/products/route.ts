@@ -29,9 +29,9 @@ export async function GET(request: NextRequest) {
     }
 
     // If no products found or Supabase error, return sample data for demo
-    let productsToTransform = products;
+    let productsToTransform: any[] = (products as any[]) ?? [];
     if (!products || products.length === 0 || error) {
-      productsToTransform = [
+      const sample: any[] = [
         {
           products_id: 1,
           name: "Classic White T-Shirt",
@@ -93,10 +93,11 @@ export async function GET(request: NextRequest) {
           category_id: "electronics"
         }
       ];
+      productsToTransform = sample;
     }
 
     // Transform the data to match our Product interface
-    const transformedProducts = productsToTransform?.map(product => ({
+    const transformedProducts = productsToTransform?.map((product: any) => ({
       id: product.products_id.toString(),
       name: product.name,
       description: product.description || '',
@@ -134,8 +135,8 @@ export async function POST(request: NextRequest) {
     const { name, description, price, images, categoryId, stock, translations } = body;
 
     // Insert the product
-    const { data: product, error: productError } = await supabase
-      .from('products')
+    const resp: any = await (supabase
+      .from('products') as any)
       .insert({
         name,
         description,
@@ -146,6 +147,8 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single();
+    const product = resp?.data;
+    const productError = resp?.error;
 
     if (productError) {
       console.error('Error creating product:', productError);
@@ -164,8 +167,8 @@ export async function POST(request: NextRequest) {
         description: translation.description
       }));
 
-      const { error: translationError } = await supabase
-        .from('product_translations')
+      const { error: translationError } = await (supabase
+        .from('product_translations') as any)
         .insert(translationData);
 
       if (translationError) {
