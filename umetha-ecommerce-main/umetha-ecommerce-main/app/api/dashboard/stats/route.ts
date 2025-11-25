@@ -182,7 +182,7 @@ export async function GET(req: NextRequest) {
 
           // Merge quantities with product details
           return items.map((item) => {
-            const product = products.find((p) => p.id === item.productId);
+            const product = products.find((p: any) => p.id === item.productId);
             return {
               ...product,
               totalQuantity: item._sum.quantity,
@@ -202,7 +202,7 @@ export async function GET(req: NextRequest) {
       },
       lowStockProducts,
       recentOrders,
-      salesByStatus: salesByStatus.reduce((acc, curr) => {
+      salesByStatus: salesByStatus.reduce((acc: Record<string, number>, curr: { status: string; _count: number }) => {
         acc[curr.status] = curr._count;
         return acc;
       }, {} as Record<string, number>),
