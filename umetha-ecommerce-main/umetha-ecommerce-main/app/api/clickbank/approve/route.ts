@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
     const mockUserId = "influencer-user-id";
 
     // Save approval to database
-    const { data, error } = await supabase
-      .from("influencer_clickbank_products")
+    const tableAny = supabase.from("influencer_clickbank_products") as any;
+    const { data, error } = await tableAny
       .insert({
         influencer_id: mockUserId,
         product_id: productId,
@@ -32,8 +32,7 @@ export async function POST(req: NextRequest) {
     if (error) {
       // If already exists, update it
       if (error.code === "23505") {
-        const { data: updateData, error: updateError } = await supabase
-          .from("influencer_clickbank_products")
+        const { data: updateData, error: updateError } = await (supabase.from("influencer_clickbank_products") as any)
           .update({
             approved: true,
             approved_at: new Date().toISOString(),

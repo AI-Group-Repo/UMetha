@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       console.error("Error fetching approved products:", error);
     }
 
-    const approvedIds = approvedProducts?.map((p) => p.product_id) || [];
+    const approvedIds = approvedProducts?.map((p: any) => p.product_id) || [];
     const pendingApprovals = products
       .filter((p) => !approvedIds.includes(p.id))
       .map((p) => p.id);

@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+type CategoryRow = {
+	id: string;
+	name: string;
+	slug: string;
+};
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -22,16 +28,17 @@ export async function GET(request: NextRequest) {
 
     // Try to get categories from the database if they exist
     try {
-      const { data: categories, error } = await supabase
+			const { data, error } = await supabase
         .from('categories')
         .select('id, name, slug')
         .range(offset, offset + limit - 1);
 
-      if (!error && categories && categories.length > 0) {
+			if (!error && data && data.length > 0) {
+				const categories = data as CategoryRow[];
         return NextResponse.json({
           status: 'success',
           data: {
-            categories: categories.map(cat => ({
+						categories: categories.map((cat: CategoryRow) => ({
               id: cat.id,
               name: cat.name,
               slug: cat.slug
