@@ -10,7 +10,8 @@ import {
   unauthorizedResponse,
   forbiddenResponse,
 } from "@/lib/api-utils";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
+//import { authOptions } from "../../auth/[...nextauth]/route";
 
 // Ensure Node.js runtime (Prisma is not supported on Edge)
 export const runtime = "nodejs";
