@@ -30,9 +30,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
-      message: "Scheduled EDI update completed successfully",
       ...result,
+      message: "Scheduled EDI update completed successfully",
     });
   } catch (error: any) {
     console.error("Error in scheduled EDI update endpoint:", error);
