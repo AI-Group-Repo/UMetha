@@ -31,7 +31,7 @@ const updateProductSchema = z.object({
 // Get single product by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const id = params.id;
@@ -57,7 +57,7 @@ export async function GET(
 // Update product by ID (admin only)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Check if admin
@@ -119,7 +119,7 @@ export async function PATCH(
 // Delete product by ID (admin only)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     // Check if admin
