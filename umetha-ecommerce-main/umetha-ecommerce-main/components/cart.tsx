@@ -67,7 +67,11 @@ export default function CartPage() {
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Calculate totals
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce(
+    (total: number, item: { price: number; quantity: number }) =>
+      total + item.price * item.quantity,
+    0
+  );
   const shipping = subtotal > 150 ? 0 : 9.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax - discount;

@@ -209,7 +209,7 @@ export default function InfluencersPage() {
     pendingInfluencers: influencers.filter((i) => i.status === "pending")
       .length,
     totalSales: influencers.reduce(
-      (acc, influencer) => acc + influencer.sales,
+      (acc: number, influencer: { sales: number }) => acc + influencer.sales,
       0
     ),
   };

@@ -69,7 +69,8 @@ export default function CheckoutPage() {
 
   // Calculate totals
   const subtotal = items.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total: number, item: { price: number; quantity: number }) =>
+      total + item.price * item.quantity,
     0
   );
   const shippingCost =

@@ -661,7 +661,8 @@ export default function OrdersPage() {
                           $
                           {selectedOrder.items
                             .reduce(
-                              (acc, item) => acc + item.price * item.quantity,
+                              (acc: number, item: OrderItem) =>
+                                acc + item.price * item.quantity,
                               0
                             )
                             .toFixed(2)}

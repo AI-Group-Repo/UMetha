@@ -205,7 +205,10 @@ export default function SellersPage() {
     activeSellers: sellers.filter((s) => s.status === "active").length,
     featuredSellers: sellers.filter((s) => s.featured).length,
     pendingSellers: sellers.filter((s) => s.status === "pending").length,
-    totalRevenue: sellers.reduce((acc, seller) => acc + seller.revenue, 0),
+    totalRevenue: sellers.reduce(
+      (acc: number, seller: { revenue: number }) => acc + seller.revenue,
+      0
+    ),
   };
 
   // Check for proper admin authorization

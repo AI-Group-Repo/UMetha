@@ -73,7 +73,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems([]);
   };
 
-  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const itemCount = items.reduce(
+    (total: number, item: CartItem) => total + item.quantity,
+    0
+  );
 
   return (
     <CartContext.Provider

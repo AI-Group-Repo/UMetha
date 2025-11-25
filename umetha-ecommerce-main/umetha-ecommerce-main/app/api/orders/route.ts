@@ -151,8 +151,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Calculate order total
-    const total = cart.items.reduce(
-      (sum, item) => sum + item.quantity * item.product.price,
+    type CartItemWithProduct = { quantity: number; product: { price: number } };
+    const total = (cart.items as CartItemWithProduct[]).reduce(
+      (sum: number, item: CartItemWithProduct) =>
+        sum + item.quantity * item.product.price,
       0
     );
 

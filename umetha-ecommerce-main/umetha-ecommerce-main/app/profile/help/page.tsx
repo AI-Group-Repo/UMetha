@@ -227,12 +227,14 @@ const supportChannels = [
   },
 ];
 
+type FAQ = { id: string; question: string; answer: string };
+
 export default function HelpPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("help");
 
   // Filter FAQs based on search term
-  const filteredQuestions = searchTerm
+  const filteredQuestions: FAQ[] = searchTerm
     ? commonQuestions.filter(
         (q) =>
           q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -241,14 +243,17 @@ export default function HelpPage() {
     : commonQuestions;
 
   // Group FAQs by category
-  const categorizedQuestions = filteredQuestions.reduce((acc, question) => {
-    const category = question.id.split("-")[0];
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(question);
-    return acc;
-  }, {});
+  const categorizedQuestions = filteredQuestions.reduce(
+    (acc: Record<string, FAQ[]>, question: FAQ) => {
+      const category = question.id.split("-")[0];
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(question);
+      return acc;
+    },
+    {} as Record<string, FAQ[]>
+  );
 
   const mainContent = (
     <motion.div

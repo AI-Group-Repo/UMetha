@@ -100,11 +100,15 @@ export async function PUT(req: NextRequest) {
 
     // Calculate cart total
     const total = items.reduce(
-      (sum, item) => sum + item.quantity * item.product.price,
+      (sum: number, item: CartItemWithProduct) =>
+        sum + item.quantity * item.product.price,
       0
     );
 
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    const itemCount = items.reduce(
+      (sum: number, item: CartItemWithProduct) => sum + item.quantity,
+      0
+    );
 
     return successResponse({
       cart: {
