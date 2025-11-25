@@ -200,8 +200,8 @@ export default function InfluencerProductsPage() {
         const mockUserId = getCookieValue("mock-user-id");
         const userId = mockUserId || user?.id || "";
 
-        const { data, error } = await supabase
-          .from("influencer_products")
+        const { data, error } = await (supabase
+          .from("influencer_products") as any)
           .select("*")
           .eq("influencer_id", userId)
           .eq("source", "cj_dropshipping")
@@ -360,8 +360,8 @@ export default function InfluencerProductsPage() {
       const mockUserId = getCookieValue("mock-user-id");
       const userId = mockUserId || user?.id || "";
 
-      const { data, error } = await supabase
-        .from("influencer_products")
+      const { data, error } = await (supabase
+        .from("influencer_products") as any)
         .select("*")
         .eq("influencer_id", userId)
         .order("created_at", { ascending: false });
@@ -436,8 +436,8 @@ export default function InfluencerProductsPage() {
 
   const deleteMyProduct = async (productId: string) => {
     try {
-      const { error } = await supabase
-        .from("influencer_products")
+      const { error } = await (supabase
+        .from("influencer_products") as any)
         .delete()
         .eq("id", productId);
 

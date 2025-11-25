@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import {
   successResponse,
   createdResponse,
@@ -156,7 +157,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Start a transaction to create order and update inventory
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create order
       const newOrder = await tx.order.create({
         data: {

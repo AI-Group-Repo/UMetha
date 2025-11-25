@@ -69,8 +69,8 @@ export async function GET() {
       );
     }
 
-    const { data: products, error: productsError } = await supabase
-      .from("influencer_products")
+    const { data: products, error: productsError } = await (supabase
+      .from("influencer_products") as any)
       .select("id, influencer_id")
       .eq("status", "active");
 

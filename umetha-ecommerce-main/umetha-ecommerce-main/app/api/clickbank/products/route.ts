@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
     const products = await fetchTrendingClickBankProducts(limit);
 
     // Fetch approved products from database
-    const { data: approvedProducts, error } = await supabase
-      .from("influencer_clickbank_products")
+    const { data: approvedProducts, error } = await (supabase
+      .from("influencer_clickbank_products") as any)
       .select("product_id, approved, approved_at")
       .eq("approved", true);
 

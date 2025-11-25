@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import {
   successResponse,
   errorResponse,
@@ -122,7 +123,7 @@ export async function PATCH(
 
     // Special handling for cancelled orders: restore stock
     if (status === "CANCELLED" && existingOrder.status !== "CANCELLED") {
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         // Update order status
         await tx.order.update({
           where: { id },

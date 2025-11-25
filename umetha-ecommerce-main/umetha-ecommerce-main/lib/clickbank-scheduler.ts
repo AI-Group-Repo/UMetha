@@ -26,8 +26,8 @@ export async function syncClickBankProductsForAll(): Promise<SyncResult> {
 
   try {
     // Create sync log entry
-    const { data: syncLog, error: logError } = await supabase
-      .from("clickbank_sync_logs")
+    const { data: syncLog, error: logError } = await (supabase
+      .from("clickbank_sync_logs") as any)
       .insert({
         sync_started_at: new Date().toISOString(),
         status: "pending",
@@ -73,8 +73,8 @@ export async function syncClickBankProductsForAll(): Promise<SyncResult> {
             }));
 
             // Use upsert to avoid duplicates
-            const { error: insertError } = await supabase
-              .from("influencer_clickbank_products")
+            const { error: insertError } = await (supabase
+              .from("influencer_clickbank_products") as any)
               .upsert(productsToInsert, {
                 onConflict: "influencer_id,product_id",
                 ignoreDuplicates: true,
@@ -96,8 +96,8 @@ export async function syncClickBankProductsForAll(): Promise<SyncResult> {
 
     // Update sync log
     if (syncLog) {
-      await supabase
-        .from("clickbank_sync_logs")
+      await (supabase
+        .from("clickbank_sync_logs") as any)
         .update({
           sync_completed_at: new Date().toISOString(),
           products_fetched: productsFetched,
