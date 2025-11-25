@@ -75,20 +75,29 @@ export async function DELETE(req: NextRequest) {
       },
     });
 
+    // Safely handle case where cart or items might be missing
+    type CartItemWithProduct = {
+      quantity: number;
+      product: { price: number };
+    };
+
+    const items: CartItemWithProduct[] =
+      (updatedCart?.items as CartItemWithProduct[]) ?? [];
+
     // Calculate cart total
-    const total =
-      updatedCart?.items.reduce(
-        (sum, item) => sum + item.quantity * item.product.price,
-        0
-      ) || 0;
+    const total = items.reduce(
+      (sum, item) => sum + item.quantity * item.product.price,
+      0
+    );
+
+    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return successResponse({
       cart: {
         id: updatedCart?.id,
-        items: updatedCart?.items,
+        items,
         total,
-        itemCount:
-          updatedCart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0,
+        itemCount,
       },
       message: "Item removed from cart successfully",
     });

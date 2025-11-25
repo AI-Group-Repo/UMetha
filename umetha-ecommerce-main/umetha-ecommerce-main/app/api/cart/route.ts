@@ -77,8 +77,14 @@ export async function GET(req: NextRequest) {
 
     // Calculate total price of all items in cart
     // This is calculated on-the-fly to ensure accurate pricing
-    const total = cart.items.reduce(
-      (sum, item) => sum + item.quantity * item.product.price,
+    type CartItemWithProduct = {
+      quantity: number;
+      product: { price: number };
+    };
+
+    const total = (cart.items as CartItemWithProduct[]).reduce(
+      (sum: number, item: CartItemWithProduct) =>
+        sum + item.quantity * item.product.price,
       0
     );
 
@@ -86,7 +92,10 @@ export async function GET(req: NextRequest) {
       id: cart.id,
       items: cart.items,
       total,
-      itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
+      itemCount: (cart.items as CartItemWithProduct[]).reduce(
+        (sum: number, item: CartItemWithProduct) => sum + item.quantity,
+        0
+      ),
     });
   } catch (error) {
     console.error("Error fetching cart:", error);

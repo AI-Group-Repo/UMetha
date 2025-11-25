@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Keep in sync with `next.config.mjs` in case this file is used
+  typedRoutes: false,
   images: {
     remotePatterns: [
       {

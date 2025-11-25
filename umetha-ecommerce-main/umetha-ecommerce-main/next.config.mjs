@@ -13,6 +13,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Disable typed routes to avoid symlinked `.next/types/routes.d.ts`
+  // which can fail on Windows/OneDrive with readlink EINVAL
+  typedRoutes: false,
   images: {
     unoptimized: true,
   },
@@ -20,6 +23,7 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    typedRoutes: false,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
