@@ -33,7 +33,7 @@ const products = [
   },
 ]
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+export default function ProductPage({ params }: { params: any }) {
   const product = products.find((p) => p.id === params.id)
 
   if (!product) {

@@ -81,7 +81,7 @@ interface InfluencerProfile {
   };
 }
 
-export default function InfluencerStorePage({ params }: { params: { id: string } }) {
+export default function InfluencerStorePage({ params }: { params: any }) {
   const { user } = useAuth();
   const { addItem } = useCart();
   const router = useRouter();

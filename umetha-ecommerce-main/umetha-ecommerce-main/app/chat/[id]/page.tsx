@@ -4,7 +4,7 @@ import { ChatWorkspace } from "@/components/chat/ChatWorkspace";
 export default function ChatPage({
   params,
 }: {
-  params: { id: string };
+  params: any;
 }) {
   return (
     <MainLayout>

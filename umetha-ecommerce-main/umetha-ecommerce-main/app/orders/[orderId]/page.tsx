@@ -63,7 +63,7 @@ const steps = [
 export default async function OrderTrackingPage({
   params,
 }: {
-  params: { orderId: string };
+  params: any;
 }) {
   // If you need to fetch data based on the orderId, you can do it here
   // const orderData = await fetchOrderData(params.orderId);
