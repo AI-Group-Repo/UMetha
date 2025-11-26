@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     // These parameters allow for flexible filtering of products based on user preferences
     const query = searchParams.get("q") || "";
     const language = searchParams.get("language") || "en";
-    const categoryId = searchParams.get("categoryId");
+    const categoryId = searchParams.get("categoryId") || "";
     const categorySlug = searchParams.get("categorySlug");
     const minPrice = searchParams.has("minPrice")
       ? parseFloat(searchParams.get("minPrice") as string)
@@ -108,7 +108,7 @@ async function searchWithSupabase(params: {
     const { data: products, error } = await db.searchProductsAdvanced({
       query,
       language,
-      categoryId,
+     Category: categoryId ? categoryId : undefined,
       minPrice,
       maxPrice,
       sortBy,
