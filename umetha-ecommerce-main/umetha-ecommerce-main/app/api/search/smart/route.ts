@@ -59,7 +59,7 @@ async function smartSearchWithSupabase(query: string, language: string, limit: n
 
     if (!categoryError && categories && categories.length > 0) {
       // Query matches a category - return all products from that category
-      const categoryIds = categories.map(cat => cat.id);
+      const categoryIds = (categories as Array<{ id: string }>).map((cat) => cat.id);
       const { data: products, error: productError } = await supabase
         .from("products")
         .select(`
@@ -76,7 +76,7 @@ async function smartSearchWithSupabase(query: string, language: string, limit: n
         return successResponse({
           products: products || [],
           searchType: "category",
-          matchedCategories: categories.map(cat => cat.name),
+          matchedCategories: (categories as Array<{ name: string }>).map((cat) => cat.name),
           totalResults: products?.length || 0
         });
       }
@@ -126,7 +126,7 @@ async function smartSearchWithPrisma(query: string, limit: number) {
 
     if (categories.length > 0) {
       // Query matches a category - return all products from that category
-      const categoryIds = categories.map(cat => cat.id);
+      const categoryIds = categories.map((cat: { id: string }) => cat.id);
       const products = await prisma.product.findMany({
         where: {
           categoryId: {

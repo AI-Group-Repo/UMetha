@@ -132,18 +132,23 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, price, images, categoryId, stock, translations } = body;
+    const { name, description, price, images, categoryId, stock, translations, sku } = body;
 
     // Insert the product
+    const productsId = Math.floor(Date.now() % 1000000000);
+
     const resp: any = await (supabase
       .from('products') as any)
       .insert({
+        products_id: productsId,
         name,
-        description,
+        sku: sku || `PROD-${productsId}`,
         price,
-        images: images || [],
-        category_id: categoryId,
-        stock: stock || 0
+        Url: Array.isArray(images) && images.length > 0 ? images[0] : null,
+        Category: undefined, // keep null unless you use text Category
+        categoryId: categoryId ? Number(categoryId) : null,
+        stock: stock || 0,
+        date_created: new Date().toISOString(),
       })
       .select()
       .single();
