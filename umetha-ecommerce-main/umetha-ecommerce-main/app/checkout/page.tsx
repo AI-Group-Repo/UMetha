@@ -32,6 +32,14 @@ import MainLayout from "@/components/main-layout";
 import { useCart } from "@/context/cart-context";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CJ_SUPPORTED_COUNTRIES, getCountryByName } from "@/lib/cj-countries";
 
 export default function CheckoutPage() {
   const { items, removeItem, updateQuantity } = useCart();
@@ -105,6 +113,7 @@ export default function CheckoutPage() {
       if (!formData.address) errors.address = "Address is required";
       if (!formData.city) errors.city = "City is required";
       if (!formData.postalCode) errors.postalCode = "Postal code is required";
+      if (!formData.country) errors.country = "Please select a country";
     } else if (step === "payment") {
       // Only validate card details if credit card is selected
       if (formData.paymentMethod === "credit-card") {
@@ -336,20 +345,28 @@ export default function CheckoutPage() {
         });
     }
     
-    // Create order record in Supabase
+    // Create order record in Supabase using API route
     const createOrder = async () => {
-      if (!user) return;
+      if (!user) {
+        console.warn('No user logged in, creating guest order');
+        // For guest checkout, you might want to use a guest user ID or handle differently
+      }
       
       try {
-        // Create the order in your orders table
-        const { data, error } = await supabase
-          .from('orders')
-          .insert({
-            user_id: user.id,
+        const response = await fetch('/api/orders/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: user?.id || 'guest',
             total_amount: total,
+            status: 'pending', // Will be updated after payment confirmation
             shipping_address: {
               firstName: formData.firstName,
               lastName: formData.lastName,
+              email: formData.email,
+              phone: formData.phone,
               address: formData.address,
               city: formData.city,
               state: formData.state,
@@ -357,24 +374,30 @@ export default function CheckoutPage() {
               country: formData.country,
             },
             payment_method: formData.paymentMethod,
-            order_items: items.map(item => ({
+            items: items.map(item => ({
+              id: item.id,
               product_id: item.id,
+              name: item.name,
               quantity: item.quantity,
               price: item.price
             })),
-            status: 'processing',
-            payment_status: 'paid',
-            created_at: new Date().toISOString()
-          })
-          .select()
-          .single();
-          
-        if (error) throw error;
+            country: formData.country,
+          }),
+        });
+
+        const data = await response.json();
         
-        return data.id;
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to create order');
+        }
+        
+        console.log('Order created successfully:', data.order);
+        
+        // Return the order_id from the response
+        return data.order.order_id;
       } catch (error) {
         console.error('Error creating order:', error);
-        return null;
+        throw error; // Re-throw to handle in the calling function
       }
     };
 
@@ -578,30 +601,49 @@ export default function CheckoutPage() {
         // Once payment is successful, create order
         let orderId;
         
-        if (user) {
-          // Try to create a real order record
-          try {
-            orderId = await createOrder();
-          } catch (err) {
-            console.error('Failed to create order record:', err);
-            // Fallback to random order ID
-            orderId = Math.random().toString(36).substring(2, 15);
+        try {
+          // Create the order in database
+          orderId = await createOrder();
+          
+          if (!orderId) {
+            throw new Error('Order ID not returned from server');
           }
-        } else {
-          // For non-authenticated users, generate a random order ID
-          orderId = Math.random().toString(36).substring(2, 15);
+          
+          console.log('Order created with ID:', orderId);
+          
+        } catch (err: any) {
+          console.error('Failed to create order record:', err);
+          
+          // Show error to user
+          toast({
+            title: "Order Creation Failed",
+            description: err.message || "We couldn't save your order. Please contact support.",
+            variant: "destructive",
+          });
+          
+          setIsProcessing(false);
+          return; // Don't redirect if order creation failed
         }
         
         setIsProcessing(false);
         
+        // Clear cart after successful order
+        try {
+          // Clear all items from cart
+          items.forEach(item => removeItem(item.id));
+        } catch (err) {
+          console.error('Error clearing cart:', err);
+        }
+        
         toast({
           title: "Order placed successfully!",
-          description: "Redirecting you to order tracking...",
-          variant: "success",
+          description: `Order #${orderId} has been created. Redirecting you to order tracking...`,
         });
         
-        // Redirect to the order confirmation page
-        router.push(`/orders/${orderId}`);
+        // Redirect to the order confirmation page after a short delay
+        setTimeout(() => {
+          router.push(`/orders/${orderId}`);
+        }, 1500);
         
       } catch (error: any) {
         console.error('Error during checkout:', error);
@@ -888,13 +930,14 @@ export default function CheckoutPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="state">State</Label>
+                        <Label htmlFor="state">State / Province</Label>
                         <Input
                           id="state"
                           name="state"
                           value={formData.state}
                           onChange={handleChange}
                           className="mt-1"
+                          placeholder="e.g. California"
                         />
                       </div>
                       <div>
@@ -904,6 +947,7 @@ export default function CheckoutPage() {
                           name="postalCode"
                           value={formData.postalCode}
                           onChange={handleChange}
+                          placeholder="e.g. 10001"
                           className={`mt-1 ${
                             formErrors.postalCode ? "border-red-500" : ""
                           }`}
@@ -914,6 +958,40 @@ export default function CheckoutPage() {
                           </p>
                         )}
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="country">Country</Label>
+                      <Select
+                        value={formData.country}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, country: value })
+                        }
+                      >
+                        <SelectTrigger
+                          id="country"
+                          className={`mt-1 ${
+                            formErrors.country ? "border-red-500" : ""
+                          }`}
+                        >
+                          <SelectValue placeholder="Select a country" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          {CJ_SUPPORTED_COUNTRIES.map((country) => (
+                            <SelectItem key={country.code} value={country.name}>
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {formErrors.country && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {formErrors.country}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        We deliver to {CJ_SUPPORTED_COUNTRIES.length}+ countries worldwide via CJ Dropshipping
+                      </p>
                     </div>
                   </div>
 
