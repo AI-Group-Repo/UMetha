@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { GoogleGenAI } from "@google/genai";
 
-// Google Gemini API key (using user's provided key as dev fallback)
-const GOOGLE_GENERATIVE_AI_API_KEY =
-  process.env.nanoBananaApiKey
+// Google Gemini API key
+const GOOGLE_GENERATIVE_AI_API_KEY = process.env.nanoBananaApiKey;
 const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
 export async function POST(request: NextRequest) {
@@ -30,6 +29,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Both user image and product image are required" },
         { status: 400 }
+      );
+    }
+
+    if (!GOOGLE_GENERATIVE_AI_API_KEY) {
+      return NextResponse.json(
+        { error: "Virtual try-on API key not configured" },
+        { status: 500 }
       );
     }
 

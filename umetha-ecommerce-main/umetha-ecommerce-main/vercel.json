@@ -5,7 +5,12 @@
 			"path": "/api/cron/clickbank-sync",
 			"schedule": "0 0 * * *"
 		}
-	]
+	],
+	"functions": {
+		"app/api/**/*.ts": {
+			"maxDuration": 60
+		}
+	},
+	"regions": ["iad1"],
+	"framework": "nextjs"
 }
-
-

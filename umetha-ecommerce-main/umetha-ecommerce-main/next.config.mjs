@@ -11,13 +11,21 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
+    // Run type checking separately in CI/CD, but don't block builds
     ignoreBuildErrors: true,
   },
   // Disable typed routes to avoid symlinked `.next/types/routes.d.ts`
   // which can fail on Windows/OneDrive with readlink EINVAL
   typedRoutes: false,
   images: {
-    unoptimized: true,
+    // Enable optimization for production (Vercel handles this well)
+    unoptimized: false,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   experimental: {
     webpackBuildWorker: true,

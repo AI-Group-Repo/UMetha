@@ -2,11 +2,13 @@
 
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Camera, Upload, X, Loader, Download, RotateCcw, Home } from "lucide-react";
+import { Camera, Upload, X, Loader, Download, RotateCcw, Home, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { useTranslation } from 'react-i18next';
+import { useCart } from '@/context/cart-context';
+import { useToast } from '@/hooks/use-toast';
 
 interface Furniture {
   id: string;
@@ -32,8 +34,11 @@ export default function FurnitureTryOn({
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
+  const { addItem } = useCart();
+  const { toast } = useToast();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -105,6 +110,33 @@ export default function FurnitureTryOn({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!selectedFurniture) return;
+
+    setIsAddingToCart(true);
+    try {
+      await addItem({
+        id: selectedFurniture.id,
+        name: selectedFurniture.name,
+        price: selectedFurniture.price,
+        image: selectedFurniture.image,
+      });
+      
+      toast({
+        title: "Added to Cart",
+        description: `${selectedFurniture.name} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -219,17 +251,11 @@ export default function FurnitureTryOn({
           disabled={!roomImage || !selectedFurniture || isLoading}
           className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
         >
-          {isLoading ? (
-            <>
-              <Loader className="w-4 h-4 mr-2 animate-spin" />
-              {t("furniture_tryon.generating")}
-            </>
-          ) : (
-            <>
-              <Home className="w-4 h-4 mr-2" />
-              {t("furniture_tryon.try_in_room")}
-            </>
-          )}
+          <span className="flex items-center justify-center w-full">
+            {isLoading && <Loader className="w-4 h-4 mr-2 animate-spin" />}
+            {!isLoading && <Home className="w-4 h-4 mr-2" />}
+            <span>{isLoading ? t("furniture_tryon.generating") : t("furniture_tryon.try_in_room")}</span>
+          </span>
         </Button>
         
         <Button

@@ -293,17 +293,11 @@ export default function VirtualTryOn({
           disabled={!userImage || !selectedProduct || isLoading}
           className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
         >
-          {isLoading ? (
-            <>
-              <Loader className="w-4 h-4 mr-2 animate-spin" />
-              {t("virtual_tryon.generating")}
-            </>
-          ) : (
-            <>
-              <Camera className="w-4 h-4 mr-2" />
-              {t("virtual_tryon.try_on_now")}
-            </>
-          )}
+          <span className="flex items-center justify-center w-full">
+            {isLoading && <Loader className="w-4 h-4 mr-2 animate-spin" />}
+            {!isLoading && <Camera className="w-4 h-4 mr-2" />}
+            <span>{isLoading ? t("virtual_tryon.generating") : t("virtual_tryon.try_on_now")}</span>
+          </span>
         </Button>
         
         <Button
@@ -372,17 +366,11 @@ export default function VirtualTryOn({
                   disabled={isAddingToCart}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  {isAddingToCart ? (
-                    <>
-                      <Loader className="w-4 h-4 mr-2 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Accept & Add to Cart
-                    </>
-                  )}
+                  <span className="flex items-center justify-center w-full">
+                    {isAddingToCart && <Loader className="w-4 h-4 mr-2 animate-spin" />}
+                    {!isAddingToCart && <CheckCircle className="w-4 h-4 mr-2" />}
+                    <span>{isAddingToCart ? "Adding..." : "Accept & Add to Cart"}</span>
+                  </span>
                 </Button>
                 
                 <Button

@@ -3,9 +3,8 @@ import sharp from "sharp";
 import axios from "axios";
 import { GoogleGenAI, Modality } from "@google/genai";
 // Environment variables for API keys
-const FURNITURE_NANO_BANANA_API_KEY = process.env.nanoBananaApiKey || "AIzaSyAlDFVyERRgGemp3hMLjPRuch3Q7-Z8BDM";
+const FURNITURE_NANO_BANANA_API_KEY = process.env.nanoBananaApiKey;
 //const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
-const api = new GoogleGenAI({ apiKey: FURNITURE_NANO_BANANA_API_KEY });
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -27,20 +26,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Initialize API
+    const api = new GoogleGenAI({ apiKey: FURNITURE_NANO_BANANA_API_KEY });
+
     // Convert files to buffers
     const roomImageBuffer = Buffer.from(await roomImage.arrayBuffer());
     const furnitureImageBuffer = Buffer.from(await furnitureImage.arrayBuffer());
-
-    // Compress images
-    const compressedRoomImage = await sharp(roomImageBuffer)
-      .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: 85 })
-      .toBuffer();
-
-    const compressedFurnitureImage = await sharp(furnitureImageBuffer)
-      .resize(512, 512, { fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: 85 })
-      .toBuffer();
+    const compressedRoomImage = await sharp(roomImageBuffer).resize(512, 512, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer();
+    const compressedFurnitureImage = await sharp(furnitureImageBuffer).resize(512, 512, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer();
 
     // Convert to base64 for Nano Banana API
     const roomImageBase64 = compressedRoomImage.toString("base64");
